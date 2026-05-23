@@ -1377,7 +1377,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
                         <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px", background:diff>=0?"rgba(74,222,128,0.08)":"rgba(255,61,46,0.08)", border:`1px solid ${diff>=0?"rgba(74,222,128,0.2)":"rgba(255,61,46,0.2)"}`, borderRadius:10 }}>
                           <TrendingDown size={13} color={diff>=0?"#4ade80":"#ff3d2e"} strokeWidth={2} style={{ transform:diff>=0?"rotate(180deg)":"none" }}/>
                           <span style={{ fontSize:12, color:diff>=0?"#4ade80":"#ff3d2e", fontWeight:700 }}>
-                            {diff>=0?"+"}{diff.toFixed(1)}kg across {bestPerSession.length} sessions
+                            {diff>=0?"+":""}{diff.toFixed(1)}kg across {bestPerSession.length} sessions
                           </span>
                         </div>
                       );
