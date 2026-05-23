@@ -22,8 +22,9 @@ function todayRange() {
 function weekRange() {
   return { startMs: Date.now() - 7*24*60*60*1000, endMs: Date.now() };
 }
-// Google's official merged step source — aggregates from all writers (Samsung Health, etc.)
-const MERGED_STEPS_SOURCE = "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps";
+// Google's official merged data sources — aggregate from all writers (Samsung Health, etc.)
+const MERGED_STEPS_SOURCE    = "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps";
+const MERGED_CALORIES_SOURCE = "derived:com.google.calories.expended:com.google.android.gms:merge_calories_expended";
 
 async function fetchFitData(token, type, startMs, endMs, bucket, sourceId) {
   const aggBy = sourceId ? { dataSourceId: sourceId } : { dataTypeName: type };
@@ -1692,12 +1693,12 @@ export default function ApexFitUnified() {
       const DAY = 86400000;
       const [st,cal,hr,dist,act,wSt,wCal,wHr,sleep] = await Promise.all([
         fetchFitData(token,"com.google.step_count.delta",startMs,endMs,null,MERGED_STEPS_SOURCE),
-        fetchFitData(token,"com.google.calories.expended",startMs,endMs),
+        fetchFitData(token,"com.google.calories.expended",startMs,endMs,null,MERGED_CALORIES_SOURCE),
         fetchFitData(token,"com.google.heart_rate.bpm",startMs,endMs),
         fetchFitData(token,"com.google.distance.delta",startMs,endMs),
         fetchFitData(token,"com.google.active_minutes",startMs,endMs),
         fetchFitData(token,"com.google.step_count.delta",wS,wE,DAY,MERGED_STEPS_SOURCE),
-        fetchFitData(token,"com.google.calories.expended",wS,wE,DAY),
+        fetchFitData(token,"com.google.calories.expended",wS,wE,DAY,MERGED_CALORIES_SOURCE),
         fetchFitData(token,"com.google.heart_rate.bpm",wS,wE,DAY),
         fetchSleepSessions(token, wS, wE),
       ]);
