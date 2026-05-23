@@ -25,12 +25,48 @@ function weekRange() {
 // Google's official merged data sources — aggregate from all writers (Samsung Health, etc.)
 const MERGED_STEPS_SOURCE    = "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps";
 const MERGED_CALORIES_SOURCE = "derived:com.google.calories.expended:com.google.android.gms:merge_calories_expended";
+const MERGED_HR_SOURCE       = "derived:com.google.heart_rate.bpm:com.google.android.gms:merge_heart_rate_bpm";
 
 async function fetchFitData(token, type, startMs, endMs, bucket, sourceId) {
   const aggBy = sourceId ? { dataSourceId: sourceId } : { dataTypeName: type };
   const body = { aggregateBy:[aggBy], startTimeMillis:String(startMs), endTimeMillis:String(endMs), ...(bucket?{bucketByTime:{durationMillis:String(bucket)}}:{}) };
   const r = await fetch(`${FITNESS_API}/dataset:aggregate`, { method:"POST", headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"}, body:JSON.stringify(body) });
   return r.json();
+}
+
+// Fetch raw HR samples (no aggregation) so we can compute resting / max / zones / current
+async function fetchHrSamples(token, startMs, endMs) {
+  const startNs = `${startMs}000000`;
+  const endNs   = `${endMs}000000`;
+  const url = `${FITNESS_API}/dataSources/${MERGED_HR_SOURCE}/datasets/${startNs}-${endNs}`;
+  const r = await fetch(url, { headers:{ Authorization:`Bearer ${token}` } });
+  if (!r.ok) return [];
+  const d = await r.json();
+  return (d?.point || [])
+    .map(p => ({ t: Math.floor(parseInt(p.endTimeNanos)/1e6), bpm: p.value?.[0]?.fpVal||0 }))
+    .filter(s => s.bpm > 0)
+    .sort((a,b) => a.t - b.t);
+}
+
+// Derive resting (10th percentile), max, current (most recent), avg, and zone % from samples
+function computeHrStats(samples) {
+  if (!samples.length) return { current:0, resting:0, max:0, avg:0, zones:{peak:0,cardio:0,aerobic:0,fatburn:0,rest:0} };
+  const bpms = samples.map(s=>s.bpm);
+  const sorted = [...bpms].sort((a,b)=>a-b);
+  const resting = Math.round(sorted[Math.floor(sorted.length*0.1)] || sorted[0]);
+  const max     = Math.round(sorted[sorted.length-1]);
+  const avg     = Math.round(bpms.reduce((a,b)=>a+b,0) / bpms.length);
+  const current = Math.round(samples[samples.length-1].bpm);
+  const total = bpms.length;
+  const count = (lo, hi) => bpms.filter(b => b >= lo && b < hi).length;
+  const zones = {
+    peak:    Math.round(count(150, 999) / total * 100),
+    cardio:  Math.round(count(120, 150) / total * 100),
+    aerobic: Math.round(count(90, 120)  / total * 100),
+    fatburn: Math.round(count(60, 90)   / total * 100),
+    rest:    Math.round(count(0, 60)    / total * 100),
+  };
+  return { current, resting, max, avg, zones };
 }
 const extractInt   = d => d?.bucket?.flatMap(b=>b.dataset?.flatMap(ds=>ds.point?.map(p=>p.value?.[0]?.intVal||0)||[])||[]).reduce((a,b)=>a+b,0)||0;
 const extractFloat = d => d?.bucket?.flatMap(b=>b.dataset?.flatMap(ds=>ds.point?.map(p=>p.value?.[0]?.fpVal||0)||[])||[]).reduce((a,b)=>a+b,0)||0;
@@ -1547,7 +1583,7 @@ export default function ApexFitUnified() {
   const [gfitLoading, setGfitLoading]       = useState(false);
   const [gfitError, setGfitError]           = useState(null);
   const [gfitLastSync, setGfitLastSync]     = useState(null);
-  const [gfitData, setGfitData]             = useState({ steps:0, calories:0, heartRate:0, distance:0, activeMinutes:0, weeklySteps:[], weeklyCalories:[], weeklyHR:[] });
+  const [gfitData, setGfitData]             = useState({ steps:0, calories:0, heartRate:0, distance:0, activeMinutes:0, weeklySteps:[], weeklyCalories:[], weeklyHR:[], hrStats:{current:0,resting:0,max:0,avg:0,zones:{peak:0,cardio:0,aerobic:0,fatburn:0,rest:0}} });
   const [gfitSleep, setGfitSleep]           = useState(null); // { lastNight:{date,hours}, entries:[{date,hours}] }
 
   // ── AI ──
@@ -1691,7 +1727,7 @@ export default function ApexFitUnified() {
       const { startMs, endMs } = todayRange();
       const { startMs:wS, endMs:wE } = weekRange();
       const DAY = 86400000;
-      const [st,cal,hr,dist,act,wSt,wCal,wHr,sleep] = await Promise.all([
+      const [st,cal,hr,dist,act,wSt,wCal,wHr,sleep,hrRaw] = await Promise.all([
         fetchFitData(token,"com.google.step_count.delta",startMs,endMs,null,MERGED_STEPS_SOURCE),
         fetchFitData(token,"com.google.calories.expended",startMs,endMs,null,MERGED_CALORIES_SOURCE),
         fetchFitData(token,"com.google.heart_rate.bpm",startMs,endMs),
@@ -1701,8 +1737,10 @@ export default function ApexFitUnified() {
         fetchFitData(token,"com.google.calories.expended",wS,wE,DAY,MERGED_CALORIES_SOURCE),
         fetchFitData(token,"com.google.heart_rate.bpm",wS,wE,DAY),
         fetchSleepSessions(token, wS, wE),
+        fetchHrSamples(token, startMs, endMs),
       ]);
-      setGfitData({ steps:extractInt(st), calories:Math.round(extractFloat(cal)), heartRate:extractHR(hr), distance:Math.round(extractFloat(dist)/1000*10)/10, activeMinutes:extractInt(act), weeklySteps:extractDaily(wSt), weeklyCalories:extractDaily(wCal), weeklyHR:extractDaily(wHr).map(v=>Math.round(v)) });
+      const hrStats = computeHrStats(hrRaw);
+      setGfitData({ steps:extractInt(st), calories:Math.round(extractFloat(cal)), heartRate:hrStats.current||extractHR(hr), distance:Math.round(extractFloat(dist)/1000*10)/10, activeMinutes:extractInt(act), weeklySteps:extractDaily(wSt), weeklyCalories:extractDaily(wCal), weeklyHR:extractDaily(wHr).map(v=>Math.round(v)), hrStats });
       setGfitSleep(sleep);
       // Auto-populate sleepLog from Fit data
       if (sleep?.entries?.length) {
@@ -2598,7 +2636,7 @@ export default function ApexFitUnified() {
                       <span style={{ fontSize:11, color:"#4ade80", fontWeight:700 }}>LIVE</span>
                     </div>
                     <GhostBtn onClick={()=>fetchGfitAll(gfitToken)} style={{ padding:"6px 10px", fontSize:12 }}>↻</GhostBtn>
-                    <GhostBtn onClick={()=>{setGfitToken(null);setGfitData({steps:0,calories:0,heartRate:0,distance:0,activeMinutes:0,weeklySteps:[],weeklyCalories:[],weeklyHR:[]});}} style={{ padding:"6px 10px", fontSize:12 }}>✕</GhostBtn>
+                    <GhostBtn onClick={()=>{setGfitToken(null);setGfitData({steps:0,calories:0,heartRate:0,distance:0,activeMinutes:0,weeklySteps:[],weeklyCalories:[],weeklyHR:[],hrStats:{current:0,resting:0,max:0,avg:0,zones:{peak:0,cardio:0,aerobic:0,fatburn:0,rest:0}}});}} style={{ padding:"6px 10px", fontSize:12 }}>✕</GhostBtn>
                   </div>
                 </div>
 
@@ -2615,7 +2653,7 @@ export default function ApexFitUnified() {
                         <span style={{ fontSize:12, fontWeight:700, color:z.c }}>{z.l} Zone</span>
                       </div>
                       <div style={{ display:"flex", gap:16 }}>
-                        {[{l:"Resting",v:"62 bpm"},{l:"Max",v:gfitData.heartRate?`${Math.round(gfitData.heartRate*1.3)} bpm`:"–"}].map(s=>(
+                        {[{l:"Resting",v:gfitData.hrStats?.resting?`${gfitData.hrStats.resting} bpm`:"–"},{l:"Max",v:gfitData.hrStats?.max?`${gfitData.hrStats.max} bpm`:"–"}].map(s=>(
                           <div key={s.l}><div style={{ fontSize:10, color:"#9090b8" }}>{s.l}</div><div style={{ fontSize:14, fontWeight:700 }}>{gfitLoading?"–":s.v}</div></div>
                         ))}
                       </div>
@@ -2668,7 +2706,7 @@ export default function ApexFitUnified() {
                 {/* HR zones */}
                 <Card style={{ padding:18 }}>
                   <div style={{ fontWeight:700, fontSize:14, marginBottom:14 }}>Heart Rate Zones</div>
-                  {[{l:"Peak",r:"150+ bpm",p:8,c:"var(--brand)"},{l:"Cardio",r:"120–150",p:22,c:"var(--brand2)"},{l:"Aerobic",r:"90–120",p:35,c:"#ffd700"},{l:"Fat Burn",r:"60–90",p:28,c:"#4ade80"},{l:"Rest",r:"<60",p:7,c:"#00e5ff"}].map(z=>(
+                  {[{l:"Peak",r:"150+",p:gfitData.hrStats?.zones?.peak||0,c:"var(--brand)"},{l:"Cardio",r:"120–150",p:gfitData.hrStats?.zones?.cardio||0,c:"var(--brand2)"},{l:"Aerobic",r:"90–120",p:gfitData.hrStats?.zones?.aerobic||0,c:"#ffd700"},{l:"Fat Burn",r:"60–90",p:gfitData.hrStats?.zones?.fatburn||0,c:"#4ade80"},{l:"Rest",r:"<60",p:gfitData.hrStats?.zones?.rest||0,c:"#00e5ff"}].map(z=>(
                     <div key={z.l} style={{ marginBottom:10 }}>
                       <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
                         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
