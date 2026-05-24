@@ -106,12 +106,72 @@ const WORKOUTS = [
 ];
 
 const PRESET_MEALS = [
-  { id:1, name:"Power Oatmeal",        time:"Breakfast",    calories:380, protein:18, carbs:52, fat:9,  tags:["High Protein","Complex Carbs"], portion:"1 bowl (350g)",   portions:["½ bowl (175g)","1 bowl (350g)","1½ bowls (525g)"] },
-  { id:2, name:"Grilled Chicken Bowl", time:"Lunch",        calories:520, protein:48, carbs:38, fat:14, tags:["High Protein","Low Fat"],        portion:"1 bowl (420g)",   portions:["½ bowl (210g)","1 bowl (420g)","1½ bowls (630g)"] },
-  { id:3, name:"Salmon & Greens",      time:"Dinner",       calories:490, protein:42, carbs:22, fat:24, tags:["Omega-3","Keto-friendly"],       portion:"1 fillet (300g)", portions:["½ fillet (150g)","1 fillet (300g)","1½ fillets (450g)"] },
-  { id:4, name:"Greek Yogurt Parfait", time:"Snack",        calories:210, protein:20, carbs:28, fat:4,  tags:["Probiotic","Low Cal"],           portion:"1 cup (240g)",    portions:["½ cup (120g)","1 cup (240g)","2 cups (480g)"] },
-  { id:5, name:"Protein Smoothie",     time:"Post-Workout", calories:290, protein:32, carbs:35, fat:3,  tags:["Recovery","High Protein"],       portion:"1 shake (500ml)", portions:["½ shake (250ml)","1 shake (500ml)","2 shakes (1L)"] },
+  // ── BREAKFAST (6 options) ──────────────────────────────────────────
+  { id:1,  name:"Power Oatmeal",          time:"Breakfast", calories:380, protein:18, carbs:52, fat:9,  tags:["High Protein","Complex Carbs"], goalFit:["muscle","endurance","flex"], portion:"1 bowl (350g)",   portions:["½ bowl (175g)","1 bowl (350g)","1½ bowls (525g)"] },
+  { id:2,  name:"Veggie Omelette",        time:"Breakfast", calories:340, protein:26, carbs:8,  fat:22, tags:["High Protein","Low Carb"],       goalFit:["muscle","lose","flex"],      portion:"3-egg omelette",  portions:["2 eggs","3 eggs","4 eggs"] },
+  { id:3,  name:"Greek Yogurt Bowl",      time:"Breakfast", calories:290, protein:24, carbs:32, fat:6,  tags:["Probiotic","High Protein"],      goalFit:["lose","muscle","flex"],      portion:"1 bowl (300g)",   portions:["½ bowl (150g)","1 bowl (300g)","1½ bowls (450g)"] },
+  { id:4,  name:"Avocado Toast & Eggs",   time:"Breakfast", calories:420, protein:20, carbs:34, fat:24, tags:["Healthy Fats","Balanced"],       goalFit:["muscle","flex","endurance"], portion:"2 slices",        portions:["1 slice","2 slices","3 slices"] },
+  { id:5,  name:"Protein Pancakes",       time:"Breakfast", calories:410, protein:32, carbs:42, fat:11, tags:["High Protein","Filling"],        goalFit:["muscle","flex"],             portion:"3 pancakes",      portions:["2 pancakes","3 pancakes","4 pancakes"] },
+  { id:6,  name:"Berry Smoothie Bowl",    time:"Breakfast", calories:320, protein:18, carbs:48, fat:6,  tags:["Antioxidants","Low Fat"],        goalFit:["lose","endurance","flex"],   portion:"1 bowl (400g)",   portions:["½ bowl (200g)","1 bowl (400g)","1½ bowls (600g)"] },
+
+  // ── LUNCH (6 options) ──────────────────────────────────────────────
+  { id:7,  name:"Grilled Chicken Bowl",   time:"Lunch", calories:520, protein:48, carbs:38, fat:14, tags:["High Protein","Low Fat"],          goalFit:["muscle","lose","flex"],      portion:"1 bowl (420g)",   portions:["½ bowl (210g)","1 bowl (420g)","1½ bowls (630g)"] },
+  { id:8,  name:"Tuna Niçoise Salad",     time:"Lunch", calories:380, protein:32, carbs:22, fat:18, tags:["High Protein","Omega-3"],          goalFit:["lose","muscle","flex"],      portion:"1 salad (350g)",  portions:["½ salad (175g)","1 salad (350g)","1½ salads (525g)"] },
+  { id:9,  name:"Beef & Quinoa Bowl",     time:"Lunch", calories:580, protein:42, carbs:54, fat:18, tags:["High Protein","Iron-rich"],        goalFit:["muscle","endurance"],        portion:"1 bowl (450g)",   portions:["½ bowl (225g)","1 bowl (450g)","1½ bowls (675g)"] },
+  { id:10, name:"Turkey Wrap",            time:"Lunch", calories:440, protein:36, carbs:42, fat:14, tags:["High Protein","Balanced"],         goalFit:["muscle","flex","lose"],      portion:"1 wrap (300g)",   portions:["½ wrap (150g)","1 wrap (300g)","1½ wraps (450g)"] },
+  { id:11, name:"Chickpea Buddha Bowl",   time:"Lunch", calories:460, protein:20, carbs:62, fat:14, tags:["Plant-based","Fiber"],             goalFit:["endurance","flex"],          portion:"1 bowl (450g)",   portions:["½ bowl (225g)","1 bowl (450g)","1½ bowls (675g)"] },
+  { id:12, name:"Salmon Poke Bowl",       time:"Lunch", calories:540, protein:38, carbs:48, fat:18, tags:["Omega-3","Balanced"],              goalFit:["muscle","endurance","flex"], portion:"1 bowl (400g)",   portions:["½ bowl (200g)","1 bowl (400g)","1½ bowls (600g)"] },
+
+  // ── DINNER (6 options) ─────────────────────────────────────────────
+  { id:13, name:"Salmon & Greens",        time:"Dinner", calories:490, protein:42, carbs:22, fat:24, tags:["Omega-3","Keto-friendly"],         goalFit:["muscle","lose","flex"],      portion:"1 fillet (300g)", portions:["½ fillet (150g)","1 fillet (300g)","1½ fillets (450g)"] },
+  { id:14, name:"Lean Steak & Sweet Potato", time:"Dinner", calories:610, protein:46, carbs:44, fat:24, tags:["High Protein","Iron-rich"],     goalFit:["muscle","endurance"],        portion:"200g steak",      portions:["150g","200g","250g"] },
+  { id:15, name:"Chicken Stir Fry",       time:"Dinner", calories:480, protein:40, carbs:38, fat:16, tags:["High Protein","Veggies"],          goalFit:["muscle","lose","flex"],      portion:"1 plate (400g)",  portions:["½ plate (200g)","1 plate (400g)","1½ plates (600g)"] },
+  { id:16, name:"Lentil Curry & Rice",    time:"Dinner", calories:510, protein:22, carbs:78, fat:10, tags:["Plant-based","Fiber"],             goalFit:["endurance","flex"],          portion:"1 plate (450g)",  portions:["½ plate (225g)","1 plate (450g)","1½ plates (675g)"] },
+  { id:17, name:"Cod & Roast Veg",        time:"Dinner", calories:380, protein:36, carbs:24, fat:14, tags:["Low Cal","High Protein"],          goalFit:["lose","flex"],               portion:"1 fillet (250g)", portions:["½ fillet (125g)","1 fillet (250g)","1½ fillets (375g)"] },
+  { id:18, name:"Turkey Meatballs & Pasta", time:"Dinner", calories:560, protein:42, carbs:62, fat:14, tags:["High Protein","Comfort"],         goalFit:["muscle","endurance","flex"], portion:"1 plate (400g)",  portions:["½ plate (200g)","1 plate (400g)","1½ plates (600g)"] },
+
+  // ── SNACK (6 options) ──────────────────────────────────────────────
+  { id:19, name:"Greek Yogurt Parfait",   time:"Snack", calories:210, protein:20, carbs:28, fat:4,  tags:["Probiotic","Low Cal"],            goalFit:["lose","muscle","flex"],      portion:"1 cup (240g)",    portions:["½ cup (120g)","1 cup (240g)","2 cups (480g)"] },
+  { id:20, name:"Apple & Almond Butter",  time:"Snack", calories:240, protein:8,  carbs:28, fat:14, tags:["Healthy Fats","Filling"],         goalFit:["flex","endurance","lose"],   portion:"1 apple + 2 tbsp",portions:["½ apple + 1 tbsp","1 apple + 2 tbsp","1½ apples + 3 tbsp"] },
+  { id:21, name:"Cottage Cheese & Berries", time:"Snack", calories:180, protein:22, carbs:16, fat:3, tags:["High Protein","Low Cal"],         goalFit:["lose","muscle","flex"],      portion:"1 cup (200g)",    portions:["½ cup (100g)","1 cup (200g)","1½ cups (300g)"] },
+  { id:22, name:"Hummus & Veggies",       time:"Snack", calories:200, protein:8,  carbs:24, fat:10, tags:["Plant-based","Fiber"],            goalFit:["lose","flex","endurance"],   portion:"100g + veg",      portions:["50g + veg","100g + veg","150g + veg"] },
+  { id:23, name:"Trail Mix",              time:"Snack", calories:280, protein:8,  carbs:24, fat:18, tags:["Healthy Fats","Energy"],          goalFit:["endurance","flex"],          portion:"45g",             portions:["30g","45g","60g"] },
+  { id:24, name:"Boiled Eggs & Crackers", time:"Snack", calories:220, protein:18, carbs:14, fat:11, tags:["High Protein","Filling"],         goalFit:["muscle","lose","flex"],      portion:"2 eggs + 4",      portions:["1 egg + 2","2 eggs + 4","3 eggs + 6"] },
+
+  // ── POST-WORKOUT (5 options) ───────────────────────────────────────
+  { id:25, name:"Protein Smoothie",       time:"Post-Workout", calories:290, protein:32, carbs:35, fat:3,  tags:["Recovery","High Protein"],   goalFit:["muscle","endurance","flex"], portion:"1 shake (500ml)", portions:["½ shake (250ml)","1 shake (500ml)","2 shakes (1L)"] },
+  { id:26, name:"Whey Shake & Banana",    time:"Post-Workout", calories:260, protein:28, carbs:34, fat:2,  tags:["Quick Recovery","Carbs"],    goalFit:["muscle","endurance"],        portion:"1 shake + 1",     portions:["½ shake","1 shake","1 shake + 2 bananas"] },
+  { id:27, name:"Chocolate Milk",         time:"Post-Workout", calories:220, protein:14, carbs:32, fat:5,  tags:["Recovery","Classic"],        goalFit:["endurance","muscle"],        portion:"500ml",           portions:["250ml","500ml","750ml"] },
+  { id:28, name:"Tuna & Rice Cakes",      time:"Post-Workout", calories:240, protein:26, carbs:24, fat:3,  tags:["Lean Protein","Low Fat"],    goalFit:["lose","muscle","flex"],      portion:"1 tin + 3",       portions:["½ tin + 2","1 tin + 3","1½ tins + 4"] },
+  { id:29, name:"Cottage Cheese & Honey", time:"Post-Workout", calories:230, protein:24, carbs:22, fat:5,  tags:["High Protein","Slow Digest"], goalFit:["muscle","flex"],            portion:"1 cup (200g)",    portions:["½ cup (100g)","1 cup (200g)","1½ cups (300g)"] },
 ];
+
+// ── Deterministic 7-day rotation ──────────────────────────────────────
+// Picks one meal per slot for a given absolute day index, biased toward user's goal.
+// Same dayIndex returns the same meal — so today is consistent across refreshes.
+function getDayPlan(dayIndex, profile, swaps={}) {
+  const goal = profile?.goal || "flex";
+  const slots = ["Breakfast","Lunch","Dinner","Snack","Post-Workout"];
+  const plan = {};
+  slots.forEach((slot, si) => {
+    // Check for manual swap first (user picked something specific for this day+slot)
+    const swapKey = `${dayIndex}:${slot}`;
+    if (swaps[swapKey]) { plan[slot] = swaps[swapKey]; return; }
+    // Filter to meals matching goal, fall back to all if no matches
+    const pool = PRESET_MEALS.filter(m=>m.time===slot && m.goalFit.includes(goal));
+    const candidates = pool.length ? pool : PRESET_MEALS.filter(m=>m.time===slot);
+    // Deterministic offset: rotate based on dayIndex + slot index so same day rotates all slots together
+    const idx = (dayIndex + si*2) % candidates.length;
+    plan[slot] = candidates[idx].id;
+  });
+  return plan;
+}
+
+// Absolute day index (days since epoch) — stable across timezones for "today"
+function dayIndexFor(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.floor(d.getTime() / 86400000);
+}
 
 const EXERCISES_LIB = [
   "Push-ups","Pull-ups","Squats","Lunges","Burpees","Plank","Mountain Climbers",
@@ -917,6 +977,9 @@ export default function ApexFitUnified() {
   const [customWorkouts,   setCustomWorkouts,   customLoaded]           = useStorage("apex:customWorkouts", []);
   const [loggedMeals,      setLoggedMeals,      mealsLoaded]            = useStorage("apex:loggedMeals", [1,2,4]);
   const [mealPortions,     setMealPortions,     ]                       = useStorage("apex:mealPortions", {}); // {mealId: multiplier}
+  const [mealSwaps,        setMealSwaps,        ]                       = useStorage("apex:mealSwaps", {});    // {"dayIndex:Slot": mealId}
+  const [mealDayOffset,    setMealDayOffset,    ]                       = useState(0);                          // 0=today, -1=yesterday, +1=tomorrow
+  const [swapPickerOpen,   setSwapPickerOpen,   ]                       = useState(null);                       // slot name when swap picker open
   const [scannedLog,       setScannedLog,       scannedLoaded]          = useStorage("apex:scannedLog", []);
   const [quickLog,         setQuickLog,         quickLoaded]            = useStorage("apex:quickLog", []);
   const [streak,           setStreak,           streakLoaded]           = useStorage("apex:streak", 7);
@@ -1734,58 +1797,130 @@ export default function ApexFitUnified() {
               </div>
             )}
 
-            {["Breakfast","Lunch","Dinner","Snack","Post-Workout"].map(slot=>{
-              const ms = PRESET_MEALS.filter(m=>m.time===slot);
-              if (!ms.length) return null;
+            {/* ── Day picker ─────────────────────────────────────── */}
+            {(()=>{
+              const today = new Date();
+              const viewDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()+mealDayOffset);
+              const dayIdx = dayIndexFor(viewDate);
+              const plan = getDayPlan(dayIdx, profile, mealSwaps);
+              const dayLabel = mealDayOffset===0 ? "Today" : mealDayOffset===-1 ? "Yesterday" : mealDayOffset===1 ? "Tomorrow" : viewDate.toLocaleDateString(undefined,{weekday:"long"});
+              const dateLabel = viewDate.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+
               return (
-                <div key={slot}>
-                  <div style={{ fontSize:10, color:"#8080a8", fontWeight:700, textTransform:"uppercase", letterSpacing:1, marginBottom:7 }}>{slot}</div>
-                  {ms.map(meal=>{
-                    const ok = loggedMeals.includes(meal.id);
+                <>
+                  <Card style={{ padding:"10px 14px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <button onClick={()=>setMealDayOffset(d=>d-1)}
+                      style={{ width:36, height:36, borderRadius:10, background:"var(--border)", border:"none", color:"var(--text)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      ‹
+                    </button>
+                    <div style={{ textAlign:"center" }}>
+                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, textTransform:"uppercase", letterSpacing:0.5, lineHeight:1 }}>{dayLabel}</div>
+                      <div style={{ fontSize:11, color:"var(--text3)", marginTop:3 }}>{dateLabel}</div>
+                    </div>
+                    <button onClick={()=>setMealDayOffset(d=>d+1)}
+                      style={{ width:36, height:36, borderRadius:10, background:"var(--border)", border:"none", color:"var(--text)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      ›
+                    </button>
+                  </Card>
+
+                  {/* Plan list */}
+                  {["Breakfast","Lunch","Dinner","Snack","Post-Workout"].map(slot=>{
+                    const mealId = plan[slot];
+                    const meal = PRESET_MEALS.find(m=>m.id===mealId);
+                    if (!meal) return null;
+                    const ok = mealDayOffset===0 && loggedMeals.includes(meal.id);
                     const mult = portionMult(meal.id);
-                    const portionIdx = mult === 0.5 ? 0 : mult === 1 ? 1 : 2;
                     const scaledCal  = Math.round(meal.calories * mult);
                     const scaledPro  = Math.round(meal.protein  * mult);
                     const scaledCarb = Math.round(meal.carbs    * mult);
                     const scaledFat  = Math.round(meal.fat      * mult);
+                    const swapKey = `${dayIdx}:${slot}`;
+                    const slotOptions = PRESET_MEALS.filter(m=>m.time===slot && m.id!==meal.id);
+                    const swapping = swapPickerOpen===swapKey;
+
                     return (
-                      <Card key={meal.id} style={{ padding:14, marginBottom:8, borderColor:ok?"rgba(74,222,128,0.25)":"#1c1c2e" }}>
-                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"start" }}>
-                          <div style={{ flex:1 }}>
-                            <div style={{ fontWeight:700, marginBottom:4 }}>{meal.name}</div>
-                            {/* Portion selector */}
-                            <div style={{ display:"flex", gap:4, marginBottom:8 }}>
-                              {meal.portions.map((p,i)=>{
-                                const m = i===0?0.5:i===1?1:1.5;
-                                const sel = mult===m;
-                                return (
-                                  <button key={i} onClick={()=>setMealPortions(prev=>({...prev,[meal.id]:m}))}
-                                    style={{ padding:"3px 8px", borderRadius:20, border:`1px solid ${sel?"var(--brand)":"var(--border2)"}`, background:sel?"rgba(255,61,46,0.12)":"transparent", color:sel?"var(--brand)":"var(--text3)", fontSize:9, fontWeight:700, fontFamily:"'Syne',sans-serif", cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}>
-                                    {p}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            {/* Scaled macros */}
-                            <div style={{ display:"flex", gap:10, fontSize:12, color:"#9090b8", flexWrap:"wrap" }}>
-                              <span>🔥 {scaledCal}</span>
-                              <span>💪 {scaledPro}g</span>
-                              <span>🌾 {scaledCarb}g</span>
-                              <span>🥑 {scaledFat}g</span>
-                            </div>
-                            <div style={{ marginTop:6 }}>{meal.tags.map(t=><span key={t} style={{ display:"inline-block", padding:"2px 8px", borderRadius:20, fontSize:10, fontWeight:700, background:"var(--border)", color:"#9898b8", margin:2 }}>{t}</span>)}</div>
-                          </div>
-                          <button onClick={()=>setLoggedMeals(p=>ok?p.filter(m=>m!==meal.id):[...p,meal.id])}
-                            style={{ width:30, height:30, borderRadius:8, border:"none", cursor:"pointer", flexShrink:0, marginLeft:10, background:ok?"rgba(74,222,128,0.2)":"var(--border)", color:ok?"#4ade80":"#555", fontSize:14, transition:"all 0.2s" }}>
-                            {ok?"✓":"+"}
+                      <div key={slot}>
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:7 }}>
+                          <div style={{ fontSize:10, color:"#8080a8", fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>{slot}</div>
+                          <button onClick={()=>setSwapPickerOpen(swapping?null:swapKey)}
+                            style={{ fontSize:10, color:swapping?"var(--brand)":"var(--text3)", fontWeight:700, background:"transparent", border:"none", cursor:"pointer", textTransform:"uppercase", letterSpacing:0.5, padding:"2px 8px", display:"flex", alignItems:"center", gap:4 }}>
+                            <RotateCcw size={10} strokeWidth={2.5}/> {swapping?"Cancel":"Swap"}
                           </button>
                         </div>
-                      </Card>
+
+                        {/* Swap picker - shows alternatives */}
+                        {swapping && (
+                          <Card style={{ padding:10, marginBottom:8, borderColor:"rgba(255,61,46,0.25)" }}>
+                            <div style={{ fontSize:10, color:"var(--text3)", marginBottom:8, fontWeight:700, textTransform:"uppercase", letterSpacing:0.5 }}>Pick a replacement</div>
+                            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                              {slotOptions.map(opt=>(
+                                <button key={opt.id}
+                                  onClick={()=>{ setMealSwaps(prev=>({...prev,[swapKey]:opt.id})); setSwapPickerOpen(null); }}
+                                  style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 12px", borderRadius:10, background:"var(--border)", border:"1px solid var(--border2)", color:"var(--text)", textAlign:"left", cursor:"pointer", transition:"all 0.15s" }}>
+                                  <div style={{ flex:1, minWidth:0 }}>
+                                    <div style={{ fontWeight:600, fontSize:13, marginBottom:2 }}>{opt.name}</div>
+                                    <div style={{ fontSize:10, color:"var(--text3)" }}>{opt.calories} kcal · {opt.protein}g protein</div>
+                                  </div>
+                                  <ChevronRight size={14} color="var(--text3)"/>
+                                </button>
+                              ))}
+                              {mealSwaps[swapKey] && (
+                                <button onClick={()=>{ setMealSwaps(prev=>{const n={...prev};delete n[swapKey];return n;}); setSwapPickerOpen(null); }}
+                                  style={{ padding:"8px 12px", borderRadius:10, background:"transparent", border:"1px dashed var(--border2)", color:"var(--text3)", fontSize:11, cursor:"pointer", fontFamily:"'Syne',sans-serif", fontWeight:600 }}>
+                                  Reset to default
+                                </button>
+                              )}
+                            </div>
+                          </Card>
+                        )}
+
+                        <Card style={{ padding:14, marginBottom:8, borderColor:ok?"rgba(74,222,128,0.25)":"#1c1c2e" }}>
+                          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"start" }}>
+                            <div style={{ flex:1 }}>
+                              <div style={{ fontWeight:700, marginBottom:4 }}>{meal.name}</div>
+                              {/* Portion selector */}
+                              <div style={{ display:"flex", gap:4, marginBottom:8 }}>
+                                {meal.portions.map((p,i)=>{
+                                  const m = i===0?0.5:i===1?1:1.5;
+                                  const sel = mult===m;
+                                  return (
+                                    <button key={i} onClick={()=>setMealPortions(prev=>({...prev,[meal.id]:m}))}
+                                      style={{ padding:"3px 8px", borderRadius:20, border:`1px solid ${sel?"var(--brand)":"var(--border2)"}`, background:sel?"rgba(255,61,46,0.12)":"transparent", color:sel?"var(--brand)":"var(--text3)", fontSize:9, fontWeight:700, fontFamily:"'Syne',sans-serif", cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}>
+                                      {p}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {/* Scaled macros */}
+                              <div style={{ display:"flex", gap:10, fontSize:12, color:"#9090b8", flexWrap:"wrap" }}>
+                                <span>🔥 {scaledCal}</span>
+                                <span>💪 {scaledPro}g</span>
+                                <span>🌾 {scaledCarb}g</span>
+                                <span>🥑 {scaledFat}g</span>
+                              </div>
+                              <div style={{ marginTop:6 }}>{meal.tags.map(t=><span key={t} style={{ display:"inline-block", padding:"2px 8px", borderRadius:20, fontSize:10, fontWeight:700, background:"var(--border)", color:"#9898b8", margin:2 }}>{t}</span>)}</div>
+                            </div>
+                            {mealDayOffset===0 && (
+                              <button onClick={()=>setLoggedMeals(p=>ok?p.filter(m=>m!==meal.id):[...p,meal.id])}
+                                style={{ width:30, height:30, borderRadius:8, border:"none", cursor:"pointer", flexShrink:0, marginLeft:10, background:ok?"rgba(74,222,128,0.2)":"var(--border)", color:ok?"#4ade80":"#555", fontSize:14, transition:"all 0.2s" }}>
+                                {ok?"✓":"+"}
+                              </button>
+                            )}
+                          </div>
+                        </Card>
+                      </div>
                     );
                   })}
-                </div>
+
+                  {/* AI regenerate hint - placeholder for future */}
+                  <Card style={{ padding:12, textAlign:"center", borderStyle:"dashed", borderColor:"var(--border2)", background:"transparent" }}>
+                    <div style={{ fontSize:11, color:"var(--text3)", lineHeight:1.5 }}>
+                      💡 Plan auto-rotates daily based on your goal. Tap <b>Swap</b> on any meal to change it.
+                    </div>
+                  </Card>
+                </>
               );
-            })}
+            })()}
           </div>
         )}
 
