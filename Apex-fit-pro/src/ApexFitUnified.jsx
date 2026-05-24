@@ -145,12 +145,13 @@ const pct  = (v,m) => Math.min(100, Math.round((v/Math.max(m,1))*100));
 const b64  = f => new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.onerror=()=>rej(); r.readAsDataURL(f); });
 
 async function callClaude(messages, system="You are a helpful fitness coach. Be concise and motivational.") {
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const r = await fetch("/api/claude", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, system, messages })
   });
   const d = await r.json();
+  if (d.error) throw new Error(d.error.message || "API error");
   return d.content?.[0]?.text || "";
 }
 
