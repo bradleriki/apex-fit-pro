@@ -4,7 +4,7 @@ import { Home, Dumbbell, Camera, Salad, Watch, BarChart2, Bot, Flame, Zap, Chevr
 // ─────────────────────────────────────────────────────────────────────────────
 // GOOGLE FIT CONFIG — paste your OAuth Client ID here
 // ─────────────────────────────────────────────────────────────────────────────
-const GFIT_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID_HERE";
+const GFIT_CLIENT_ID = "219238177313-jsacshodqhaoni3r0ulf2poinnkucjnp.apps.googleusercontent.com";
 const GFIT_SCOPES = [
   "https://www.googleapis.com/auth/fitness.activity.read",
   "https://www.googleapis.com/auth/fitness.heart_rate.read",
@@ -1970,46 +1970,52 @@ export default function ApexFitUnified() {
             {!gfitToken ? (
               /* ── CONNECT SCREEN ── */
               <>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>CONNECT WEARABLE</div>
-
-                {/* Device grid */}
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
-                  {[{name:"Pixel Watch",Icon:Watch},{name:"Fitbit",Icon:Activity},{name:"Galaxy Watch",Icon:Watch},{name:"Garmin",Icon:Heart},{name:"Wear OS",Icon:Cpu},{name:"Any Device",Icon:Wifi}].map(d=>(
-                    <Card key={d.name} style={{ padding:"12px 8px", textAlign:"center" }}>
-                      <div style={{ display:"flex", justifyContent:"center", marginBottom:6 }}><d.Icon size={20} color="var(--text2)" strokeWidth={1.5}/></div>
-                      <div style={{ fontSize:10, color:"var(--text3)", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{d.name}</div>
-                    </Card>
-                  ))}
+                <div>
+                  <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:8 }}>
+                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>CONNECT WEARABLE</div>
+                  </div>
+                  <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", borderRadius:100, padding:"4px 12px" }}>
+                    <div style={{ width:6, height:6, borderRadius:"50%", background:"var(--text3)" }}/>
+                    <span style={{ fontSize:11, color:"var(--text3)", fontFamily:"'Syne',sans-serif", fontWeight:600 }}>Not connected</span>
+                  </div>
                 </div>
 
-                <Card style={{ padding:20, borderColor:"rgba(255,61,46,0.2)" }}>
-                  <div style={{ display:"flex", gap:10, alignItems:"center", marginBottom:14 }}>
-                    <div style={{ width:36, height:36, background:"rgba(255,61,46,0.12)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center" }}><BarChart2 size={18} color="var(--brand)" strokeWidth={2}/></div>
+                {/* Hero connection card */}
+                <Card style={{ padding:24, borderColor:"rgba(255,61,46,0.25)", background:"linear-gradient(135deg,rgba(255,61,46,0.06),transparent 60%)" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:16 }}>
+                    <div style={{ width:48, height:48, background:"var(--grad)", borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 6px 20px rgba(255,61,46,0.35)", flexShrink:0 }}>
+                      <Watch size={24} color="#fff" strokeWidth={2}/>
+                    </div>
                     <div>
-                      <div style={{ fontWeight:700 }}>Google Fit Integration</div>
-                      <div style={{ fontSize:12, color:"var(--text3)" }}>Syncs steps, heart rate, calories & more</div>
+                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, textTransform:"uppercase", letterSpacing:0.5, lineHeight:1 }}>Sync your watch</div>
+                      <div style={{ fontSize:12, color:"var(--text3)", marginTop:4 }}>Works with any device that syncs to Google Fit</div>
                     </div>
                   </div>
-                  <div style={{ fontSize:13, color:"#9090b8", lineHeight:1.65, marginBottom:14 }}>Enter your Google OAuth Client ID to connect. Your data is fetched directly — never stored.</div>
-                  <div style={{ marginBottom:12 }}>
-                    <div style={{ fontSize:11, color:"#9090b8", marginBottom:6 }}>Google OAuth Client ID</div>
-                    <input value={gfitClientId} onChange={e=>setGfitClientId(e.target.value)} placeholder="xxxx.apps.googleusercontent.com"/>
-                  </div>
-                  <PrimaryBtn onClick={connectGfit} disabled={!gfitClientId.trim()||gfitConnecting}>
-                    {gfitConnecting ? "Redirecting to Google…" : "Connect Google Fit"}
-                  </PrimaryBtn>
-                </Card>
 
-                {/* Setup instructions */}
-                <Card style={{ padding:18 }}>
-                  <div style={{ fontWeight:700, marginBottom:12, fontSize:14 }}>How to get your Client ID</div>
-                  {["Go to console.cloud.google.com","Create a project → Enable Fitness API","APIs & Services → Credentials → OAuth Client ID","Type: Web Application — add your URL as origin","Copy the Client ID and paste above"].map((s,i)=>(
-                    <div key={i} style={{ display:"flex", gap:12, marginBottom:10, alignItems:"flex-start" }}>
-                      <div style={{ width:22, height:22, borderRadius:6, background:"linear-gradient(135deg,var(--brand),var(--brand2))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, flexShrink:0 }}>{i+1}</div>
-                      <span style={{ fontSize:13, color:"#777", lineHeight:1.55 }}>{s}</span>
-                    </div>
-                  ))}
-                  <div style={{ fontSize:11, color:"var(--border2)", marginTop:4, textAlign:"center" }}>🔒 We never store your health data</div>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:18 }}>
+                    {[
+                      { Icon:Heart, label:"Heart Rate", color:"var(--brand)" },
+                      { Icon:Footprints, label:"Steps", color:"var(--brand2)" },
+                      { Icon:BedDouble, label:"Sleep", color:"#a78bfa" },
+                      { Icon:Flame, label:"Calories", color:"#ffd700" },
+                      { Icon:Activity, label:"Distance", color:"#00e5ff" },
+                      { Icon:Timer, label:"Active Min", color:"#4ade80" },
+                    ].map(p=>(
+                      <div key={p.label} style={{ display:"flex", alignItems:"center", gap:5, padding:"5px 10px", borderRadius:100, background:`${p.color}14`, border:`1px solid ${p.color}33` }}>
+                        <p.Icon size={11} color={p.color} strokeWidth={2}/>
+                        <span style={{ fontSize:11, color:p.color, fontFamily:"'Syne',sans-serif", fontWeight:600 }}>{p.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <PrimaryBtn onClick={connectGfit} disabled={!gfitClientId.trim()||gfitConnecting} style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                    {gfitConnecting ? "Redirecting to Google…" : (<><Watch size={15} strokeWidth={2.5}/> Connect Google Fit</>)}
+                  </PrimaryBtn>
+
+                  <div style={{ fontSize:11, color:"var(--text3)", textAlign:"center", marginTop:12, lineHeight:1.5 }}>
+                    Google will ask for permission to share your fitness data.<br/>
+                    <span style={{ color:"var(--text2)" }}>🔒 Data is fetched directly — never stored on our servers.</span>
+                  </div>
                 </Card>
               </>
             ) : (
