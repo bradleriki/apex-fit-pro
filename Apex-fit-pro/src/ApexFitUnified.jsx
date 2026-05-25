@@ -503,9 +503,9 @@ async function callClaude(messages, system="You are a helpful fitness coach. Be 
 // ─────────────────────────────────────────────────────────────────────────────
 // SHARED UI ATOMS
 // ─────────────────────────────────────────────────────────────────────────────
-function Card({ children, style={}, glow=false }) {
+function Card({ children, style={}, glow=false, onClick, ...rest }) {
   return (
-    <div className={`glass${glow?" glass-hot":""}`} style={style}>
+    <div className={`glass${glow?" glass-hot":""}`} style={style} onClick={onClick} {...rest}>
       {children}
     </div>
   );
@@ -1991,7 +1991,15 @@ export default function ApexFitUnified() {
                                 </>
                               )}
                             </div>
-                            {workout && <ChevronRight size={18} color="var(--text3)"/>}
+                            {workout && (
+                              isToday ? (
+                                <div style={{ padding:"7px 14px", borderRadius:100, background:"var(--grad)", color:"#fff", fontSize:11, fontWeight:700, fontFamily:"'Syne',sans-serif", whiteSpace:"nowrap", display:"flex", alignItems:"center", gap:4, boxShadow:"0 4px 14px rgba(255,61,46,0.4)" }}>
+                                  Start <ChevronRight size={12} strokeWidth={2.5}/>
+                                </div>
+                              ) : (
+                                <ChevronRight size={16} color="var(--text3)" strokeWidth={2}/>
+                              )
+                            )}
                           </div>
                         </Card>
                       );
