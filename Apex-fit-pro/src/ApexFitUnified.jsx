@@ -105,6 +105,291 @@ const WORKOUTS = [
   { id:6, name:"Cardio Blast",      type:"Cardio",      duration:30, calories:350, difficulty:"Hard",     exercises:["Sprint Intervals","Jump Rope","Box Jumps","Jumping Jacks","Skaters"],            muscles:["Legs","Cardio"] },
 ];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRAM WORKOUT LIBRARY — exercises with sets/reps/weight for progression
+// ─────────────────────────────────────────────────────────────────────────────
+const PROGRAM_WORKOUTS = {
+  // === FULL BODY (beginner) ===
+  "fb-a": { id:"fb-a", name:"Full Body A", type:"Strength", duration:45, calories:320, difficulty:"Moderate", muscles:["Full Body"],
+    exercises:[
+      { name:"Goblet Squat",    sets:3, reps:"10-12", restSec:60, weighted:true },
+      { name:"Push-ups",        sets:3, reps:"8-12",  restSec:45, weighted:false },
+      { name:"Dumbbell Row",    sets:3, reps:"10-12", restSec:60, weighted:true },
+      { name:"Glute Bridges",   sets:3, reps:"12-15", restSec:45, weighted:false },
+      { name:"Plank",           sets:3, reps:"30-45s",restSec:30, weighted:false },
+    ]},
+  "fb-b": { id:"fb-b", name:"Full Body B", type:"Strength", duration:45, calories:330, difficulty:"Moderate", muscles:["Full Body"],
+    exercises:[
+      { name:"Romanian Deadlift", sets:3, reps:"8-10",  restSec:75, weighted:true },
+      { name:"Dumbbell Press",    sets:3, reps:"10-12", restSec:60, weighted:true },
+      { name:"Lat Pulldown",      sets:3, reps:"10-12", restSec:60, weighted:true },
+      { name:"Walking Lunges",    sets:3, reps:"10/leg",restSec:60, weighted:true },
+      { name:"Russian Twists",    sets:3, reps:"20",    restSec:30, weighted:false },
+    ]},
+  "fb-c": { id:"fb-c", name:"Full Body C", type:"Strength", duration:45, calories:325, difficulty:"Moderate", muscles:["Full Body"],
+    exercises:[
+      { name:"Front Squat",     sets:3, reps:"8-10",  restSec:75, weighted:true },
+      { name:"Incline Push-ups",sets:3, reps:"10-12", restSec:45, weighted:false },
+      { name:"Inverted Row",    sets:3, reps:"8-10",  restSec:60, weighted:false },
+      { name:"Step-ups",        sets:3, reps:"10/leg",restSec:60, weighted:true },
+      { name:"Dead Bug",        sets:3, reps:"10/side",restSec:30, weighted:false },
+    ]},
+
+  // === UPPER / LOWER (intermediate) ===
+  "upper-a": { id:"upper-a", name:"Upper Body A", type:"Strength", duration:50, calories:340, difficulty:"Hard", muscles:["Chest","Back","Shoulders"],
+    exercises:[
+      { name:"Bench Press",     sets:4, reps:"6-8",   restSec:90, weighted:true },
+      { name:"Pull-ups",        sets:4, reps:"6-10",  restSec:90, weighted:false },
+      { name:"Overhead Press",  sets:3, reps:"8-10",  restSec:75, weighted:true },
+      { name:"Barbell Row",     sets:3, reps:"8-10",  restSec:75, weighted:true },
+      { name:"Bicep Curl",      sets:3, reps:"10-12", restSec:45, weighted:true },
+      { name:"Tricep Pushdown", sets:3, reps:"10-12", restSec:45, weighted:true },
+    ]},
+  "lower-a": { id:"lower-a", name:"Lower Body A", type:"Strength", duration:55, calories:380, difficulty:"Hard", muscles:["Quads","Glutes","Hamstrings"],
+    exercises:[
+      { name:"Back Squat",       sets:4, reps:"6-8",  restSec:120,weighted:true },
+      { name:"Romanian Deadlift",sets:4, reps:"8-10", restSec:90, weighted:true },
+      { name:"Leg Press",        sets:3, reps:"10-12",restSec:75, weighted:true },
+      { name:"Leg Curl",         sets:3, reps:"10-12",restSec:60, weighted:true },
+      { name:"Calf Raises",      sets:4, reps:"12-15",restSec:45, weighted:true },
+    ]},
+  "upper-b": { id:"upper-b", name:"Upper Body B", type:"Strength", duration:50, calories:340, difficulty:"Hard", muscles:["Chest","Back","Shoulders"],
+    exercises:[
+      { name:"Incline Press",   sets:4, reps:"8-10",  restSec:75, weighted:true },
+      { name:"Lat Pulldown",    sets:4, reps:"8-10",  restSec:75, weighted:true },
+      { name:"Dumbbell Press",  sets:3, reps:"10-12", restSec:60, weighted:true },
+      { name:"Seated Row",      sets:3, reps:"10-12", restSec:60, weighted:true },
+      { name:"Lateral Raise",   sets:3, reps:"12-15", restSec:45, weighted:true },
+      { name:"Face Pull",       sets:3, reps:"12-15", restSec:45, weighted:true },
+    ]},
+  "lower-b": { id:"lower-b", name:"Lower Body B", type:"Strength", duration:55, calories:370, difficulty:"Hard", muscles:["Quads","Glutes","Hamstrings"],
+    exercises:[
+      { name:"Deadlift",         sets:4, reps:"5-6",  restSec:120,weighted:true },
+      { name:"Front Squat",      sets:3, reps:"8-10", restSec:90, weighted:true },
+      { name:"Bulgarian Split",  sets:3, reps:"8/leg",restSec:75, weighted:true },
+      { name:"Hip Thrust",       sets:3, reps:"10-12",restSec:60, weighted:true },
+      { name:"Hanging Leg Raise",sets:3, reps:"10-15",restSec:45, weighted:false },
+    ]},
+
+  // === PUSH / PULL / LEGS (advanced) ===
+  "push-a": { id:"push-a", name:"Push A — Chest Focus", type:"Strength", duration:55, calories:360, difficulty:"Hard", muscles:["Chest","Shoulders","Triceps"],
+    exercises:[
+      { name:"Bench Press",      sets:4, reps:"6-8",  restSec:90, weighted:true },
+      { name:"Incline Press",    sets:3, reps:"8-10", restSec:75, weighted:true },
+      { name:"Overhead Press",   sets:3, reps:"8-10", restSec:75, weighted:true },
+      { name:"Cable Fly",        sets:3, reps:"12-15",restSec:60, weighted:true },
+      { name:"Tricep Pushdown",  sets:3, reps:"10-12",restSec:45, weighted:true },
+      { name:"Dips",             sets:3, reps:"8-12", restSec:60, weighted:false },
+    ]},
+  "pull-a": { id:"pull-a", name:"Pull A — Back Focus", type:"Strength", duration:55, calories:350, difficulty:"Hard", muscles:["Back","Biceps","Rear Delts"],
+    exercises:[
+      { name:"Deadlift",         sets:4, reps:"5-6",  restSec:120,weighted:true },
+      { name:"Pull-ups",         sets:4, reps:"6-10", restSec:90, weighted:false },
+      { name:"Barbell Row",      sets:3, reps:"8-10", restSec:75, weighted:true },
+      { name:"Face Pull",        sets:3, reps:"12-15",restSec:45, weighted:true },
+      { name:"Barbell Curl",     sets:3, reps:"8-10", restSec:60, weighted:true },
+      { name:"Hammer Curl",      sets:3, reps:"10-12",restSec:45, weighted:true },
+    ]},
+  "legs-a": { id:"legs-a", name:"Legs A — Quad Focus", type:"Strength", duration:60, calories:420, difficulty:"Hard", muscles:["Quads","Glutes","Calves"],
+    exercises:[
+      { name:"Back Squat",       sets:4, reps:"6-8",  restSec:120,weighted:true },
+      { name:"Leg Press",        sets:3, reps:"10-12",restSec:90, weighted:true },
+      { name:"Walking Lunges",   sets:3, reps:"10/leg",restSec:75,weighted:true },
+      { name:"Leg Extension",    sets:3, reps:"12-15",restSec:60, weighted:true },
+      { name:"Calf Raises",      sets:4, reps:"12-15",restSec:45, weighted:true },
+    ]},
+  "push-b": { id:"push-b", name:"Push B — Shoulder Focus", type:"Strength", duration:50, calories:330, difficulty:"Hard", muscles:["Shoulders","Chest","Triceps"],
+    exercises:[
+      { name:"Overhead Press",   sets:4, reps:"6-8",  restSec:90, weighted:true },
+      { name:"Dumbbell Press",   sets:3, reps:"8-10", restSec:75, weighted:true },
+      { name:"Lateral Raise",    sets:4, reps:"12-15",restSec:45, weighted:true },
+      { name:"Front Raise",      sets:3, reps:"12-15",restSec:45, weighted:true },
+      { name:"Skull Crushers",   sets:3, reps:"10-12",restSec:60, weighted:true },
+      { name:"Diamond Push-ups", sets:3, reps:"8-12", restSec:45, weighted:false },
+    ]},
+  "pull-b": { id:"pull-b", name:"Pull B — Width Focus", type:"Strength", duration:50, calories:330, difficulty:"Hard", muscles:["Back","Biceps"],
+    exercises:[
+      { name:"Lat Pulldown",     sets:4, reps:"8-10", restSec:75, weighted:true },
+      { name:"Seated Row",       sets:3, reps:"10-12",restSec:75, weighted:true },
+      { name:"Dumbbell Row",     sets:3, reps:"10-12",restSec:60, weighted:true },
+      { name:"Shrugs",           sets:3, reps:"12-15",restSec:45, weighted:true },
+      { name:"Preacher Curl",    sets:3, reps:"10-12",restSec:45, weighted:true },
+    ]},
+  "legs-b": { id:"legs-b", name:"Legs B — Posterior Focus", type:"Strength", duration:60, calories:400, difficulty:"Hard", muscles:["Hamstrings","Glutes","Calves"],
+    exercises:[
+      { name:"Romanian Deadlift",sets:4, reps:"8-10", restSec:90, weighted:true },
+      { name:"Hip Thrust",       sets:4, reps:"10-12",restSec:75, weighted:true },
+      { name:"Bulgarian Split",  sets:3, reps:"8/leg",restSec:75, weighted:true },
+      { name:"Leg Curl",         sets:3, reps:"10-12",restSec:60, weighted:true },
+      { name:"Standing Calf",    sets:4, reps:"12-15",restSec:45, weighted:true },
+    ]},
+
+  // === HIIT & CARDIO ===
+  "hiit-full":   { id:"hiit-full",   name:"HIIT Full Body",      type:"HIIT",   duration:30, calories:380, difficulty:"Hard", muscles:["Full Body"],
+    exercises:[
+      { name:"Burpees",          sets:4, reps:"40s on/20s off", restSec:0, weighted:false },
+      { name:"Mountain Climbers",sets:4, reps:"40s on/20s off", restSec:0, weighted:false },
+      { name:"Jump Squats",      sets:4, reps:"40s on/20s off", restSec:0, weighted:false },
+      { name:"High Knees",       sets:4, reps:"40s on/20s off", restSec:0, weighted:false },
+      { name:"Push-up to T",     sets:4, reps:"40s on/20s off", restSec:0, weighted:false },
+    ]},
+  "hiit-circuit":{ id:"hiit-circuit",name:"Strength Circuit",    type:"Circuit",duration:35, calories:340, difficulty:"Hard", muscles:["Full Body"],
+    exercises:[
+      { name:"Goblet Squat",     sets:4, reps:"15",   restSec:30, weighted:true },
+      { name:"Push-ups",         sets:4, reps:"12",   restSec:30, weighted:false },
+      { name:"Kettlebell Swing", sets:4, reps:"15",   restSec:30, weighted:true },
+      { name:"Renegade Row",     sets:4, reps:"10",   restSec:30, weighted:true },
+      { name:"Plank",            sets:4, reps:"45s",  restSec:30, weighted:false },
+    ]},
+  "cardio-steady":{ id:"cardio-steady",name:"Steady Cardio",      type:"Cardio", duration:40, calories:360, difficulty:"Moderate", muscles:["Cardio"],
+    exercises:[
+      { name:"Treadmill / Bike / Row", sets:1, reps:"40min @ Zone 2", restSec:0, weighted:false },
+    ]},
+  "core-finisher":{ id:"core-finisher",name:"Core Finisher",      type:"Core",   duration:20, calories:160, difficulty:"Moderate", muscles:["Core","Abs"],
+    exercises:[
+      { name:"Plank",            sets:3, reps:"45s",  restSec:30, weighted:false },
+      { name:"Russian Twists",   sets:3, reps:"20",   restSec:30, weighted:false },
+      { name:"Leg Raises",       sets:3, reps:"12",   restSec:30, weighted:false },
+      { name:"Dead Bug",         sets:3, reps:"10/side",restSec:30,weighted:false },
+      { name:"Mountain Climbers",sets:3, reps:"30s",  restSec:30, weighted:false },
+    ]},
+
+  // === ENDURANCE ===
+  "endur-tempo":{ id:"endur-tempo",name:"Tempo Run",          type:"Cardio", duration:35, calories:380, difficulty:"Hard", muscles:["Cardio","Legs"],
+    exercises:[ { name:"Tempo Run", sets:1, reps:"5min easy + 20min tempo + 5min cooldown", restSec:0, weighted:false } ]},
+  "endur-long": { id:"endur-long", name:"Long Steady State",  type:"Cardio", duration:60, calories:540, difficulty:"Moderate", muscles:["Cardio","Legs"],
+    exercises:[ { name:"Long Run/Bike", sets:1, reps:"60min @ Zone 2", restSec:0, weighted:false } ]},
+  "endur-intervals":{ id:"endur-intervals",name:"Interval Training",type:"Cardio", duration:30, calories:340, difficulty:"Hard", muscles:["Cardio","Legs"],
+    exercises:[ { name:"Intervals", sets:8, reps:"1min hard / 1min easy", restSec:0, weighted:false } ]},
+  "endur-strength":{ id:"endur-strength",name:"Runner's Strength",type:"Strength", duration:40, calories:280, difficulty:"Moderate", muscles:["Legs","Core"],
+    exercises:[
+      { name:"Single-Leg Squat", sets:3, reps:"8/leg", restSec:60, weighted:false },
+      { name:"Step-ups",         sets:3, reps:"10/leg",restSec:60, weighted:true },
+      { name:"Glute Bridges",    sets:3, reps:"12-15", restSec:45, weighted:false },
+      { name:"Plank",            sets:3, reps:"45s",   restSec:30, weighted:false },
+      { name:"Side Plank",       sets:3, reps:"30s/side",restSec:30,weighted:false },
+    ]},
+
+  // === FLEXIBILITY / MOBILITY ===
+  "mob-flow":  { id:"mob-flow",  name:"Full Body Flow",   type:"Flexibility", duration:40, calories:180, difficulty:"Easy", muscles:["Full Body"],
+    exercises:[
+      { name:"Sun Salutation",   sets:1, reps:"5 rounds",restSec:0, weighted:false },
+      { name:"Warrior Sequence", sets:1, reps:"both sides",restSec:0,weighted:false },
+      { name:"Pigeon Pose",      sets:1, reps:"90s/side",restSec:0,weighted:false },
+      { name:"Lizard Pose",      sets:1, reps:"60s/side",restSec:0,weighted:false },
+      { name:"Savasana",         sets:1, reps:"5min",   restSec:0, weighted:false },
+    ]},
+  "mob-hip":   { id:"mob-hip",   name:"Hip & Lower Body", type:"Flexibility", duration:30, calories:140, difficulty:"Easy", muscles:["Hips","Legs"],
+    exercises:[
+      { name:"Hip 90/90",        sets:1, reps:"10/side", restSec:0, weighted:false },
+      { name:"Couch Stretch",    sets:1, reps:"60s/side",restSec:0, weighted:false },
+      { name:"Cossack Squat",    sets:1, reps:"10/side", restSec:0, weighted:false },
+      { name:"Frog Stretch",     sets:1, reps:"90s",     restSec:0, weighted:false },
+      { name:"Pigeon Pose",      sets:1, reps:"90s/side",restSec:0, weighted:false },
+    ]},
+  "mob-thoracic":{id:"mob-thoracic",name:"Thoracic & Shoulders",type:"Flexibility",duration:25,calories:120,difficulty:"Easy",muscles:["Back","Shoulders"],
+    exercises:[
+      { name:"Cat-Cow",          sets:1, reps:"10 reps",  restSec:0, weighted:false },
+      { name:"Thread the Needle",sets:1, reps:"8/side",   restSec:0, weighted:false },
+      { name:"Cobra Pose",       sets:1, reps:"5x 15s",   restSec:0, weighted:false },
+      { name:"Doorway Stretch",  sets:1, reps:"60s/side", restSec:0, weighted:false },
+      { name:"Child's Pose",     sets:1, reps:"2min",     restSec:0, weighted:false },
+    ]},
+  "mob-strength":{id:"mob-strength",name:"Strength + Mobility",type:"Strength",duration:35,calories:200,difficulty:"Moderate",muscles:["Full Body"],
+    exercises:[
+      { name:"Turkish Get-up",   sets:3, reps:"5/side",   restSec:60, weighted:true },
+      { name:"Goblet Squat",     sets:3, reps:"10-12",    restSec:45, weighted:true },
+      { name:"Push-up to T",     sets:3, reps:"8/side",   restSec:45, weighted:false },
+      { name:"Bird Dog",         sets:3, reps:"10/side",  restSec:30, weighted:false },
+      { name:"Hollow Hold",      sets:3, reps:"30s",      restSec:30, weighted:false },
+    ]},
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CURATED PROGRAMS — 7-day schedules
+// schedule[0]=Mon ... schedule[6]=Sun. null = rest. restActivity = light suggestion.
+// ─────────────────────────────────────────────────────────────────────────────
+const PROGRAMS = [
+  { id:"fb-3day", name:"Full Body Foundation", emoji:"💪",
+    description:"3-day full body. The classic beginner builder.",
+    goal:"flex", level:"beginner", daysPerWeek:3,
+    schedule:["fb-a", null, "fb-b", null, "fb-c", null, null],
+    restActivity:"20-30min walk, light stretching, or yoga flow." },
+
+  { id:"ul-4day", name:"Upper / Lower Split", emoji:"⚡",
+    description:"4-day split for balanced strength and muscle.",
+    goal:"muscle", level:"intermediate", daysPerWeek:4,
+    schedule:["upper-a", "lower-a", null, "upper-b", "lower-b", null, null],
+    restActivity:"30-45min walk, mobility work, or recovery yoga." },
+
+  { id:"ppl-5day", name:"Push Pull Legs", emoji:"🔥",
+    description:"5-day muscle building split. The gold standard.",
+    goal:"muscle", level:"intermediate", daysPerWeek:5,
+    schedule:["push-a", "pull-a", "legs-a", null, "push-b", "pull-b", null],
+    restActivity:"Active recovery: 30min walk, stretching, or light cycling." },
+
+  { id:"hiit-lose", name:"HIIT & Burn", emoji:"🔥",
+    description:"5-day fat-loss focus. High intensity + circuits.",
+    goal:"lose", level:"intermediate", daysPerWeek:5,
+    schedule:["hiit-full", "hiit-circuit", "cardio-steady", null, "hiit-full", "core-finisher", null],
+    restActivity:"45-60min walk, light yoga, or foam rolling." },
+
+  { id:"endurance", name:"Endurance Builder", emoji:"🏃",
+    description:"Cardio-focused with supportive strength work.",
+    goal:"endurance", level:"intermediate", daysPerWeek:5,
+    schedule:["endur-tempo", "endur-strength", null, "endur-intervals", null, "endur-long", null],
+    restActivity:"30min easy walk, dynamic stretching, or mobility flow." },
+
+  { id:"flex-focus", name:"Mobility & Flow", emoji:"🧘",
+    description:"Flexibility, mobility, and gentle strength.",
+    goal:"flex", level:"beginner", daysPerWeek:5,
+    schedule:["mob-flow", "mob-strength", null, "mob-hip", "mob-thoracic", null, "mob-flow"],
+    restActivity:"Light walk, deep breathing, or a meditation session." },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRAM HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+// Recommend a program based on user's onboarding profile
+function recommendProgram(profile) {
+  if (!profile) return PROGRAMS[0];
+  const goal = profile.goal;
+  const level = profile.level;
+  // Match goal first
+  let candidates = PROGRAMS.filter(p=>p.goal===goal);
+  if (!candidates.length) candidates = PROGRAMS;
+  // Prefer matching level
+  const levelMatch = candidates.find(p=>p.level===level);
+  return levelMatch || candidates[0];
+}
+
+// Get the program day index (0=Mon...6=Sun) for a given date
+function programDayForDate(date) {
+  const dow = date.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+  return dow === 0 ? 6 : dow - 1; // shift so 0=Mon, 6=Sun
+}
+
+// Suggested next-session progression for an exercise based on its history
+function suggestProgression(history, exercise) {
+  if (!history || !history.length) return null;
+  const last = history[history.length-1];
+  if (exercise.weighted && last.weight) {
+    // Standard linear progression: +2.5kg for lower body, +1.25kg for upper, or +1 rep
+    const isLower = /squat|deadlift|leg|hip|lunge|step/i.test(exercise.name);
+    const bump = isLower ? 2.5 : 1.25;
+    return { type:"weight", suggested:`${last.weight + bump}kg × ${last.reps}`, last:`${last.weight}kg × ${last.reps}` };
+  }
+  // Bodyweight: suggest +1 rep
+  if (last.reps) {
+    return { type:"reps", suggested:`${Math.round(last.reps) + 1} reps`, last:`${last.reps} reps` };
+  }
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEALS
+// ─────────────────────────────────────────────────────────────────────────────
+
 const PRESET_MEALS = [
   // ── BREAKFAST (6 options) ──────────────────────────────────────────
   { id:1,  name:"Power Oatmeal",          time:"Breakfast", calories:380, protein:18, carbs:52, fat:9,  tags:["High Protein","Complex Carbs"], goalFit:["muscle","endurance","flex"], portion:"1 bowl (350g)",   portions:["½ bowl (175g)","1 bowl (350g)","1½ bowls (525g)"] },
@@ -975,6 +1260,8 @@ export default function ApexFitUnified() {
   const [profile,          setProfile,          profileLoaded]          = useStorage("apex:profile", null);
   const [completedWorkouts,setCompletedWorkouts,cwLoaded]               = useStorage("apex:completedWorkouts", [1,3]);
   const [customWorkouts,   setCustomWorkouts,   customLoaded]           = useStorage("apex:customWorkouts", []);
+  const [activeProgramId,  setActiveProgramId,  ]                       = useStorage("apex:activeProgramId", null); // user-selected or recommended
+  const [progressionLog,   setProgressionLog,   ]                       = useStorage("apex:progressionLog", {});    // { "exerciseName": [{date, sets, reps, weight}] }
   const [loggedMeals,      setLoggedMeals,      mealsLoaded]            = useStorage("apex:loggedMeals", [1,2,4]);
   const [mealPortions,     setMealPortions,     ]                       = useStorage("apex:mealPortions", {}); // {mealId: multiplier}
   const [mealSwaps,        setMealSwaps,        ]                       = useStorage("apex:mealSwaps", {});    // {"dayIndex:Slot": mealId}
@@ -1007,6 +1294,7 @@ export default function ApexFitUnified() {
   const [builderExercises, setBuilderExercises]   = useState([]);
   const [builderDuration, setBuilderDuration]     = useState(30);
   const [activeWorkout, setActiveWorkout]         = useState(null);
+  const [sessionLog,    setSessionLog]            = useState({}); // { exerciseName: [{ weight, reps }, ...] } for current session
   const [workoutTimer, setWorkoutTimer]           = useState(0);
   const [timerRunning, setTimerRunning]           = useState(false);
 
@@ -1051,7 +1339,7 @@ export default function ApexFitUnified() {
 
   // ── Strength diary state ──
   const [strengthLog,    setStrengthLog,    ]  = useStorage("apex:strengthLog", []); // [{date, exercise, sets:[{reps,weight}]}]
-  const [trainSubTab,    setTrainSubTab]        = useState("workouts"); // workouts | diary
+  const [trainSubTab,    setTrainSubTab]        = useState("week"); // week | freestyle | programs | diary
   const [diaryExercise,  setDiaryExercise]      = useState("Bench Press");
   const [diarySets,      setDiarySets]          = useState([{reps:"",weight:""}]);
   const [diaryNote,      setDiaryNote]          = useState("");
@@ -1256,7 +1544,22 @@ export default function ApexFitUnified() {
   };
 
   // ── Workout actions ──
-  const startWorkout = w => { setActiveWorkout(w); setWorkoutTimer(0); setTimerRunning(true); setTab("active"); };
+  const startWorkout = w => {
+    setActiveWorkout(w);
+    setWorkoutTimer(0);
+    setTimerRunning(true);
+    // Initialize sessionLog with empty sets for each structured exercise
+    if (w.structuredExercises) {
+      const init = {};
+      w.structuredExercises.forEach(ex=>{
+        init[ex.name] = Array(ex.sets).fill(null).map(()=>({ weight:"", reps:"" }));
+      });
+      setSessionLog(init);
+    } else {
+      setSessionLog({});
+    }
+    setTab("active");
+  };
   const finishWorkout = () => {
     if (activeWorkout && !completedWorkouts.includes(activeWorkout.id)) {
       setCompletedWorkouts(p=>[...p, activeWorkout.id]);
@@ -1265,6 +1568,27 @@ export default function ApexFitUnified() {
       setCompletedDays(p => p.includes(todayIdx) ? p : [...p, todayIdx]);
       setStreak(s => s + (completedDays.includes(todayIdx) ? 0 : 1));
     }
+    // Persist progression log entries (best set per exercise)
+    if (Object.keys(sessionLog).length) {
+      const dateStr = new Date().toISOString().slice(0,10);
+      setProgressionLog(prev => {
+        const next = {...prev};
+        Object.entries(sessionLog).forEach(([exName, sets])=>{
+          const validSets = sets.filter(s=>s && (s.reps || s.weight));
+          if (!validSets.length) return;
+          // Take the heaviest valid set as the session's "best"
+          const best = validSets.reduce((b,s)=>{
+            const sw = parseFloat(s.weight)||0;
+            const bw = parseFloat(b.weight)||0;
+            return sw > bw ? s : b;
+          }, validSets[0]);
+          const entry = { date:dateStr, weight:parseFloat(best.weight)||null, reps:parseFloat(best.reps)||null };
+          next[exName] = [...(next[exName]||[]), entry];
+        });
+        return next;
+      });
+    }
+    setSessionLog({});
     setTimerRunning(false); setActiveWorkout(null); setTab("train");
   };
 
@@ -1589,7 +1913,7 @@ export default function ApexFitUnified() {
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>TRAIN</div>
-              {trainSubTab==="workouts" && (
+              {trainSubTab==="freestyle" && (
                 <PrimaryBtn onClick={()=>setBuilderView(v=>v==="list"?"build":"list")} style={{ width:"auto", padding:"8px 14px", fontSize:12 }}>
                   {builderView==="list" ? "+ BUILD" : "← Back"}
                 </PrimaryBtn>
@@ -1597,17 +1921,127 @@ export default function ApexFitUnified() {
             </div>
 
             {/* Sub-nav */}
-            <div style={{ display:"flex", gap:0, background:"#0d0d18", borderRadius:12, padding:4 }}>
-              {[{id:"workouts",label:"💪 Workouts"},{id:"diary",label:"📓 Strength Diary"}].map(t=>(
+            <div style={{ display:"flex", gap:0, background:"#0d0d18", borderRadius:12, padding:4, overflowX:"auto" }}>
+              {[
+                {id:"week",     label:"📅 Week"},
+                {id:"programs", label:"📋 Plans"},
+                {id:"freestyle",label:"💪 Freestyle"},
+                {id:"diary",    label:"📓 Diary"},
+              ].map(t=>(
                 <button key={t.id} onClick={()=>setTrainSubTab(t.id)}
-                  style={{ flex:1, padding:"9px 0", background:trainSubTab===t.id?"linear-gradient(135deg,var(--brand),var(--brand2))":"transparent", border:"none", color:trainSubTab===t.id?"#fff":"#555", fontFamily:"inherit", fontSize:13, fontWeight:700, borderRadius:9, cursor:"pointer", transition:"all 0.2s" }}>
+                  style={{ flex:1, padding:"9px 4px", background:trainSubTab===t.id?"linear-gradient(135deg,var(--brand),var(--brand2))":"transparent", border:"none", color:trainSubTab===t.id?"#fff":"#555", fontFamily:"inherit", fontSize:12, fontWeight:700, borderRadius:9, cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}>
                   {t.label}
                 </button>
               ))}
             </div>
 
-            {/* ── WORKOUTS SUB-TAB ── */}
-            {trainSubTab==="workouts" && (
+            {/* ── THIS WEEK SUB-TAB ── */}
+            {trainSubTab==="week" && (()=>{
+              const program = PROGRAMS.find(p=>p.id===activeProgramId) || recommendProgram(profile);
+              const today = new Date();
+              const todayIdx = programDayForDate(today);
+              const dayNames = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+              return (
+                <>
+                  {/* Program header */}
+                  <Card style={{ padding:16, background:"linear-gradient(135deg,rgba(255,61,46,0.08),transparent 60%)", borderColor:"rgba(255,61,46,0.2)" }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontSize:10, color:"var(--text3)", fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, marginBottom:3 }}>Current Program</div>
+                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, textTransform:"uppercase", lineHeight:1.1 }}>{program.emoji} {program.name}</div>
+                        <div style={{ fontSize:11, color:"var(--text3)", marginTop:4 }}>{program.daysPerWeek} days · {program.level}</div>
+                      </div>
+                      <button onClick={()=>setTrainSubTab("programs")}
+                        style={{ padding:"7px 12px", borderRadius:8, background:"var(--border)", border:"1px solid var(--border2)", color:"var(--text)", fontSize:11, fontFamily:"'Syne',sans-serif", fontWeight:600, cursor:"pointer", whiteSpace:"nowrap" }}>
+                        Change
+                      </button>
+                    </div>
+                  </Card>
+
+                  {/* Weekly schedule */}
+                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    {program.schedule.map((workoutId, dayIdx)=>{
+                      const isToday = dayIdx === todayIdx;
+                      const workout = workoutId ? PROGRAM_WORKOUTS[workoutId] : null;
+                      const isRest = !workout;
+                      return (
+                        <Card key={dayIdx}
+                          onClick={workout ? ()=>startWorkout({...workout, id:workoutId, structuredExercises:workout.exercises, exercises:workout.exercises.map(e=>e.name)}) : undefined}
+                          style={{ padding:14, cursor:workout?"pointer":"default", borderColor:isToday?"var(--brand)":"#1c1c2e", background:isToday?"rgba(255,61,46,0.04)":"var(--card)" }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                            <div style={{ width:40, textAlign:"center" }}>
+                              <div style={{ fontSize:9, color:isToday?"var(--brand)":"var(--text3)", fontWeight:800, textTransform:"uppercase", letterSpacing:0.8 }}>{dayNames[dayIdx]}</div>
+                              {isToday && <div style={{ fontSize:8, color:"var(--brand)", fontWeight:700, marginTop:2 }}>TODAY</div>}
+                            </div>
+                            <div style={{ flex:1, minWidth:0 }}>
+                              {isRest ? (
+                                <>
+                                  <div style={{ fontSize:14, fontWeight:700, color:"var(--text2)" }}>💤 Rest Day</div>
+                                  <div style={{ fontSize:11, color:"var(--text3)", marginTop:3, lineHeight:1.4 }}>{program.restActivity}</div>
+                                </>
+                              ) : (
+                                <>
+                                  <div style={{ fontSize:14, fontWeight:700, color:"var(--text)" }}>{workout.name}</div>
+                                  <div style={{ display:"flex", gap:10, fontSize:11, color:"var(--text3)", marginTop:4, flexWrap:"wrap" }}>
+                                    <span>⏱ {workout.duration}min</span>
+                                    <span>🔥 {workout.calories}kcal</span>
+                                    <span>💪 {workout.muscles.slice(0,2).join(", ")}</span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                            {workout && <ChevronRight size={18} color="var(--text3)"/>}
+                          </div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+
+                  {/* Progressive overload hint */}
+                  <Card style={{ padding:12, borderStyle:"dashed", borderColor:"var(--border2)", background:"transparent" }}>
+                    <div style={{ fontSize:11, color:"var(--text3)", lineHeight:1.5, textAlign:"center" }}>
+                      📈 Log your weights & reps in the workout — APEX will track your progression and suggest next session's load.
+                    </div>
+                  </Card>
+                </>
+              );
+            })()}
+
+            {/* ── PROGRAMS SUB-TAB ── */}
+            {trainSubTab==="programs" && (
+              <>
+                <div style={{ fontSize:10, color:"#7878a0", fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Choose Your Program</div>
+                {PROGRAMS.map(p=>{
+                  const sel = (activeProgramId||recommendProgram(profile).id) === p.id;
+                  const recommended = !activeProgramId && recommendProgram(profile).id === p.id;
+                  return (
+                    <Card key={p.id} onClick={()=>{ setActiveProgramId(p.id); setTrainSubTab("week"); }}
+                      style={{ padding:16, cursor:"pointer", borderColor:sel?"var(--brand)":"#1c1c2e", background:sel?"rgba(255,61,46,0.05)":"var(--card)" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
+                            <span style={{ fontSize:20 }}>{p.emoji}</span>
+                            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.3 }}>{p.name}</div>
+                            {recommended && <span style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"rgba(74,222,128,0.18)", color:"#4ade80", fontWeight:700, fontFamily:"'Syne',sans-serif" }}>RECOMMENDED</span>}
+                          </div>
+                          <div style={{ fontSize:12, color:"var(--text3)", marginBottom:8, lineHeight:1.45 }}>{p.description}</div>
+                          <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{p.daysPerWeek}d/week</span>
+                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{p.level}</span>
+                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{p.goal}</span>
+                          </div>
+                        </div>
+                        {sel ? <CheckCircle2 size={20} color="var(--brand)" strokeWidth={2.5}/> : <ChevronRight size={18} color="var(--text3)"/>}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </>
+            )}
+
+            {/* ── FREESTYLE SUB-TAB (original workouts + custom builder) ── */}
+            {trainSubTab==="freestyle" && (
               <>
                 {builderView==="build" ? (
                   <div style={{ display:"flex", flexDirection:"column", gap:12 }} className="fadein">
@@ -1647,13 +2081,16 @@ export default function ApexFitUnified() {
                   </div>
                 ) : (
                   <>
+                    <div style={{ fontSize:11, color:"var(--text3)", lineHeight:1.5, marginBottom:4 }}>
+                      Quick one-off workouts. Tap "+ BUILD" to create your own, or pick a preset below.
+                    </div>
                     {customWorkouts.length>0 && (
                       <>
                         <div style={{ fontSize:10, color:"#7878a0", fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Your Custom Workouts</div>
                         {customWorkouts.map(w=><WorkoutCard key={w.id} w={w} done={completedWorkouts.includes(w.id)} onStart={startWorkout}/>)}
                       </>
                     )}
-                    <div style={{ fontSize:10, color:"#7878a0", fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Training Plans</div>
+                    <div style={{ fontSize:10, color:"#7878a0", fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Preset Workouts</div>
                     {WORKOUTS.map(w=><WorkoutCard key={w.id} w={w} done={completedWorkouts.includes(w.id)} onStart={startWorkout}/>)}
                   </>
                 )}
@@ -1680,15 +2117,81 @@ export default function ApexFitUnified() {
               </div>
             </Card>
             <Card style={{ padding:18, width:"100%", textAlign:"left" }}>
-              <div style={{ fontWeight:700, marginBottom:12, fontSize:14 }}>Exercises</div>
-              {activeWorkout.exercises.map((ex,i)=>(
-                <div key={ex} style={{ display:"flex", alignItems:"center", gap:12, padding:"8px 0", borderBottom:i<activeWorkout.exercises.length-1?"1px solid #111":"none" }}>
-                  <div style={{ width:22, height:22, borderRadius:6, background:workoutTimer>i*180?"linear-gradient(var(--brand),var(--brand2))":"var(--border)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, flexShrink:0 }}>
-                    {workoutTimer>i*180?"✓":i+1}
+              <div style={{ fontWeight:700, marginBottom:12, fontSize:14, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <span>Exercises</span>
+                {activeWorkout.structuredExercises && <span style={{ fontSize:10, color:"var(--text3)", fontWeight:600 }}>Tap inputs to log each set</span>}
+              </div>
+
+              {activeWorkout.structuredExercises ? (
+                /* Structured exercise list with set logging */
+                activeWorkout.structuredExercises.map((ex, exIdx)=>{
+                  const history = progressionLog[ex.name];
+                  const sug = suggestProgression(history, ex);
+                  const setsLogged = sessionLog[ex.name] || [];
+                  return (
+                    <div key={ex.name} style={{ padding:"12px 0", borderBottom:exIdx<activeWorkout.structuredExercises.length-1?"1px solid #1c1c2e":"none" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8, gap:8 }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontWeight:700, fontSize:14, marginBottom:2 }}>{ex.name}</div>
+                          <div style={{ fontSize:11, color:"var(--text3)" }}>{ex.sets} sets × {ex.reps} · rest {ex.restSec}s</div>
+                        </div>
+                        {sug && (
+                          <div style={{ textAlign:"right", flexShrink:0 }}>
+                            <div style={{ fontSize:9, color:"#4ade80", fontWeight:700, textTransform:"uppercase", letterSpacing:0.5 }}>Target</div>
+                            <div style={{ fontSize:11, color:"#4ade80", fontWeight:700 }}>{sug.suggested}</div>
+                            <div style={{ fontSize:9, color:"var(--text3)", marginTop:2 }}>last: {sug.last}</div>
+                          </div>
+                        )}
+                      </div>
+                      {/* Set inputs */}
+                      <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                        {setsLogged.map((set, setIdx)=>(
+                          <div key={setIdx} style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
+                            <span style={{ width:34, color:"var(--text3)", fontWeight:600 }}>Set {setIdx+1}</span>
+                            {ex.weighted && (
+                              <>
+                                <input type="number" placeholder="kg" inputMode="decimal" value={set.weight}
+                                  onChange={e=>{
+                                    const v = e.target.value;
+                                    setSessionLog(prev=>{
+                                      const next = {...prev};
+                                      next[ex.name] = [...prev[ex.name]];
+                                      next[ex.name][setIdx] = {...next[ex.name][setIdx], weight:v};
+                                      return next;
+                                    });
+                                  }}
+                                  style={{ width:56, padding:"6px 8px", fontSize:12, textAlign:"center" }}/>
+                                <span style={{ color:"var(--text3)", fontSize:10 }}>kg ×</span>
+                              </>
+                            )}
+                            <input type="number" placeholder={ex.weighted?"reps":"reps/secs"} inputMode="numeric" value={set.reps}
+                              onChange={e=>{
+                                const v = e.target.value;
+                                setSessionLog(prev=>{
+                                  const next = {...prev};
+                                  next[ex.name] = [...prev[ex.name]];
+                                  next[ex.name][setIdx] = {...next[ex.name][setIdx], reps:v};
+                                  return next;
+                                });
+                              }}
+                              style={{ width:60, padding:"6px 8px", fontSize:12, textAlign:"center" }}/>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                /* Legacy bodyweight checklist for non-structured workouts */
+                activeWorkout.exercises.map((ex,i)=>(
+                  <div key={ex} style={{ display:"flex", alignItems:"center", gap:12, padding:"8px 0", borderBottom:i<activeWorkout.exercises.length-1?"1px solid #111":"none" }}>
+                    <div style={{ width:22, height:22, borderRadius:6, background:workoutTimer>i*180?"linear-gradient(var(--brand),var(--brand2))":"var(--border)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, flexShrink:0 }}>
+                      {workoutTimer>i*180?"✓":i+1}
+                    </div>
+                    <span style={{ fontSize:14 }}>{ex}</span>
                   </div>
-                  <span style={{ fontSize:14 }}>{ex}</span>
-                </div>
-              ))}
+                ))
+              )}
             </Card>
             <PrimaryBtn onClick={finishWorkout} style={{ fontSize:15, padding:14 }}>FINISH WORKOUT</PrimaryBtn>
           </div>
