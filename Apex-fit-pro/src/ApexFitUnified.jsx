@@ -2042,8 +2042,8 @@ export default function ApexFitUnified() {
                           {stats.map(s=>{
                             const v = charStats[s.key]||0;
                             return (
-                              <div key={s.key} style={{ display:"flex", alignItems:"center", gap:10 }}>
-                                <div style={{ width:48, display:"flex", alignItems:"center", gap:5 }}>
+                              <div key={s.key} style={{ display:"flex", alignItems:"center", gap:12 }}>
+                                <div style={{ width:62, display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
                                   <span style={{ fontSize:14 }}>{s.icon}</span>
                                   <span style={{ fontSize:11, fontWeight:800, color:s.color, fontFamily:"'Syne',sans-serif", letterSpacing:0.5 }}>{s.label}</span>
                                 </div>
