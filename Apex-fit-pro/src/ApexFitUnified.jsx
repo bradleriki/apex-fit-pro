@@ -673,6 +673,194 @@ function GhostBtn({ children, onClick, style={} }) {
   );
 }
 
+// ── 🎮 Number that rolls up like a slot machine ──
+function CountUp({ to, duration=1200, prefix="", suffix="", style={} }) {
+  const [n, setN] = useState(0);
+  useEffect(()=>{
+    if (to === 0) { setN(0); return; }
+    const start = Date.now();
+    let raf;
+    const tick = () => {
+      const elapsed = Date.now() - start;
+      const t = Math.min(1, elapsed / duration);
+      // Ease-out cubic for satisfying decel
+      const eased = 1 - Math.pow(1 - t, 3);
+      setN(Math.round(to * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration]);
+  return <span style={style}>{prefix}{n.toLocaleString()}{suffix}</span>;
+}
+
+// ── 🎮 Multi-stage celebration overlay ──
+function VictoryCelebration({ gains, onClose }) {
+  const [stage, setStage] = useState(0);
+  // stage 0: impact flash + headline slam (0-700ms)
+  // stage 1: XP roll-up + bar fill (700-2000ms)
+  // stage 2: stat pills cascade (2000-3000ms)
+  // stage 3: level-up burst if applicable (3000-4500ms)
+  // stage 4: settled, button visible
+  useEffect(()=>{
+    const timers = [];
+    timers.push(setTimeout(()=>setStage(1), 700));
+    timers.push(setTimeout(()=>setStage(2), 1900));
+    if (gains.levelUp) {
+      timers.push(setTimeout(()=>setStage(3), 3100));
+      timers.push(setTimeout(()=>setStage(4), 4400));
+    } else {
+      timers.push(setTimeout(()=>setStage(4), 2800));
+    }
+    return () => timers.forEach(clearTimeout);
+  }, [gains.levelUp]);
+
+  const c = gains.classColor || "#ff3d2e";
+  const isLevelUp = !!gains.levelUp;
+  const isPR = (gains.prs?.length || 0) > 0;
+  const isTierUp = gains.tierUp;
+
+  // Stat configs for pills
+  const statColors = { STR:"#ff3d2e", AGI:"#ffd700", STA:"#4ade80", WIS:"#a78bfa", VIT:"#00e5ff" };
+  const statIcons  = { STR:"💪", AGI:"⚡", STA:"🫁", WIS:"🧠", VIT:"❤️" };
+  const positiveStats = Object.entries(gains.stats||{}).filter(([,v])=>v>0);
+
+  return (
+    <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,5,0.92)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", display:"flex", alignItems:"center", justifyContent:"center", padding:18, overflow:"hidden" }}>
+      {/* Stage 0: Full-screen flash */}
+      <div style={{ position:"absolute", inset:0, background:`radial-gradient(circle at center, ${isLevelUp?"#ffd70066":c+"66"}, transparent 70%)`, animation:"celebFlash 1s ease-out", pointerEvents:"none" }}/>
+
+      {/* Star burst particles around the headline */}
+      {[...Array(8)].map((_,i)=>{
+        const angle = (i / 8) * 360;
+        const dist = 140;
+        const tx = Math.cos(angle * Math.PI/180) * dist;
+        const ty = Math.sin(angle * Math.PI/180) * dist;
+        return (
+          <div key={i} style={{
+            position:"absolute", left:"50%", top:"38%",
+            width:6, height:6, borderRadius:"50%",
+            background: isLevelUp ? "#ffd700" : c,
+            boxShadow: `0 0 12px ${isLevelUp?"#ffd700":c}`,
+            transform:`translate(${tx}px, ${ty}px)`,
+            animation:`celebStarBurst 1.2s ${0.2 + i*0.04}s ease-out both`,
+            pointerEvents:"none",
+          }}/>
+        );
+      })}
+
+      <div style={{ width:"100%", maxWidth:420, position:"relative", zIndex:1, animation:"celebShake 0.5s 0.2s ease-in-out" }}>
+        {/* Headline slam */}
+        <div style={{ textAlign:"center", marginBottom:24, animation:"celebSlam 0.7s cubic-bezier(0.16,1,0.3,1) both" }}>
+          <div style={{
+            fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900,
+            fontSize: isLevelUp ? 44 : 36,
+            color: isLevelUp ? "#ffd700" : isPR ? "#ffd700" : c,
+            textTransform:"uppercase", letterSpacing:1.2, lineHeight:1,
+            textShadow: `0 0 24px ${isLevelUp?"#ffd700":c}88, 0 0 60px ${isLevelUp?"#ffd700":c}44`,
+          }}>
+            {gains.headline}
+          </div>
+          <div style={{ fontSize:13, color:"var(--text2)", marginTop:8, fontFamily:"'Syne',sans-serif", fontWeight:600 }}>
+            {gains.subheadline}
+          </div>
+        </div>
+
+        {/* Stage 1+: XP block */}
+        {stage >= 1 && (
+          <div style={{ padding:"18px 18px 14px", borderRadius:18, background:`linear-gradient(135deg, ${c}1f, ${c}08)`, border:`1px solid ${c}55`, marginBottom:14, animation:"celebRise 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
+            <div style={{ fontSize:10, color:"var(--text3)", fontWeight:800, textTransform:"uppercase", letterSpacing:0.8, textAlign:"center", marginBottom:4 }}>XP Earned</div>
+            <div style={{ textAlign:"center", fontFamily:"'Barlow Condensed',sans-serif", fontSize:48, fontWeight:900, color:c, lineHeight:1, textShadow:`0 0 24px ${c}66` }}>
+              <CountUp to={gains.xp} duration={1100} prefix="+"/>
+            </div>
+            {/* Bonus breakdown */}
+            {gains.xpBonus > 0 && (
+              <div style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${c}22`, display:"flex", flexDirection:"column", gap:4 }}>
+                <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"var(--text3)" }}>
+                  <span>Base</span><span>+{gains.xpBase}</span>
+                </div>
+                {gains.bonuses?.map((b,i)=>(
+                  <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#4ade80", fontWeight:600, animation:`celebPillIn 0.4s ${0.1 + i*0.1}s cubic-bezier(0.16,1,0.3,1) both` }}>
+                    <span>✨ {b}</span>
+                    <span>BONUS</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Stage 2+: Stat pills cascade */}
+        {stage >= 2 && positiveStats.length > 0 && (
+          <div style={{ marginBottom:14 }}>
+            <div style={{ fontSize:10, color:"var(--text3)", fontWeight:800, textTransform:"uppercase", letterSpacing:0.8, textAlign:"center", marginBottom:10 }}>Stat Gains</div>
+            <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
+              {positiveStats.map(([k,v], i)=>(
+                <div key={k}
+                  style={{
+                    padding:"8px 14px", borderRadius:100,
+                    background:`${statColors[k]}1c`,
+                    border:`1.5px solid ${statColors[k]}66`,
+                    boxShadow:`0 4px 14px ${statColors[k]}33`,
+                    animation:`celebPillIn 0.5s ${i*0.12}s cubic-bezier(0.34,1.56,0.64,1) both`,
+                    display:"flex", alignItems:"center", gap:6,
+                  }}>
+                  <span style={{ fontSize:16 }}>{statIcons[k]}</span>
+                  <span style={{ fontSize:14, fontWeight:800, color:statColors[k], fontFamily:"'Syne',sans-serif", letterSpacing:0.3 }}>+{v} {k}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stage 3: Level-up burst */}
+        {stage >= 3 && isLevelUp && (
+          <div style={{
+            padding:18, borderRadius:18,
+            background: isTierUp
+              ? `linear-gradient(135deg, ${gains.newTier.color}33, ${gains.newTier.color}11)`
+              : "linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.04))",
+            border: `1.5px solid ${isTierUp?gains.newTier.color:"#ffd700"}99`,
+            textAlign:"center",
+            animation:"celebGoldGlow 1.6s ease-in-out infinite, celebRise 0.5s cubic-bezier(0.16,1,0.3,1) both",
+            marginBottom:14,
+          }}>
+            <div style={{ fontSize:11, color:isTierUp?gains.newTier.color:"#ffd700", fontWeight:800, textTransform:"uppercase", letterSpacing:1, marginBottom:4 }}>
+              {isTierUp ? "Tier Promotion" : "Level Up"}
+            </div>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:30, fontWeight:900, color:"var(--text2)", lineHeight:1 }}>Lv {gains.oldLevel}</span>
+              <span style={{ fontSize:22, color:"#ffd700" }}>→</span>
+              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:36, fontWeight:900, color: isTierUp?gains.newTier.color:"#ffd700", lineHeight:1, textShadow:`0 0 20px ${isTierUp?gains.newTier.color:"#ffd700"}88` }}>
+                Lv {gains.newLevel}
+              </span>
+            </div>
+            {isTierUp && (
+              <div style={{ fontSize:13, color:gains.newTier.color, fontWeight:700, marginTop:8, fontFamily:"'Syne',sans-serif" }}>
+                {gains.newTier.name.toUpperCase()} TIER UNLOCKED
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Stage 4: Button */}
+        <div style={{ opacity: stage >= 4 ? 1 : 0, transition:"opacity 0.4s", pointerEvents: stage >= 4 ? "auto" : "none" }}>
+          <button onClick={onClose}
+            style={{
+              width:"100%", padding:"14px 18px", borderRadius:14, border:"none", cursor:"pointer",
+              background:`linear-gradient(135deg, ${c}, ${c}cc)`,
+              color:"#fff",
+              fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:16, letterSpacing:2, textTransform:"uppercase",
+              boxShadow:`0 6px 24px ${c}55`,
+            }}>
+            Onward →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProgressBar({ value, max, color="var(--brand)", height=5 }) {
   const w = Math.min(100, Math.round((value / (max||1)) * 100));
   return (
@@ -1705,24 +1893,50 @@ export default function ApexFitUnified() {
     setTab("active");
   };
   const finishWorkout = () => {
+    const now = new Date();
+    const todayIdx = now.getDay();
+    const dateStr = now.toISOString().slice(0,10);
+    let wasFirstToday = false;
+
     if (activeWorkout && !completedWorkouts.includes(activeWorkout.id)) {
       setCompletedWorkouts(p=>[...p, activeWorkout.id]);
       // Update streak & today's completed day
-      const todayIdx = new Date().getDay(); // 0=Sun … 6=Sat
+      wasFirstToday = !completedDays.includes(todayIdx);
       setCompletedDays(p => p.includes(todayIdx) ? p : [...p, todayIdx]);
       setStreak(s => s + (completedDays.includes(todayIdx) ? 0 : 1));
     }
-    // Persist progression log entries (best set per exercise)
+
+    // ── Detect PRs by comparing logged sets against history BEFORE we persist them ──
+    const prs = [];
     let setsLogged = 0;
+    let heaviestKg = 0;
     if (Object.keys(sessionLog).length) {
-      const dateStr = new Date().toISOString().slice(0,10);
+      Object.entries(sessionLog).forEach(([exName, sets])=>{
+        const validSets = sets.filter(s=>s && (s.reps || s.weight));
+        if (!validSets.length) return;
+        setsLogged += validSets.length;
+        const best = validSets.reduce((b,s)=>{
+          const sw = parseFloat(s.weight)||0;
+          const bw = parseFloat(b.weight)||0;
+          return sw > bw ? s : b;
+        }, validSets[0]);
+        const bestWeight = parseFloat(best.weight)||0;
+        const bestReps = parseFloat(best.reps)||0;
+        heaviestKg = Math.max(heaviestKg, bestWeight);
+        // PR detection: was this exercise's previous max less than today's best?
+        const history = progressionLog[exName] || [];
+        const previousMax = history.reduce((m,h)=>Math.max(m, h.weight||0), 0);
+        if (bestWeight > 0 && bestWeight > previousMax) {
+          prs.push({ exercise:exName, weight:bestWeight, reps:bestReps, previous:previousMax });
+        }
+      });
+
+      // Now persist the entries
       setProgressionLog(prev => {
         const next = {...prev};
         Object.entries(sessionLog).forEach(([exName, sets])=>{
           const validSets = sets.filter(s=>s && (s.reps || s.weight));
           if (!validSets.length) return;
-          setsLogged += validSets.length;
-          // Take the heaviest valid set as the session's "best"
           const best = validSets.reduce((b,s)=>{
             const sw = parseFloat(s.weight)||0;
             const bw = parseFloat(b.weight)||0;
@@ -1737,13 +1951,56 @@ export default function ApexFitUnified() {
 
     // 🎮 Award XP + stat gains
     const cls = CLASSES.find(c=>c.id===characterClass);
-    const xpEarned = XP_REWARDS.WORKOUT_COMPLETE + setsLogged * XP_REWARDS.WORKOUT_SET_LOGGED;
+    const baseXp = XP_REWARDS.WORKOUT_COMPLETE + setsLogged * XP_REWARDS.WORKOUT_SET_LOGGED;
+
+    // Bonus calculations
+    let xpBonus = 0;
+    const bonuses = [];
+    if (wasFirstToday) { xpBonus += 25; bonuses.push("First workout today"); }
+    if (streak >= 3 && wasFirstToday) { xpBonus += Math.min(streak*5, 100); bonuses.push(`${streak}-day streak`); }
+    if (prs.length > 0) { xpBonus += prs.length * 50; bonuses.push(`${prs.length} new PR${prs.length>1?'s':''}`); }
+    if ((activeWorkout?.duration||0) >= 45) { xpBonus += 20; bonuses.push("Long session"); }
+
+    const xpEarned = baseXp + xpBonus;
     const statGains = activeWorkout ? workoutStatGain(activeWorkout, cls) : { STR:0,AGI:0,STA:0,WIS:0,VIT:0 };
 
     const prevLevel = levelFromXp(totalXp);
     const newTotal = totalXp + xpEarned;
     const newLevel = levelFromXp(newTotal);
     const didLevelUp = newLevel > prevLevel;
+    const oldTier = tierForLevel(prevLevel);
+    const newTier = tierForLevel(newLevel);
+    const tierUp = newTier.name !== oldTier.name;
+
+    // Generate contextual headline
+    let headline = "Victory!";
+    let subheadline = activeWorkout?.name || "Workout complete";
+    if (prs.length > 0) {
+      headline = `🏆 NEW PR${prs.length>1?'s':''}!`;
+      const top = prs[0];
+      subheadline = `${top.exercise} — ${top.weight}kg${top.previous?` (was ${top.previous}kg)`:''}`;
+    } else if (didLevelUp && tierUp) {
+      headline = `${newTier.name.toUpperCase()} TIER!`;
+      subheadline = `Reached Level ${newLevel}`;
+    } else if (didLevelUp) {
+      headline = "LEVEL UP!";
+      subheadline = `Reached Level ${newLevel}`;
+    } else if (streak >= 7 && wasFirstToday) {
+      headline = `${streak}-DAY STREAK 🔥`;
+      subheadline = "Unstoppable";
+    } else if (heaviestKg >= 100) {
+      headline = "TRIPLE DIGITS 💪";
+      subheadline = `Heaviest set: ${heaviestKg}kg`;
+    } else if ((activeWorkout?.duration||0) >= 45) {
+      headline = "ENDURANCE PASSED ⏱";
+      subheadline = `${activeWorkout.name} · ${activeWorkout.duration}min`;
+    } else if (setsLogged >= 10) {
+      headline = "VOLUME CRUSHED 💥";
+      subheadline = `${setsLogged} sets logged`;
+    } else if (wasFirstToday && new Date().getHours() < 9) {
+      headline = "EARLY GRIND 🌅";
+      subheadline = activeWorkout?.name || "Morning workout done";
+    }
 
     setTotalXp(newTotal);
     setCharStats(prev=>({
@@ -1754,7 +2011,25 @@ export default function ApexFitUnified() {
       VIT:(prev.VIT||0)+statGains.VIT,
     }));
     if (didLevelUp) setLastLevel(newLevel);
-    setRecentGains({ xp:xpEarned, stats:statGains, levelUp:didLevelUp?newLevel:null });
+
+    setRecentGains({
+      xp: xpEarned,
+      xpBase: baseXp,
+      xpBonus,
+      bonuses,
+      stats: statGains,
+      prs,
+      headline,
+      subheadline,
+      levelUp: didLevelUp ? newLevel : null,
+      oldLevel: prevLevel,
+      newLevel,
+      oldTier,
+      newTier,
+      tierUp,
+      classColor: cls?.color || "#ff3d2e",
+      classEmoji: cls?.emoji || "⚡",
+    });
 
     setSessionLog({});
     setTimerRunning(false); setActiveWorkout(null); setTab("dashboard");
@@ -1862,6 +2137,14 @@ export default function ApexFitUnified() {
         @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
         @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(255,61,46,0.2)}50%{box-shadow:0 0 40px rgba(255,61,46,0.45)}}
         @keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes celebSlam{0%{opacity:0;transform:scale(1.5);filter:blur(20px)}40%{opacity:1;transform:scale(0.92);filter:blur(0)}65%{transform:scale(1.05)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+        @keyframes celebFlash{0%{opacity:0}30%{opacity:0.8}100%{opacity:0}}
+        @keyframes celebShake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-3px)}20%,40%,60%,80%{transform:translateX(3px)}}
+        @keyframes celebPillIn{from{opacity:0;transform:scale(0.5) translateY(20px)}50%{transform:scale(1.15) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+        @keyframes celebBarFill{from{width:0%}}
+        @keyframes celebStarBurst{0%{opacity:0;transform:scale(0) rotate(0deg)}30%{opacity:1}100%{opacity:0;transform:scale(1.8) rotate(180deg)}}
+        @keyframes celebGoldGlow{0%,100%{box-shadow:0 0 40px rgba(255,215,0,0.4),0 0 80px rgba(255,215,0,0.2)}50%{box-shadow:0 0 60px rgba(255,215,0,0.8),0 0 120px rgba(255,215,0,0.4)}}
+        @keyframes celebRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 
         .fadein{animation:fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards}
         .shimmer{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.8s infinite;border-radius:10px}
@@ -3646,43 +3929,9 @@ export default function ApexFitUnified() {
         </div>
       )}
 
-      {/* ── 🎮 GAINS / LEVEL-UP TOAST ── */}
+      {/* ── 🎮 GAINS / LEVEL-UP CELEBRATION ── */}
       {recentGains && (
-        <div onClick={()=>setRecentGains(null)}
-          style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.7)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", padding:18 }}>
-          <div onClick={e=>e.stopPropagation()}
-            style={{ width:"100%", maxWidth:380, background:"linear-gradient(160deg, #150510 0%, var(--card) 60%)", borderRadius:24, padding:"28px 22px", border:`1px solid ${recentGains.levelUp?"#ffd700":"var(--brand)"}55`, boxShadow:`0 20px 60px ${recentGains.levelUp?"#ffd700":"var(--brand)"}30`, textAlign:"center", animation:"fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)" }}>
-            {recentGains.levelUp ? (
-              <>
-                <div style={{ fontSize:42, marginBottom:6 }}>🎉</div>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, color:"#ffd700", textTransform:"uppercase", letterSpacing:1.2, lineHeight:1, marginBottom:6 }}>Level Up!</div>
-                <div style={{ fontSize:14, color:"var(--text2)", marginBottom:16 }}>You reached <b style={{color:"#ffd700"}}>Level {recentGains.levelUp}</b></div>
-              </>
-            ) : (
-              <>
-                <div style={{ fontSize:34, marginBottom:4 }}>💥</div>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:24, color:"var(--brand)", textTransform:"uppercase", letterSpacing:1, lineHeight:1, marginBottom:14 }}>Victory!</div>
-              </>
-            )}
-            <div style={{ padding:"12px 14px", borderRadius:14, background:"rgba(255,61,46,0.08)", border:"1px solid rgba(255,61,46,0.2)", marginBottom:12 }}>
-              <div style={{ fontSize:11, color:"var(--text3)", fontWeight:700, textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 }}>XP Earned</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:32, fontWeight:900, color:"var(--brand)", lineHeight:1 }}>+{recentGains.xp}</div>
-            </div>
-            {recentGains.stats && Object.values(recentGains.stats).some(v=>v>0) && (
-              <div style={{ display:"flex", gap:6, justifyContent:"center", flexWrap:"wrap", marginBottom:18 }}>
-                {Object.entries(recentGains.stats).filter(([,v])=>v>0).map(([k,v])=>{
-                  const colors = {STR:"#ff3d2e",AGI:"#ffd700",STA:"#4ade80",WIS:"#a78bfa",VIT:"#00e5ff"};
-                  return (
-                    <div key={k} style={{ padding:"6px 12px", borderRadius:100, background:`${colors[k]}14`, border:`1px solid ${colors[k]}44` }}>
-                      <span style={{ fontSize:11, fontWeight:700, color:colors[k], fontFamily:"'Syne',sans-serif" }}>+{v} {k}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            <PrimaryBtn onClick={()=>setRecentGains(null)} style={{ fontSize:13, padding:12 }}>Continue</PrimaryBtn>
-          </div>
-        </div>
+        <VictoryCelebration gains={recentGains} onClose={()=>setRecentGains(null)}/>
       )}
 
       {/* ── BOTTOM NAV ── */}
