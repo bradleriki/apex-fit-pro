@@ -1757,7 +1757,7 @@ export default function ApexFitUnified() {
     setRecentGains({ xp:xpEarned, stats:statGains, levelUp:didLevelUp?newLevel:null });
 
     setSessionLog({});
-    setTimerRunning(false); setActiveWorkout(null); setTab("home");
+    setTimerRunning(false); setActiveWorkout(null); setTab("dashboard");
   };
 
   const addQuickMeal = () => {
