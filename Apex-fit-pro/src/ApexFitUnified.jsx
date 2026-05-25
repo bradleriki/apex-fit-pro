@@ -387,6 +387,137 @@ function suggestProgression(history, exercise) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 🎮 GAME SYSTEM — Classes, XP, Levels, Stats
+// ─────────────────────────────────────────────────────────────────────────────
+const CLASSES = [
+  { id:"berserker", name:"Berserker", emoji:"⚔️", icon:"⚔️",
+    tagline:"Forged in iron",
+    description:"Heavy lifts. Brutal strength. The path of the powerhouse.",
+    color:"#ff3d2e",
+    statBias:{ STR:1.5, AGI:0.8, STA:1.0, WIS:0.7, VIT:1.0 },
+    suitsGoal:"muscle" },
+  { id:"ranger", name:"Ranger", emoji:"🏹", icon:"🏹",
+    tagline:"Swift as the wind",
+    description:"Long runs. Endless stamina. Master of distance.",
+    color:"#4ade80",
+    statBias:{ STR:0.8, AGI:1.4, STA:1.5, WIS:0.9, VIT:1.0 },
+    suitsGoal:"endurance" },
+  { id:"monk", name:"Monk", emoji:"🧘", icon:"🧘",
+    tagline:"Calm in the storm",
+    description:"Flexibility, mindfulness, breath. The balanced path.",
+    color:"#a78bfa",
+    statBias:{ STR:0.8, AGI:1.1, STA:1.0, WIS:1.6, VIT:1.1 },
+    suitsGoal:"flex" },
+  { id:"guardian", name:"Guardian", emoji:"🛡️", icon:"🛡️",
+    tagline:"Steady and true",
+    description:"All-round athlete. No weakness, no specialty.",
+    color:"#00e5ff",
+    statBias:{ STR:1.1, AGI:1.1, STA:1.1, WIS:1.1, VIT:1.1 },
+    suitsGoal:null },
+  { id:"pyromancer", name:"Pyromancer", emoji:"🔥", icon:"🔥",
+    tagline:"Burn it all",
+    description:"HIIT. Fat loss. Explosive, fast, fierce.",
+    color:"#ffd700",
+    statBias:{ STR:1.0, AGI:1.5, STA:1.2, WIS:0.8, VIT:1.2 },
+    suitsGoal:"lose" },
+];
+
+// Tier thresholds (level → tier)
+const TIERS = [
+  { name:"Novice",    min:1,  max:10, color:"#94a3b8" },
+  { name:"Adept",     min:11, max:25, color:"#4ade80" },
+  { name:"Expert",    min:26, max:50, color:"#a78bfa" },
+  { name:"Champion",  min:51, max:75, color:"#ffd700" },
+  { name:"Legend",    min:76, max:99, color:"#ff3d2e" },
+];
+
+// XP needed to reach level N (cumulative). Quadratic curve so progression feels meaningful.
+function xpForLevel(level) {
+  if (level <= 1) return 0;
+  return Math.round(100 * Math.pow(level - 1, 1.6));
+}
+
+// Get current level from total XP
+function levelFromXp(totalXp) {
+  let lvl = 1;
+  while (lvl < 99 && xpForLevel(lvl + 1) <= totalXp) lvl++;
+  return lvl;
+}
+
+// Get tier info for a level
+function tierForLevel(level) {
+  return TIERS.find(t => level >= t.min && level <= t.max) || TIERS[0];
+}
+
+// XP progress within current level: { current, needed, pct }
+function xpProgress(totalXp) {
+  const lvl = levelFromXp(totalXp);
+  const thisLevelStart = xpForLevel(lvl);
+  const nextLevelStart = lvl >= 99 ? thisLevelStart : xpForLevel(lvl + 1);
+  const current = totalXp - thisLevelStart;
+  const needed = nextLevelStart - thisLevelStart;
+  return { current, needed, pct: needed > 0 ? Math.min(100, (current/needed)*100) : 100 };
+}
+
+// XP reward constants for each action
+const XP_REWARDS = {
+  WORKOUT_COMPLETE:    100,
+  WORKOUT_SET_LOGGED:  5,
+  MEAL_LOGGED:         15,
+  PROTEIN_GOAL_HIT:    50,
+  CALORIE_GOAL_HIT:    50,
+  SLEEP_7H:            40,
+  MEDITATION:          30,
+  BREATHWORK:          20,
+  STEPS_8K:            30,
+  STEPS_12K:           60,
+  MOOD_LOG:            10,
+  STRESS_LOG:          10,
+  STREAK_BONUS_DAY:    20, // bonus per streak day, capped
+};
+
+// Calculate stat gain from a single workout
+function workoutStatGain(workout, classObj) {
+  const bias = classObj?.statBias || { STR:1, AGI:1, STA:1, WIS:1, VIT:1 };
+  const isStrength = /Strength|Power/i.test(workout.type||"");
+  const isHIIT = /HIIT|Circuit/i.test(workout.type||"");
+  const isCardio = /Cardio/i.test(workout.type||"");
+  const isFlex = /Flex|Yoga|Mobility/i.test(workout.type||"");
+  const isCore = /Core/i.test(workout.type||"");
+  const duration = workout.duration || 30;
+
+  const gains = { STR:0, AGI:0, STA:0, WIS:0, VIT:0 };
+  if (isStrength) { gains.STR += 3; gains.STA += 1; }
+  if (isHIIT)     { gains.AGI += 2; gains.STA += 2; gains.VIT += 1; }
+  if (isCardio)   { gains.STA += 3; gains.AGI += 1; }
+  if (isFlex)     { gains.WIS += 2; gains.AGI += 1; }
+  if (isCore)     { gains.STR += 1; gains.AGI += 1; gains.STA += 1; }
+  if (duration >= 45) gains.STA += 1;
+
+  // Apply class bias (multiplied, then floored)
+  Object.keys(gains).forEach(k => {
+    gains[k] = Math.max(0, Math.floor(gains[k] * (bias[k]||1)));
+  });
+  return gains;
+}
+
+// Aggregate today's XP from various sources (helper for the dashboard preview)
+function dayXpPreview(ctx) {
+  // ctx: { workoutsCompletedToday, mealsLogged, totalPro, proteinTarget, totalCal, calTarget, gfit, meditationToday, breathToday, moodLoggedToday }
+  let xp = 0;
+  xp += (ctx.workoutsCompletedToday||0) * XP_REWARDS.WORKOUT_COMPLETE;
+  xp += (ctx.mealsLogged||0) * XP_REWARDS.MEAL_LOGGED;
+  if (ctx.totalPro >= (ctx.proteinTarget||0) * 0.9) xp += XP_REWARDS.PROTEIN_GOAL_HIT;
+  if (ctx.totalCal >= (ctx.calTarget||0) * 0.9 && ctx.totalCal <= (ctx.calTarget||0) * 1.1) xp += XP_REWARDS.CALORIE_GOAL_HIT;
+  if (ctx.gfit?.steps >= 12000) xp += XP_REWARDS.STEPS_12K;
+  else if (ctx.gfit?.steps >= 8000) xp += XP_REWARDS.STEPS_8K;
+  if (ctx.meditationToday) xp += XP_REWARDS.MEDITATION;
+  if (ctx.breathToday) xp += XP_REWARDS.BREATHWORK;
+  if (ctx.moodLoggedToday) xp += XP_REWARDS.MOOD_LOG;
+  return xp;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MEALS
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1262,6 +1393,19 @@ export default function ApexFitUnified() {
   const [customWorkouts,   setCustomWorkouts,   customLoaded]           = useStorage("apex:customWorkouts", []);
   const [activeProgramId,  setActiveProgramId,  ]                       = useStorage("apex:activeProgramId", null); // user-selected or recommended
   const [progressionLog,   setProgressionLog,   ]                       = useStorage("apex:progressionLog", {});    // { "exerciseName": [{date, sets, reps, weight}] }
+  // ── 🎮 RPG GAME STATE ──
+  const [characterClass,   setCharacterClass,   ]                       = useStorage("apex:characterClass", null);  // null = needs to pick
+  const [totalXp,          setTotalXp,          ]                       = useStorage("apex:totalXp", 0);
+  const [charStats,        setCharStats,        ]                       = useStorage("apex:charStats", { STR:0, AGI:0, STA:0, WIS:0, VIT:0 });
+  const [lastLevel,        setLastLevel,        ]                       = useStorage("apex:lastLevel", 1);          // for level-up detection
+  const [recentGains,      setRecentGains      ]                        = useState(null);                            // { xp, stats, levelUp } shown after workout
+  const [classPickerOpen,  setClassPickerOpen  ]                        = useState(false);
+  // 🎮 Game state
+  const [gameClass,    setGameClass,    ]                               = useStorage("apex:gameClass", null);          // class id string
+  const [gameXp,       setGameXp,       ]                               = useStorage("apex:gameXp", 0);                // total XP earned
+  const [gameStats,    setGameStats,    ]                               = useStorage("apex:gameStats", { STR:0, AGI:0, STA:0, WIS:0, VIT:0 });
+  const [xpLog,        setXpLog,        ]                               = useStorage("apex:xpLog", []);                // [{date, source, xp}] for daily preview & history
+  const [showLevelUp,  setShowLevelUp,  ]                               = useState(null);                              // {oldLvl, newLvl} or null
   const [loggedMeals,      setLoggedMeals,      mealsLoaded]            = useStorage("apex:loggedMeals", [1,2,4]);
   const [mealPortions,     setMealPortions,     ]                       = useStorage("apex:mealPortions", {}); // {mealId: multiplier}
   const [mealSwaps,        setMealSwaps,        ]                       = useStorage("apex:mealSwaps", {});    // {"dayIndex:Slot": mealId}
@@ -1569,6 +1713,7 @@ export default function ApexFitUnified() {
       setStreak(s => s + (completedDays.includes(todayIdx) ? 0 : 1));
     }
     // Persist progression log entries (best set per exercise)
+    let setsLogged = 0;
     if (Object.keys(sessionLog).length) {
       const dateStr = new Date().toISOString().slice(0,10);
       setProgressionLog(prev => {
@@ -1576,6 +1721,7 @@ export default function ApexFitUnified() {
         Object.entries(sessionLog).forEach(([exName, sets])=>{
           const validSets = sets.filter(s=>s && (s.reps || s.weight));
           if (!validSets.length) return;
+          setsLogged += validSets.length;
           // Take the heaviest valid set as the session's "best"
           const best = validSets.reduce((b,s)=>{
             const sw = parseFloat(s.weight)||0;
@@ -1588,8 +1734,30 @@ export default function ApexFitUnified() {
         return next;
       });
     }
+
+    // 🎮 Award XP + stat gains
+    const cls = CLASSES.find(c=>c.id===characterClass);
+    const xpEarned = XP_REWARDS.WORKOUT_COMPLETE + setsLogged * XP_REWARDS.WORKOUT_SET_LOGGED;
+    const statGains = activeWorkout ? workoutStatGain(activeWorkout, cls) : { STR:0,AGI:0,STA:0,WIS:0,VIT:0 };
+
+    const prevLevel = levelFromXp(totalXp);
+    const newTotal = totalXp + xpEarned;
+    const newLevel = levelFromXp(newTotal);
+    const didLevelUp = newLevel > prevLevel;
+
+    setTotalXp(newTotal);
+    setCharStats(prev=>({
+      STR:(prev.STR||0)+statGains.STR,
+      AGI:(prev.AGI||0)+statGains.AGI,
+      STA:(prev.STA||0)+statGains.STA,
+      WIS:(prev.WIS||0)+statGains.WIS,
+      VIT:(prev.VIT||0)+statGains.VIT,
+    }));
+    if (didLevelUp) setLastLevel(newLevel);
+    setRecentGains({ xp:xpEarned, stats:statGains, levelUp:didLevelUp?newLevel:null });
+
     setSessionLog({});
-    setTimerRunning(false); setActiveWorkout(null); setTab("train");
+    setTimerRunning(false); setActiveWorkout(null); setTab("home");
   };
 
   const addQuickMeal = () => {
@@ -1809,9 +1977,94 @@ export default function ApexFitUnified() {
         {/* ════════════════════════════════ DASHBOARD ════════════════════════════════ */}
         {tab==="dashboard" && (
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            {/* ── 🎮 CHARACTER SHEET ── */}
+            {(()=>{
+              const cls = CLASSES.find(c=>c.id===characterClass);
+              const lvl = levelFromXp(totalXp);
+              const tier = tierForLevel(lvl);
+              const xp = xpProgress(totalXp);
+              const accent = cls?.color || "var(--brand)";
+
+              return (
+                <>
+                  {/* Hero card */}
+                  <Card style={{ padding:18, background:`linear-gradient(135deg,${accent}14,transparent 70%)`, borderColor:`${accent}3a` }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+                      {/* Avatar */}
+                      <div style={{ width:64, height:64, borderRadius:18, background:`linear-gradient(135deg,${accent},${accent}66)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, flexShrink:0, boxShadow:`0 8px 24px ${accent}50`, border:`2px solid ${accent}aa` }}>
+                        {cls?.emoji || "🛡️"}
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2, flexWrap:"wrap" }}>
+                          <span style={{ fontSize:10, color:tier.color, fontWeight:800, textTransform:"uppercase", letterSpacing:0.6, padding:"2px 7px", borderRadius:20, background:`${tier.color}22`, border:`1px solid ${tier.color}55` }}>{tier.name}</span>
+                          <span style={{ fontSize:11, color:"var(--text3)", fontWeight:600 }}>Lv {lvl}</span>
+                        </div>
+                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:24, lineHeight:1.05, textTransform:"uppercase", letterSpacing:0.3 }}>{profile.name||"Hero"}</div>
+                        <div style={{ fontSize:11, color:accent, fontWeight:700, marginTop:3, fontFamily:"'Syne',sans-serif" }}>
+                          {cls ? `${cls.icon} ${cls.name} · ${cls.tagline}` : "Class not chosen"}
+                        </div>
+                      </div>
+                      <button onClick={()=>setClassPickerOpen(true)}
+                        style={{ padding:"6px 10px", background:cls?"transparent":"var(--grad)", border:cls?"1px solid var(--border2)":"none", borderRadius:8, color:cls?"var(--text3)":"#fff", fontSize:10, fontFamily:"'Syne',sans-serif", fontWeight:700, cursor:"pointer", flexShrink:0 }}>
+                        {cls ? "Change" : "Pick Class"}
+                      </button>
+                    </div>
+
+                    {/* XP bar */}
+                    <div style={{ marginTop:14 }}>
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, color:"var(--text3)", marginBottom:5, fontWeight:600 }}>
+                        <span>XP</span>
+                        <span>{xp.current} / {xp.needed}</span>
+                      </div>
+                      <div style={{ height:8, background:"var(--border)", borderRadius:100, overflow:"hidden", position:"relative" }}>
+                        <div style={{ height:"100%", width:`${xp.pct}%`, background:`linear-gradient(90deg,${accent},${accent}cc)`, borderRadius:100, boxShadow:`0 0 12px ${accent}80`, transition:"width 0.6s ease-out" }}/>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Stat hexagon / radar */}
+                  <Card style={{ padding:16 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                      <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5 }}>Stats</span>
+                      <span style={{ fontSize:10, color:"var(--text3)", fontWeight:600 }}>Total: {Object.values(charStats).reduce((a,b)=>a+b,0)}</span>
+                    </div>
+                    {(()=>{
+                      const stats = [
+                        { key:"STR", label:"STR", icon:"💪", color:"#ff3d2e", desc:"Strength" },
+                        { key:"AGI", label:"AGI", icon:"⚡", color:"#ffd700", desc:"Agility" },
+                        { key:"STA", label:"STA", icon:"🫁", color:"#4ade80", desc:"Stamina" },
+                        { key:"WIS", label:"WIS", icon:"🧠", color:"#a78bfa", desc:"Wisdom" },
+                        { key:"VIT", label:"VIT", icon:"❤️", color:"#00e5ff", desc:"Vitality" },
+                      ];
+                      const max = Math.max(20, ...stats.map(s=>charStats[s.key]||0));
+                      return (
+                        <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+                          {stats.map(s=>{
+                            const v = charStats[s.key]||0;
+                            return (
+                              <div key={s.key} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                                <div style={{ width:48, display:"flex", alignItems:"center", gap:5 }}>
+                                  <span style={{ fontSize:14 }}>{s.icon}</span>
+                                  <span style={{ fontSize:11, fontWeight:800, color:s.color, fontFamily:"'Syne',sans-serif", letterSpacing:0.5 }}>{s.label}</span>
+                                </div>
+                                <div style={{ flex:1, height:7, background:"var(--border)", borderRadius:100, overflow:"hidden" }}>
+                                  <div style={{ height:"100%", width:`${Math.min(100,(v/max)*100)}%`, background:`linear-gradient(90deg,${s.color},${s.color}88)`, borderRadius:100, transition:"width 0.6s" }}/>
+                                </div>
+                                <span style={{ fontSize:13, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", minWidth:24, textAlign:"right" }}>{v}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+                  </Card>
+                </>
+              );
+            })()}
+
             <div style={{ paddingTop:4 }}>
               <div className="label" style={{ marginBottom:4 }}>Welcome back</div>
-              <div className="display" style={{ fontSize:36, color:"var(--text)" }}>{profile.name} 💪</div>
+              <div className="display" style={{ fontSize:32, color:"var(--text)" }}>{profile.name} 💪</div>
             </div>
 
             {/* AI Card */}
@@ -3345,6 +3598,92 @@ export default function ApexFitUnified() {
         })()}
 
       </div>
+
+      {/* ── 🎮 CLASS PICKER MODAL ── */}
+      {classPickerOpen && (
+        <div onClick={()=>setClassPickerOpen(false)}
+          style={{ position:"fixed", inset:0, zIndex:200, background:"rgba(0,0,0,0.85)", backdropFilter:"blur(16px)", display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+          <div onClick={e=>e.stopPropagation()}
+            style={{ width:"100%", maxWidth:520, maxHeight:"86vh", overflowY:"auto", background:"var(--card)", borderTopLeftRadius:24, borderTopRightRadius:24, padding:"20px 18px 40px", borderTop:"1px solid var(--border2)" }}>
+            <div style={{ width:36, height:4, background:"var(--border2)", borderRadius:100, margin:"0 auto 16px" }}/>
+            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:26, textTransform:"uppercase", letterSpacing:0.5, textAlign:"center", marginBottom:6 }}>
+              {characterClass ? "Change Class" : "Choose Your Class"}
+            </div>
+            <div style={{ fontSize:12, color:"var(--text3)", textAlign:"center", marginBottom:18, lineHeight:1.5 }}>
+              Each class shapes how your workouts grow your stats. Switch later — progress stays.
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {CLASSES.map(c=>{
+                const sel = c.id === characterClass;
+                const recommended = !characterClass && c.suitsGoal === profile.goal;
+                return (
+                  <div key={c.id} onClick={()=>{ setCharacterClass(c.id); setClassPickerOpen(false); }}
+                    style={{ padding:14, borderRadius:14, cursor:"pointer", border:sel?`2px solid ${c.color}`:`1px solid var(--border2)`, background:sel?`${c.color}14`:"var(--bg2)", transition:"all 0.18s" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                      <div style={{ width:48, height:48, borderRadius:12, background:`linear-gradient(135deg,${c.color},${c.color}88)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, flexShrink:0, boxShadow:`0 4px 14px ${c.color}50` }}>
+                        {c.emoji}
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2, flexWrap:"wrap" }}>
+                          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.3, color:c.color }}>{c.name}</span>
+                          {recommended && <span style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"rgba(74,222,128,0.18)", color:"#4ade80", fontWeight:700, fontFamily:"'Syne',sans-serif" }}>RECOMMENDED</span>}
+                          {sel && <CheckCircle2 size={14} color={c.color} strokeWidth={2.5}/>}
+                        </div>
+                        <div style={{ fontSize:11, color:c.color, fontWeight:600, marginBottom:4, fontStyle:"italic" }}>{c.tagline}</div>
+                        <div style={{ fontSize:12, color:"var(--text2)", lineHeight:1.45 }}>{c.description}</div>
+                        <div style={{ display:"flex", gap:4, marginTop:6, flexWrap:"wrap" }}>
+                          {Object.entries(c.statBias).filter(([,v])=>v>=1.3).map(([s])=>(
+                            <span key={s} style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:c.color, fontWeight:700, fontFamily:"'Syne',sans-serif" }}>+{s}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 🎮 GAINS / LEVEL-UP TOAST ── */}
+      {recentGains && (
+        <div onClick={()=>setRecentGains(null)}
+          style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.7)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", padding:18 }}>
+          <div onClick={e=>e.stopPropagation()}
+            style={{ width:"100%", maxWidth:380, background:"linear-gradient(160deg, #150510 0%, var(--card) 60%)", borderRadius:24, padding:"28px 22px", border:`1px solid ${recentGains.levelUp?"#ffd700":"var(--brand)"}55`, boxShadow:`0 20px 60px ${recentGains.levelUp?"#ffd700":"var(--brand)"}30`, textAlign:"center", animation:"fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)" }}>
+            {recentGains.levelUp ? (
+              <>
+                <div style={{ fontSize:42, marginBottom:6 }}>🎉</div>
+                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, color:"#ffd700", textTransform:"uppercase", letterSpacing:1.2, lineHeight:1, marginBottom:6 }}>Level Up!</div>
+                <div style={{ fontSize:14, color:"var(--text2)", marginBottom:16 }}>You reached <b style={{color:"#ffd700"}}>Level {recentGains.levelUp}</b></div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize:34, marginBottom:4 }}>💥</div>
+                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:24, color:"var(--brand)", textTransform:"uppercase", letterSpacing:1, lineHeight:1, marginBottom:14 }}>Victory!</div>
+              </>
+            )}
+            <div style={{ padding:"12px 14px", borderRadius:14, background:"rgba(255,61,46,0.08)", border:"1px solid rgba(255,61,46,0.2)", marginBottom:12 }}>
+              <div style={{ fontSize:11, color:"var(--text3)", fontWeight:700, textTransform:"uppercase", letterSpacing:0.5, marginBottom:4 }}>XP Earned</div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:32, fontWeight:900, color:"var(--brand)", lineHeight:1 }}>+{recentGains.xp}</div>
+            </div>
+            {recentGains.stats && Object.values(recentGains.stats).some(v=>v>0) && (
+              <div style={{ display:"flex", gap:6, justifyContent:"center", flexWrap:"wrap", marginBottom:18 }}>
+                {Object.entries(recentGains.stats).filter(([,v])=>v>0).map(([k,v])=>{
+                  const colors = {STR:"#ff3d2e",AGI:"#ffd700",STA:"#4ade80",WIS:"#a78bfa",VIT:"#00e5ff"};
+                  return (
+                    <div key={k} style={{ padding:"6px 12px", borderRadius:100, background:`${colors[k]}14`, border:`1px solid ${colors[k]}44` }}>
+                      <span style={{ fontSize:11, fontWeight:700, color:colors[k], fontFamily:"'Syne',sans-serif" }}>+{v} {k}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <PrimaryBtn onClick={()=>setRecentGains(null)} style={{ fontSize:13, padding:12 }}>Continue</PrimaryBtn>
+          </div>
+        </div>
+      )}
 
       {/* ── BOTTOM NAV ── */}
       <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:100, background:"rgba(6,6,14,0.95)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderTop:"1px solid rgba(255,255,255,0.05)", padding:"10px 4px 20px", display:"flex", justifyContent:"space-around" }}>
