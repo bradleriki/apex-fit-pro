@@ -3415,7 +3415,7 @@ export default function ApexFitUnified() {
                     {gfitLastSync && <div style={{ fontSize:10, color:"#7878a0" }}>Synced {gfitLastSync.toLocaleTimeString()}</div>}
                   </div>
                   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                    {(()=>{ const fresh = gfitHrAt && Date.now()-gfitHrAt < 5*60000; const c = fresh?"#4ade80":"#9090b8"; return (
+                    {(()=>{ const fresh = gfitHrAt && Date.now()-gfitHrAt < 15*60000; // watches typically measure every ~10 min const c = fresh?"#4ade80":"#9090b8"; return (
                     <div style={{ display:"flex", alignItems:"center", gap:6, background:fresh?"rgba(74,222,128,0.1)":"rgba(255,255,255,0.04)", border:`1px solid ${fresh?"rgba(74,222,128,0.3)":"var(--border2)"}`, borderRadius:20, padding:"4px 12px" }}>
                       <div style={{ width:7, height:7, borderRadius:"50%", background:c, animation:fresh?"pulse 2s infinite":"none" }}/>
                       <span style={{ fontSize:11, color:c, fontWeight:700 }}>{fresh?"LIVE":"SYNCED"}</span>
