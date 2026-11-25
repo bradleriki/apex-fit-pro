@@ -27,11 +27,21 @@ const MERGED_STEPS_SOURCE    = "derived:com.google.step_count.delta:com.google.a
 const MERGED_CALORIES_SOURCE = "derived:com.google.calories.expended:com.google.android.gms:merge_calories_expended";
 const MERGED_HR_SOURCE       = "derived:com.google.heart_rate.bpm:com.google.android.gms:merge_heart_rate_bpm";
 
+// Google returns 401 when the 1-hour OAuth token expires and 403 when a scope wasn't granted.
+// Throw on those so the UI can say so, instead of quietly showing zeros.
+class FitAuthError extends Error {}
+async function fitFetch(url, opts) {
+  const r = await fetch(url, opts);
+  if (r.status === 401) throw new FitAuthError("expired");
+  if (r.status === 403) throw new FitAuthError("permission");
+  return r;
+}
+
 async function fetchFitData(token, type, startMs, endMs, bucket, sourceId) {
   const aggBy = sourceId ? { dataSourceId: sourceId } : { dataTypeName: type };
   const body = { aggregateBy:[aggBy], startTimeMillis:String(startMs), endTimeMillis:String(endMs), ...(bucket?{bucketByTime:{durationMillis:String(bucket)}}:{}) };
-  const r = await fetch(`${FITNESS_API}/dataset:aggregate`, { method:"POST", headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"}, body:JSON.stringify(body) });
-  return r.json();
+  const r = await fitFetch(`${FITNESS_API}/dataset:aggregate`, { method:"POST", headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  return r.ok ? r.json() : {};
 }
 
 // Fetch raw HR samples (no aggregation) so we can compute resting / max / zones / current
@@ -39,7 +49,7 @@ async function fetchHrSamples(token, startMs, endMs) {
   const startNs = `${startMs}000000`;
   const endNs   = `${endMs}000000`;
   const url = `${FITNESS_API}/dataSources/${MERGED_HR_SOURCE}/datasets/${startNs}-${endNs}`;
-  const r = await fetch(url, { headers:{ Authorization:`Bearer ${token}` } });
+  const r = await fitFetch(url, { headers:{ Authorization:`Bearer ${token}` } });
   if (!r.ok) return [];
   const d = await r.json();
   return (d?.point || [])
@@ -75,7 +85,7 @@ const extractDaily = d => d?.bucket?.map(b=>{ const p=b.dataset?.flatMap(ds=>ds.
 
 // Sleep data comes from the sessions endpoint, not aggregate
 async function fetchSleepSessions(token, startMs, endMs) {
-  const r = await fetch(
+  const r = await fitFetch(
     `https://www.googleapis.com/fitness/v1/users/me/sessions?startTime=${new Date(startMs).toISOString()}&endTime=${new Date(endMs).toISOString()}&activityType=72`,
     { headers:{ Authorization:`Bearer ${token}` } }
   );
@@ -1736,6 +1746,7 @@ export default function ApexFitUnified() {
   const [gfitLoading, setGfitLoading]       = useState(false);
   const [gfitError, setGfitError]           = useState(null);
   const [gfitLastSync, setGfitLastSync]     = useState(null);
+  const [gfitHrAt, setGfitHrAt]             = useState(null); // timestamp (ms) of the newest heart-rate sample
   const [gfitData, setGfitData]             = useState({ steps:0, calories:0, heartRate:0, distance:0, activeMinutes:0, weeklySteps:[], weeklyCalories:[], weeklyHR:[], hrStats:{current:0,resting:0,max:0,avg:0,zones:{peak:0,cardio:0,aerobic:0,fatburn:0,rest:0}} });
   const [gfitSleep, setGfitSleep]           = useState(null); // { lastNight:{date,hours}, entries:[{date,hours}] }
 
@@ -1858,12 +1869,31 @@ export default function ApexFitUnified() {
     if (hash.includes("access_token")) {
       const params = new URLSearchParams(hash.replace("#",""));
       const t = params.get("access_token");
-      if (t) { setGfitToken(t); window.history.replaceState({},document.title,window.location.pathname); setTab("watch"); }
+      if (t) {
+        const expiresIn = parseInt(params.get("expires_in")) || 3600;
+        try { sessionStorage.setItem("gfit_token", JSON.stringify({ t, exp: Date.now() + expiresIn*1000 })); } catch {}
+        setGfitToken(t); window.history.replaceState({},document.title,window.location.pathname); setTab("watch");
+      }
+    } else {
+      // Restore a still-valid token after a page reload
+      try {
+        const saved = JSON.parse(sessionStorage.getItem("gfit_token") || "null");
+        if (saved?.t && saved.exp > Date.now() + 60000) setGfitToken(saved.t);
+        else sessionStorage.removeItem("gfit_token");
+      } catch {}
     }
   },[]);
 
-  const fetchGfitAll = useCallback(async (token)=>{
-    setGfitLoading(true); setGfitError(null);
+  const disconnectGfit = useCallback((message=null)=>{
+    try { sessionStorage.removeItem("gfit_token"); } catch {}
+    setGfitToken(null); setGfitHrAt(null); setGfitError(message);
+    setGfitData({steps:0,calories:0,heartRate:0,distance:0,activeMinutes:0,weeklySteps:[],weeklyCalories:[],weeklyHR:[],hrStats:{current:0,resting:0,max:0,avg:0,zones:{peak:0,cardio:0,aerobic:0,fatburn:0,rest:0}}});
+  },[]);
+
+  // quiet=true for background refreshes, so the numbers don't blank out every minute
+  const fetchGfitAll = useCallback(async (token, quiet=false)=>{
+    if (!quiet) setGfitLoading(true);
+    setGfitError(null);
     try {
       const { startMs, endMs } = todayRange();
       const { startMs:wS, endMs:wE } = weekRange();
@@ -1878,9 +1908,13 @@ export default function ApexFitUnified() {
         fetchFitData(token,"com.google.calories.expended",wS,wE,DAY,MERGED_CALORIES_SOURCE),
         fetchFitData(token,"com.google.heart_rate.bpm",wS,wE,DAY),
         fetchSleepSessions(token, wS, wE),
-        fetchHrSamples(token, startMs, endMs),
+        // Last 24h, so there's still a latest reading early in the day or if the watch hasn't synced today
+        fetchHrSamples(token, endMs - DAY, endMs),
       ]);
-      const hrStats = computeHrStats(hrRaw);
+      const hrStats = computeHrStats(hrRaw.filter(x => x.t >= startMs)); // resting/max/zones: today only
+      const latest = hrRaw[hrRaw.length-1];
+      hrStats.current = latest ? Math.round(latest.bpm) : 0;
+      setGfitHrAt(latest ? latest.t : null);
       setGfitData({ steps:extractInt(st), calories:Math.round(extractFloat(cal)), heartRate:hrStats.current||extractHR(hr), distance:Math.round(extractFloat(dist)/1000*10)/10, activeMinutes:extractInt(act), weeklySteps:extractDaily(wSt), weeklyCalories:extractDaily(wCal), weeklyHR:extractDaily(wHr).map(v=>Math.round(v)), hrStats });
       setGfitSleep(sleep);
       // Auto-populate sleepLog from Fit data
@@ -1894,11 +1928,22 @@ export default function ApexFitUnified() {
         });
       }
       setGfitLastSync(new Date());
-    } catch(e) { setGfitError("Failed to fetch data. Check your permissions."); }
+    } catch(e) {
+      if (e instanceof FitAuthError && e.message === "expired") disconnectGfit("Your Google Fit sign-in expired (they last 1 hour). Connect again to keep syncing.");
+      else if (e instanceof FitAuthError) setGfitError("Google Fit refused access. Reconnect and allow all the requested permissions.");
+      else setGfitError("Couldn't reach Google Fit. Check your connection and try again.");
+    }
     setGfitLoading(false);
-  },[]);
+  },[disconnectGfit]);
 
   useEffect(()=>{ if(gfitToken) fetchGfitAll(gfitToken); },[gfitToken, fetchGfitAll]);
+
+  // Re-sync every 60s while the Watch tab is open and the page is visible
+  useEffect(()=>{
+    if (!gfitToken || tab!=="watch") return;
+    const iv = setInterval(()=>{ if (document.visibilityState==="visible") fetchGfitAll(gfitToken, true); }, 60000);
+    return ()=>clearInterval(iv);
+  },[gfitToken, tab, fetchGfitAll]);
 
   const connectGfit = () => {
     if (!gfitClientId.trim()) return;
@@ -3262,6 +3307,8 @@ export default function ApexFitUnified() {
                   </div>
                 </div>
 
+                {gfitError && <Card style={{ padding:14, borderColor:"rgba(255,77,77,0.3)" }}><div style={{ fontSize:13, color:"#ff8888" }}>⚠️ {gfitError}</div></Card>}
+
                 {/* Hero connection card */}
                 <Card style={{ padding:24, borderColor:"rgba(255,61,46,0.25)", background:"linear-gradient(135deg,rgba(255,61,46,0.06),transparent 60%)" }}>
                   <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:16 }}>
@@ -3309,12 +3356,14 @@ export default function ApexFitUnified() {
                     {gfitLastSync && <div style={{ fontSize:10, color:"#7878a0" }}>Synced {gfitLastSync.toLocaleTimeString()}</div>}
                   </div>
                   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:6, background:"rgba(74,222,128,0.1)", border:"1px solid rgba(74,222,128,0.3)", borderRadius:20, padding:"4px 12px" }}>
-                      <div style={{ width:7, height:7, borderRadius:"50%", background:"#4ade80", animation:"pulse 2s infinite" }}/>
-                      <span style={{ fontSize:11, color:"#4ade80", fontWeight:700 }}>LIVE</span>
+                    {(()=>{ const fresh = gfitHrAt && Date.now()-gfitHrAt < 5*60000; const c = fresh?"#4ade80":"#9090b8"; return (
+                    <div style={{ display:"flex", alignItems:"center", gap:6, background:fresh?"rgba(74,222,128,0.1)":"rgba(255,255,255,0.04)", border:`1px solid ${fresh?"rgba(74,222,128,0.3)":"var(--border2)"}`, borderRadius:20, padding:"4px 12px" }}>
+                      <div style={{ width:7, height:7, borderRadius:"50%", background:c, animation:fresh?"pulse 2s infinite":"none" }}/>
+                      <span style={{ fontSize:11, color:c, fontWeight:700 }}>{fresh?"LIVE":"SYNCED"}</span>
                     </div>
+                    ); })()}
                     <GhostBtn onClick={()=>fetchGfitAll(gfitToken)} style={{ padding:"6px 10px", fontSize:12 }}>↻</GhostBtn>
-                    <GhostBtn onClick={()=>{setGfitToken(null);setGfitData({steps:0,calories:0,heartRate:0,distance:0,activeMinutes:0,weeklySteps:[],weeklyCalories:[],weeklyHR:[],hrStats:{current:0,resting:0,max:0,avg:0,zones:{peak:0,cardio:0,aerobic:0,fatburn:0,rest:0}}});}} style={{ padding:"6px 10px", fontSize:12 }}>✕</GhostBtn>
+                    <GhostBtn onClick={()=>disconnectGfit()} style={{ padding:"6px 10px", fontSize:12 }}>✕</GhostBtn>
                   </div>
                 </div>
 
@@ -3325,7 +3374,12 @@ export default function ApexFitUnified() {
                   <Card style={{ padding:20, display:"flex", alignItems:"center", gap:18, borderColor:`${z.c}33` }}>
                     <HeartRateOrb bpm={gfitData.heartRate} loading={gfitLoading}/>
                     <div style={{ flex:1 }}>
-                      <div style={{ fontWeight:700, fontSize:15, marginBottom:6 }}>Heart Rate</div>
+                      <div style={{ fontWeight:700, fontSize:15, marginBottom:2 }}>Heart Rate</div>
+                      <div style={{ fontSize:11, color:"#9090b8", marginBottom:8 }}>{(()=>{
+                        if (!gfitHrAt) return "No readings in the last 24h";
+                        const m = Math.round((Date.now()-gfitHrAt)/60000);
+                        return m<1 ? "Latest reading: just now" : m<60 ? `Latest reading: ${m} min ago` : `Latest reading: ${Math.floor(m/60)}h ${m%60}m ago`;
+                      })()}</div>
                       <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:`${z.c}22`, border:`1px solid ${z.c}44`, borderRadius:20, padding:"3px 12px", marginBottom:12 }}>
                         <div style={{ width:6, height:6, borderRadius:"50%", background:z.c, animation:"pulse 1s infinite" }}/>
                         <span style={{ fontSize:12, fontWeight:700, color:z.c }}>{z.l} Zone</span>
