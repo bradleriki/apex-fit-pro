@@ -611,24 +611,103 @@ const ONBOARDING = [
 
 const FOOD_PROMPT = `You are an expert nutritionist. Analyze this food photo carefully.
 Return ONLY valid JSON (no markdown, no backticks):
-{"name":"Full meal name","confidence":92,"servingSize":"1 plate (~350g)","calories":520,"protein":38,"carbs":45,"fat":16,"fiber":6,"sugar":8,"sodium":720,"ingredients":["chicken","rice"],"healthScore":82,"mealType":"Lunch","dietTags":["High Protein"],"warnings":["High Sodium"],"tips":"Brief coaching tip under 40 words.","alternatives":["Swap X for Y"]}`;
+{"name":"Full meal name","confidence":92,"servingSize":"1 plate (~350g)","calories":520,"protein":38,"carbs":45,"fat":16,"fiber":6,"sugar":8,"sodium":720,"ingredients":["chicken","rice"],"healthScore":82,"mealType":"Lunch","dietTags":["High Protein"],"warnings":["High Sodium"],"tips":"Brief coaching tip under 40 words.","alternatives":["Swap X for Y"]}
+All numeric fields must be plain numbers (no units). Sodium is in mg; protein, carbs, fat, fiber and sugar are in grams.
+If the photo does not show food or drink, return exactly {"error":"not_food"}.`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
 const fmt  = s => `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
 const pct  = (v,m) => Math.min(100, Math.round((v/Math.max(m,1))*100));
-const b64  = f => new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.onerror=()=>rej(); r.readAsDataURL(f); });
+// Local-date key (YYYY-MM-DD) so "today" follows the user's clock, not UTC
+const dayKeyOf = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const todayKey = () => dayKeyOf(new Date());
+// Day an entry belongs to. Older entries have no `date`, but their id is a Date.now() timestamp.
+const entryDay = e => e?.date || (typeof e?.id === "number" ? dayKeyOf(new Date(e.id)) : "");
 
+// Coerce AI / stored values to a safe non-negative integer ("520 kcal" → 520, missing → 0)
+const num = (v, max = 100000) => {
+  const n = typeof v === "number" ? v : parseFloat(String(v ?? "").replace(/[^\d.]/g, ""));
+  return Number.isFinite(n) ? Math.min(max, Math.max(0, Math.round(n))) : 0;
+};
+const strArr = v => Array.isArray(v) ? v.filter(x => typeof x === "string" && x.trim()).map(x => x.trim()) : [];
+const str = (v, fallback = "") => (typeof v === "string" && v.trim()) ? v.trim() : fallback;
+
+// Pull the JSON object out of the model's reply and normalise every field
+function parseFoodResult(text) {
+  const start = text.indexOf("{"), end = text.lastIndexOf("}");
+  if (start < 0 || end <= start) throw new Error("unreadable");
+  let r;
+  try { r = JSON.parse(text.slice(start, end + 1)); } catch { throw new Error("unreadable"); }
+  if (r?.error) throw new Error("not_food");
+  return {
+    name: str(r.name, "Unknown meal"),
+    confidence: num(r.confidence, 100),
+    servingSize: str(r.servingSize, "1 serving"),
+    calories: num(r.calories, 10000),
+    protein: num(r.protein, 1000),
+    carbs: num(r.carbs, 1000),
+    fat: num(r.fat, 1000),
+    fiber: num(r.fiber, 1000),
+    sugar: num(r.sugar, 1000),
+    sodium: num(r.sodium, 100000),
+    ingredients: strArr(r.ingredients),
+    healthScore: num(r.healthScore, 100),
+    mealType: str(r.mealType, "Meal"),
+    dietTags: strArr(r.dietTags),
+    warnings: strArr(r.warnings),
+    tips: str(r.tips),
+    alternatives: strArr(r.alternatives),
+  };
+}
+
+// Decode a photo and re-encode it as a resized JPEG.
+// Keeps uploads under the API's 5 MB image limit and converts HEIC/other formats the API rejects.
+function loadImage(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload  = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("decode")); };
+    img.src = url;
+  });
+}
+function drawJpeg(img, maxDim, quality) {
+  const w = img.naturalWidth, h = img.naturalHeight;
+  const scale = Math.min(1, maxDim / Math.max(w, h));
+  const c = document.createElement("canvas");
+  c.width = Math.max(1, Math.round(w * scale));
+  c.height = Math.max(1, Math.round(h * scale));
+  const ctx = c.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); // transparent PNGs → white, not black
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", quality);
+}
+async function prepareImage(file) {
+  const img = await loadImage(file);
+  const full = drawJpeg(img, 1568, 0.85);
+  return { data: full.split(",")[1], mime: "image/jpeg", preview: full, thumb: drawJpeg(img, 160, 0.7) };
+}
+
+// The model, token limit and effort are fixed server-side in functions/api/claude.js
 async function callClaude(messages, system="You are a helpful fitness coach. Be concise and motivational.") {
   const r = await fetch("/api/claude", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, system, messages })
+    body: JSON.stringify({ system, messages })
   });
-  const d = await r.json();
-  if (d.error) throw new Error(d.error.message || "API error");
-  return d.content?.[0]?.text || "";
+  const raw = await r.text();
+  let d;
+  try { d = JSON.parse(raw); }
+  catch { throw new Error(r.ok ? "the AI service sent an unreadable response" : `the AI service is unavailable (HTTP ${r.status})`); }
+  if (!r.ok || d.error) throw new Error(d.error?.message || `the AI service returned HTTP ${r.status}`);
+  if (d.stop_reason === "refusal")    throw new Error("the AI declined this request");
+  if (d.stop_reason === "max_tokens") throw new Error("the AI response was cut off");
+  // Replies can start with a thinking block, so join the text blocks instead of reading content[0]
+  const text = (d.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
+  if (!text) throw new Error("the AI returned an empty response");
+  return text;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1500,10 +1579,10 @@ function FoodLogItem({ item, onDelete }) {
   return (
     <Card style={{ marginBottom:10, overflow:"hidden" }}>
       <div onClick={()=>setOpen(o=>!o)} style={{ padding:"12px 14px", display:"flex", gap:12, alignItems:"center", cursor:"pointer" }}>
-        {item.imageUrl && <img src={item.imageUrl} alt="" style={{ width:50, height:50, borderRadius:10, objectFit:"cover", flexShrink:0 }}/>}
+        {item.imageUrl?.startsWith("data:") && <img src={item.imageUrl} alt="" style={{ width:50, height:50, borderRadius:10, objectFit:"cover", flexShrink:0 }}/>}
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ fontWeight:700, fontSize:13, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{item.result.name}</div>
-          <div style={{ fontSize:11, color:"#9090b8", marginTop:2 }}>{item.result.mealType} · {item.time}</div>
+          <div style={{ fontSize:11, color:"#9090b8", marginTop:2 }}>{item.result.mealType} · {entryDay(item)!==todayKey() ? `${entryDay(item)} ` : ""}{item.time}</div>
           <div style={{ display:"flex", gap:10, marginTop:3 }}>
             <span style={{ fontSize:12, color:"var(--brand)", fontWeight:700 }}>🔥 {item.result.calories}</span>
             <span style={{ fontSize:12, color:"#a78bfa" }}>💪 {item.result.protein}g</span>
@@ -1639,6 +1718,7 @@ export default function ApexFitUnified() {
   const [quickFat, setQuickFat]         = useState("");
   const [scanImage, setScanImage]       = useState(null);
   const [scanImageData, setScanImageData] = useState(null);
+  const [scanThumb, setScanThumb]       = useState(null); // small JPEG data URL saved with the log entry
   const [scanMime, setScanMime]         = useState("image/jpeg");
   const [scanning, setScanning]         = useState(false);
   const [scanResult, setScanResult]     = useState(null);
@@ -1705,21 +1785,6 @@ export default function ApexFitUnified() {
     window.location.reload();
   };
 
-  // ── Loading screen ──
-  if (!appReady) return (
-    <div style={{ minHeight:"100vh", background:"#06060e", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16 }}>
-      <div style={{ width:44, height:44, background:"linear-gradient(135deg,#ff3d2e,#e06800)", borderRadius:13, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 8px 24px rgba(255,61,46,0.4)" }}>
-        <Zap size={22} color="#fff" strokeWidth={2.5}/>
-      </div>
-      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, letterSpacing:2, color:"#ece8e1", textTransform:"uppercase" }}>APEX FIT PRO</div>
-      <div style={{ display:"flex", gap:6, marginTop:8 }}>
-        {[0,1,2].map(i=>(
-          <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#ff3d2e", animation:`pulse 1.2s ${i*0.2}s ease-in-out infinite`, opacity:0.8 }}/>
-        ))}
-      </div>
-      <style>{`@keyframes pulse{0%,100%{transform:scale(0.6);opacity:0.3}50%{transform:scale(1);opacity:1}}`}</style>
-    </div>
-  );
 
   // ── Effects ──
   useEffect(()=>{
@@ -1772,17 +1837,20 @@ export default function ApexFitUnified() {
 
   const portionMult = (id) => mealPortions[id] ?? 1;
   const presetCal  = loggedMeals.reduce((a,id)=>a+Math.round((PRESET_MEALS.find(m=>m.id===id)?.calories||0)*portionMult(id)),0);
-  const scannedCal = scannedLog.reduce((a,i)=>a+i.result.calories,0);
-  const quickCals  = quickLog.reduce((a,i)=>a+i.calories,0);
+  const todayStr     = todayKey();
+  const scannedToday = scannedLog.filter(i=>entryDay(i)===todayStr);
+  const quickToday   = quickLog.filter(i=>entryDay(i)===todayStr);
+  const scannedCal = scannedToday.reduce((a,i)=>a+num(i.result?.calories),0);
+  const quickCals  = quickToday.reduce((a,i)=>a+num(i.calories),0);
   const totalCal   = presetCal + scannedCal + quickCals;
 
   const presetPro  = loggedMeals.reduce((a,id)=>a+Math.round((PRESET_MEALS.find(m=>m.id===id)?.protein||0)*portionMult(id)),0);
-  const scannedPro = scannedLog.reduce((a,i)=>a+i.result.protein,0);
-  const quickPros  = quickLog.reduce((a,i)=>a+(i.protein||0),0);
+  const scannedPro = scannedToday.reduce((a,i)=>a+num(i.result?.protein),0);
+  const quickPros  = quickToday.reduce((a,i)=>a+num(i.protein),0);
   const totalPro   = presetPro + scannedPro + quickPros;
 
-  const totalCarbs = loggedMeals.reduce((a,id)=>a+Math.round((PRESET_MEALS.find(m=>m.id===id)?.carbs||0)*portionMult(id)),0) + scannedLog.reduce((a,i)=>a+i.result.carbs,0) + quickLog.reduce((a,i)=>a+(i.carbs||0),0);
-  const totalFat   = loggedMeals.reduce((a,id)=>a+Math.round((PRESET_MEALS.find(m=>m.id===id)?.fat||0)*portionMult(id)),0)   + scannedLog.reduce((a,i)=>a+i.result.fat,0)   + quickLog.reduce((a,i)=>a+(i.fat||0),0);
+  const totalCarbs = loggedMeals.reduce((a,id)=>a+Math.round((PRESET_MEALS.find(m=>m.id===id)?.carbs||0)*portionMult(id)),0) + scannedToday.reduce((a,i)=>a+num(i.result?.carbs),0) + quickToday.reduce((a,i)=>a+num(i.carbs),0);
+  const totalFat   = loggedMeals.reduce((a,id)=>a+Math.round((PRESET_MEALS.find(m=>m.id===id)?.fat||0)*portionMult(id)),0)   + scannedToday.reduce((a,i)=>a+num(i.result?.fat),0)   + quickToday.reduce((a,i)=>a+num(i.fat),0);
 
   // ── Google Fit OAuth token from URL hash ──
   useEffect(()=>{
@@ -1844,8 +1912,11 @@ export default function ApexFitUnified() {
   const getAISuggestion = async () => {
     setAiLoading(true); setAiSuggestion(null);
     const ctx = `User: ${profile?.name||"Athlete"}, Goal: ${profile?.goal}, Level: ${profile?.level}, Weight: ${profile?.weight}→${profile?.target}kg. Streak: ${streak}d. Workouts done: ${completedWorkouts.length}.`;
-    const text = await callClaude([{role:"user",content:`${ctx}\nGive a personalized recommendation: 1) workout to do today & why, 2) one nutrition tip, 3) one motivational insight. Under 100 words total.`}]);
-    setAiSuggestion(text); setAiLoading(false);
+    try {
+      const text = await callClaude([{role:"user",content:`${ctx}\nGive a personalized recommendation: 1) workout to do today & why, 2) one nutrition tip, 3) one motivational insight. Under 100 words total.`}]);
+      setAiSuggestion(text);
+    } catch (err) { setAiSuggestion(`Couldn't get a suggestion: ${err.message}.`); }
+    finally { setAiLoading(false); }
   };
 
   const sendChat = async () => {
@@ -1854,15 +1925,17 @@ export default function ApexFitUnified() {
     const msgs = [...aiMessages, {role:"user",content:msg}];
     setAiMessages([...msgs,{role:"assistant",content:"..."}]);
     const ctx = `Profile: name=${profile?.name}, goal=${profile?.goal}, level=${profile?.level}, weight=${profile?.weight}kg, target=${profile?.target}kg.`;
-    const text = await callClaude([...msgs.slice(-8)], `You are APEX AI Coach. ${ctx} Be concise (under 80 words), motivational, actionable. No markdown.`);
+    let text;
+    try { text = await callClaude([...msgs.slice(-8)], `You are APEX AI Coach. ${ctx} Be concise (under 80 words), motivational, actionable. No markdown.`); }
+    catch (err) { text = `Sorry, I couldn't reply: ${err.message}.`; }
     setAiMessages([...msgs,{role:"assistant",content:text}]);
   };
 
   const generateAIWorkout = async () => {
     setBuilderLoading(true);
-    const text = await callClaude([{role:"user",content:`Create a workout for: goal=${profile?.goal||"fitness"}, level=${profile?.level||"intermediate"}. Return ONLY valid JSON: {"name":"...","type":"HIIT","duration":25,"calories":280,"exercises":["ex1","ex2","ex3","ex4","ex5"]}`}], "Return only valid JSON, no markdown.");
     try {
-      const w = JSON.parse(text.replace(/```json|```/g,"").trim());
+      const text = await callClaude([{role:"user",content:`Create a workout for: goal=${profile?.goal||"fitness"}, level=${profile?.level||"intermediate"}. Return ONLY valid JSON: {"name":"...","type":"HIIT","duration":25,"calories":280,"exercises":["ex1","ex2","ex3","ex4","ex5"]}`}], "Return only valid JSON, no markdown.");
+      const w = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}")+1));
       setCustomWorkouts(p=>[...p,{...w,id:Date.now(),difficulty:"AI Generated",muscles:["Full Body"]}]);
       setBuilderView("list");
     } catch { alert("Couldn't parse AI workout, try again."); }
@@ -2037,44 +2110,71 @@ export default function ApexFitUnified() {
 
   const addQuickMeal = () => {
     if (!quickName.trim() || !quickCal) return;
-    setQuickLog(p=>[{ id:Date.now(), name:quickName.trim(), calories:parseInt(quickCal)||0, protein:parseInt(quickPro)||0, carbs:parseInt(quickCarbs)||0, fat:parseInt(quickFat)||0, time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) }, ...p]);
+    setQuickLog(p=>[{ id:Date.now(), date:todayKey(), name:quickName.trim(), calories:parseInt(quickCal)||0, protein:parseInt(quickPro)||0, carbs:parseInt(quickCarbs)||0, fat:parseInt(quickFat)||0, time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) }, ...p].slice(0,300));
     setQuickName(""); setQuickCal(""); setQuickPro(""); setQuickCarbs(""); setQuickFat(""); setQuickOpen(false);
   };
 
   // ── Food scan actions ──
   const processFile = useCallback(async file => {
-    if (!file?.type.startsWith("image/")) return;
-    const data = await b64(file);
-    setScanImageData(data); setScanMime(file.type||"image/jpeg");
-    setScanImage(URL.createObjectURL(file));
     setScanResult(null); setScanError(null); setScanLogged(false);
+    if (!file) return;
+    // Some Android pickers leave file.type empty, so only reject files that say they're not images
+    if (file.type && !file.type.startsWith("image/")) { setScanError("That file isn't an image. Please choose a photo of your meal."); return; }
+    try {
+      const img = await prepareImage(file);
+      setScanImageData(img.data); setScanMime(img.mime); setScanImage(img.preview); setScanThumb(img.thumb);
+    } catch {
+      setScanImage(null); setScanImageData(null); setScanThumb(null);
+      setScanError("Couldn't open that photo. Try a JPEG or PNG — this browser may not support HEIC photos.");
+    }
   },[]);
 
-  const handleFileInput = e => { if(e.target.files[0]) processFile(e.target.files[0]); };
+  // Clear the input so picking the same photo again still fires onChange
+  const handleFileInput = e => { const f = e.target.files?.[0]; e.target.value = ""; if (f) processFile(f); };
 
   const analyzeFood = async () => {
-    if (!scanImageData) return;
+    if (!scanImageData || scanning) return;
     setScanning(true); setScanResult(null); setScanError(null);
     try {
       const text = await callClaude([{role:"user",content:[
         {type:"image",source:{type:"base64",media_type:scanMime,data:scanImageData}},
         {type:"text",text:FOOD_PROMPT}
       ]}], "You are a nutritionist AI. Return only valid JSON.");
-      const parsed = JSON.parse(text.replace(/```json|```/g,"").trim());
-      setScanResult(parsed);
-    } catch { setScanError("Couldn't analyze image. Make sure it clearly shows food."); }
-    setScanning(false);
+      setScanResult(parseFoodResult(text));
+    } catch (err) {
+      setScanError(
+        err.message === "not_food"   ? "That doesn't look like food. Try a clearer photo of your meal." :
+        err.message === "unreadable" ? "The AI's answer couldn't be read. Please try again." :
+        `Couldn't analyze image: ${err.message}.`
+      );
+    } finally { setScanning(false); }
   };
 
   const logScannedMeal = () => {
-    if (!scanResult) return;
-    setScannedLog(p=>[{id:Date.now(),imageUrl:scanImage,result:scanResult,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}, ...p]);
+    if (!scanResult || scanLogged) return;
+    setScannedLog(p=>[{id:Date.now(),date:todayKey(),imageUrl:scanThumb,result:scanResult,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}, ...p].slice(0,200));
     setScanLogged(true);
   };
 
-  const resetScan = () => { setScanImage(null); setScanImageData(null); setScanResult(null); setScanError(null); setScanLogged(false); };
+  const resetScan = () => { setScanImage(null); setScanImageData(null); setScanThumb(null); setScanResult(null); setScanError(null); setScanLogged(false); };
 
   // ─────────────────────────────────────────────────────────────────────────
+  // ── Loading screen ──
+  if (!appReady) return (
+    <div style={{ minHeight:"100vh", background:"#06060e", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16 }}>
+      <div style={{ width:44, height:44, background:"linear-gradient(135deg,#ff3d2e,#e06800)", borderRadius:13, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 8px 24px rgba(255,61,46,0.4)" }}>
+        <Zap size={22} color="#fff" strokeWidth={2.5}/>
+      </div>
+      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, letterSpacing:2, color:"#ece8e1", textTransform:"uppercase" }}>APEX FIT PRO</div>
+      <div style={{ display:"flex", gap:6, marginTop:8 }}>
+        {[0,1,2].map(i=>(
+          <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#ff3d2e", animation:`pulse 1.2s ${i*0.2}s ease-in-out infinite`, opacity:0.8 }}/>
+        ))}
+      </div>
+      <style>{`@keyframes pulse{0%,100%{transform:scale(0.6);opacity:0.3}50%{transform:scale(1);opacity:1}}`}</style>
+    </div>
+  );
+
   if (!profile) return <Onboarding onDone={p=>setProfile(p)} />;
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -2816,10 +2916,10 @@ export default function ApexFitUnified() {
             </div>
 
             {/* Quick log entries */}
-            {quickLog.length>0 && (
+            {quickToday.length>0 && (
               <div>
                 <div className="label" style={{ marginBottom:8 }}>Manually Added</div>
-                {quickLog.map(item=>(
+                {quickToday.map(item=>(
                   <Card key={item.id} style={{ padding:14, marginBottom:8 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                       <div>
@@ -2976,7 +3076,7 @@ export default function ApexFitUnified() {
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
             {/* Sub-tabs */}
             <div style={{ display:"flex", gap:0, background:"#0d0d18", borderRadius:12, padding:4 }}>
-              {[{id:"camera",label:"📷 Scan"},{id:"log",label:`📋 Log ${scannedLog.length>0?`(${scannedLog.length})`:""}` }].map(t=>(
+              {[{id:"camera",label:"📷 Scan"},{id:"log",label:`📋 Log ${scannedToday.length>0?`(${scannedToday.length})`:""}` }].map(t=>(
                 <button key={t.id} onClick={()=>setScanSubTab(t.id)}
                   style={{ flex:1, padding:"9px 0", background:scanSubTab===t.id?"linear-gradient(135deg,var(--brand),var(--brand2))":"transparent", border:"none", color:scanSubTab===t.id?"#fff":"#555", fontFamily:"inherit", fontSize:13, fontWeight:700, borderRadius:9, cursor:"pointer", transition:"all 0.2s" }}>
                   {t.label}
@@ -3119,11 +3219,11 @@ export default function ApexFitUnified() {
             {scanSubTab==="log" && (
               <>
                 <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, letterSpacing:1 }}>SCANNED MEALS</div>
-                {scannedLog.length>0 && (
+                {scannedToday.length>0 && (
                   <Card style={{ padding:16 }}>
                     <div style={{ fontWeight:700, fontSize:13, marginBottom:12 }}>Today from Scans</div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8, textAlign:"center" }}>
-                      {[{l:"Cal",v:scannedCal,c:"var(--brand)"},{l:"Protein",v:scannedPro+"g",c:"#a78bfa"},{l:"Items",v:scannedLog.length,c:"#4ade80"},{l:"Avg Score",v:Math.round(scannedLog.reduce((a,i)=>a+i.result.healthScore,0)/scannedLog.length),c:"#ffd700"}].map(s=>(
+                      {[{l:"Cal",v:scannedCal,c:"var(--brand)"},{l:"Protein",v:scannedPro+"g",c:"#a78bfa"},{l:"Items",v:scannedToday.length,c:"#4ade80"},{l:"Avg Score",v:Math.round(scannedToday.reduce((a,i)=>a+num(i.result?.healthScore,100),0)/scannedToday.length),c:"#ffd700"}].map(s=>(
                         <div key={s.l}>
                           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, color:s.c }}>{s.v}</div>
                           <div style={{ fontSize:9, color:"#7878a0" }}>{s.l}</div>
