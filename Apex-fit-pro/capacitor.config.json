@@ -1,0 +1,8 @@
+{
+  "appId": "pro.apexfit.app",
+  "appName": "Apex Fit",
+  "webDir": "build",
+  "android": {
+    "backgroundColor": "#06060e"
+  }
+}

@@ -9,12 +9,11 @@ const MAX_BODY_BYTES = 8_000_000;
 const MAX_MESSAGES = 20;
 const MAX_SYSTEM_CHARS = 4000;
 
-const json = (obj, status = 200) =>
-  new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json" } });
-const fail = (status, message) => json({ error: { message } }, status);
+// The Android app (Capacitor) serves its pages from https://localhost on the device.
+const APP_ORIGINS = ["https://localhost"];
 
-// Only accept calls from this site (or origins listed in the ALLOWED_ORIGINS env var,
-// comma-separated, e.g. "http://localhost:3000" for local development).
+// Only accept calls from this site, the Android app, or origins listed in the
+// ALLOWED_ORIGINS env var (comma-separated, e.g. "http://localhost:3000" for local development).
 function originAllowed(request, env) {
   const origin = request.headers.get("Origin");
   if (!origin) return false;
@@ -24,11 +23,33 @@ function originAllowed(request, env) {
     return false;
   }
   const extra = (env.ALLOWED_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
-  return extra.includes(origin);
+  return APP_ORIGINS.includes(origin) || extra.includes(origin);
+}
+
+// Cross-origin callers (the app) need CORS headers naming their exact origin
+function corsHeaders(request, env) {
+  const origin = request.headers.get("Origin");
+  if (!origin || !originAllowed(request, env)) return {};
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
+  };
+}
+
+export async function onRequestOptions({ request, env }) {
+  if (!originAllowed(request, env)) return new Response(null, { status: 403 });
+  return new Response(null, { status: 204, headers: corsHeaders(request, env) });
 }
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const cors = corsHeaders(request, env);
+  const json = (obj, status = 200) =>
+    new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json", ...cors } });
+  const fail = (status, message) => json({ error: { message } }, status);
 
   if (!originAllowed(request, env)) return fail(403, "Requests from this origin are not allowed.");
   if (!env.ANTHROPIC_API_KEY) return fail(500, "ANTHROPIC_API_KEY is not configured on the server.");
@@ -75,7 +96,7 @@ export async function onRequestPost(context) {
     const text = await apiResp.text();
     return new Response(text, {
       status: apiResp.status,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...cors },
     });
   } catch (err) {
     return fail(502, `Couldn't reach the AI service: ${String(err)}`);

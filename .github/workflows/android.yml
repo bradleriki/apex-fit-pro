@@ -1,0 +1,55 @@
+# Builds the Android app (APK) on every push that touches the app, and on demand.
+# Download it from the run's "Artifacts" section on GitHub.
+name: Android app
+
+on:
+  push:
+    paths:
+      - "Apex-fit-pro/**"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Apex-fit-pro
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build web app
+        run: npm run build
+        env:
+          CI: false
+
+      - name: Copy web app into Android project
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: Apex-fit-pro/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk "ApexFit-${GITHUB_SHA::7}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ApexFit-apk
+          path: Apex-fit-pro/ApexFit-*.apk
+          retention-days: 30

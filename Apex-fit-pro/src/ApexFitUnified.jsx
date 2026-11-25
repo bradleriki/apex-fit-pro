@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Capacitor } from "@capacitor/core";
 import { Home, Dumbbell, Camera, Salad, Watch, BarChart2, Bot, Flame, Zap, ChevronRight, Plus, RotateCcw, X, Send, RefreshCw, Sparkles, CheckCircle2, Play, Pause, Trophy, Target, TrendingDown, Heart, Footprints, Timer, Layers, Wifi, WifiOff, ScanLine, Trash2, ChevronDown, ChevronUp, Shield, Cpu, Swords, Wind, Leaf, Settings, Activity, Moon, Sun, Brain, Smile, Frown, Meh, CloudRain, Stars, BookOpen, BedDouble, AlertCircle } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -710,9 +711,13 @@ async function prepareImage(file) {
   return { data: full.split(",")[1], mime: "image/jpeg", preview: full, thumb: drawJpeg(img, 160, 0.7) };
 }
 
+// Inside the Android app the page is served from the device, so AI calls must go to the live site.
+const IS_NATIVE = Capacitor.isNativePlatform();
+const API_BASE  = IS_NATIVE ? "https://apex-fit-pro.pages.dev" : "";
+
 // The model, token limit and effort are fixed server-side in functions/api/claude.js
 async function callClaude(messages, system="You are a helpful fitness coach. Be concise and motivational.") {
-  const r = await fetch("/api/claude", {
+  const r = await fetch(`${API_BASE}/api/claude`, {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({ system, messages })
@@ -1956,6 +1961,11 @@ export default function ApexFitUnified() {
   },[gfitToken, tab, fetchGfitAll]);
 
   const connectGfit = () => {
+    if (IS_NATIVE) {
+      // Google blocks its sign-in page inside apps' web views, and Google Fit is being retired anyway
+      setGfitError("Google Fit sign-in isn't available inside the app. Watch sync through Samsung Health is coming in the next update.");
+      return;
+    }
     if (!gfitClientId.trim()) return;
     setGfitConnecting(true);
     sessionStorage.setItem("gfit_cid", gfitClientId);
