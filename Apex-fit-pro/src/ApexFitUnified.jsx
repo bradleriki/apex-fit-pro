@@ -802,165 +802,131 @@ function CountUp({ to, duration=1200, prefix="", suffix="", style={} }) {
 
 // ── 🎮 Multi-stage celebration overlay ──
 function VictoryCelebration({ gains, onClose }) {
-  const [stage, setStage] = useState(0);
-  // stage 0: impact flash + headline slam (0-700ms)
-  // stage 1: XP roll-up + bar fill (700-2000ms)
-  // stage 2: stat pills cascade (2000-3000ms)
-  // stage 3: level-up burst if applicable (3000-4500ms)
-  // stage 4: settled, button visible
-  useEffect(()=>{
-    const timers = [];
-    timers.push(setTimeout(()=>setStage(1), 700));
-    timers.push(setTimeout(()=>setStage(2), 1900));
-    if (gains.levelUp) {
-      timers.push(setTimeout(()=>setStage(3), 3100));
-      timers.push(setTimeout(()=>setStage(4), 4400));
-    } else {
-      timers.push(setTimeout(()=>setStage(4), 2800));
-    }
-    return () => timers.forEach(clearTimeout);
-  }, [gains.levelUp]);
-
-  const c = gains.classColor || "#ff3d2e";
   const isLevelUp = !!gains.levelUp;
+  const isTierUp = !!gains.tierUp;
   const isPR = (gains.prs?.length || 0) > 0;
-  const isTierUp = gains.tierUp;
+  const c = gains.classColor || "#ff3d2e";
+  const gold = "#ffd700";
+  const accent = isLevelUp ? (isTierUp ? gains.newTier.color : gold) : c;
 
-  // Stat configs for pills
-  const statColors = { STR:"#ff3d2e", AGI:"#ffd700", STA:"#4ade80", WIS:"#a78bfa", VIT:"#00e5ff" };
-  const statIcons  = { STR:"💪", AGI:"⚡", STA:"🫁", WIS:"🧠", VIT:"❤️" };
+  // Stages: 0 headline → 1 XP card → 2 stats → 3 level-up → 4 button. Tap anywhere to skip ahead.
+  const [stage, setStage] = useState(0);
+  useEffect(()=>{
+    const t = [setTimeout(()=>setStage(1), 450), setTimeout(()=>setStage(2), 1050)];
+    if (isLevelUp) t.push(setTimeout(()=>setStage(3), 1700), setTimeout(()=>setStage(4), 2300));
+    else t.push(setTimeout(()=>setStage(4), 1300));
+    return () => t.forEach(clearTimeout);
+  }, [isLevelUp]);
+  const skip = () => setStage(4);
+
+  // Level progress bar: animate from where you were to where you are now
+  const after  = gains.newTotal != null ? xpProgress(gains.newTotal) : null;
+  const before = gains.prevTotal != null ? xpProgress(gains.prevTotal) : null;
+  const [barPct, setBarPct] = useState(isLevelUp ? 0 : (before?.pct || 0));
+  const showXp = stage >= 1, targetPct = after ? after.pct : 0;
+  useEffect(()=>{ if (showXp) { const id = setTimeout(()=>setBarPct(targetPct), 120); return ()=>clearTimeout(id); } }, [showXp, targetPct]);
+
+  const STAT = {
+    STR:{ name:"Strength", icon:"💪", color:"#ff4d3d" }, AGI:{ name:"Agility", icon:"⚡", color:"#ffd23f" },
+    STA:{ name:"Stamina",  icon:"🫁", color:"#4ade80" }, WIS:{ name:"Wisdom",  icon:"🧠", color:"#a78bfa" },
+    VIT:{ name:"Vitality", icon:"❤️", color:"#22d3ee" },
+  };
   const positiveStats = Object.entries(gains.stats||{}).filter(([,v])=>v>0);
+  // Bonus amounts (older saves only have the labels)
+  const bonusRows = gains.bonusList || (gains.bonuses||[]).map(label=>({ label, xp:null }));
+
+  const card = { borderRadius:20, background:"linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))", border:"1px solid rgba(255,255,255,0.09)", boxShadow:"inset 0 1px 0 rgba(255,255,255,0.08),0 18px 40px -20px rgba(0,0,0,0.8)" };
+  const label = { fontFamily:"'Manrope Variable',sans-serif", fontSize:11, fontWeight:800, letterSpacing:1.2, textTransform:"uppercase", color:"var(--text2)" };
 
   return (
-    <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,5,0.92)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", display:"flex", alignItems:"center", justifyContent:"center", padding:"calc(18px + var(--sat)) 18px calc(18px + var(--sab))", overflow:"hidden" }}>
-      {/* Stage 0: Full-screen flash */}
-      <div style={{ position:"absolute", inset:0, background:`radial-gradient(circle at center, ${isLevelUp?"#ffd70066":c+"66"}, transparent 70%)`, animation:"celebFlash 1s ease-out", pointerEvents:"none" }}/>
-
-      {/* Star burst particles around the headline */}
-      {[...Array(8)].map((_,i)=>{
-        const angle = (i / 8) * 360;
-        const dist = 140;
-        const tx = Math.cos(angle * Math.PI/180) * dist;
-        const ty = Math.sin(angle * Math.PI/180) * dist;
-        return (
-          <div key={i} style={{
-            position:"absolute", left:"50%", top:"38%",
-            width:6, height:6, borderRadius:"50%",
-            background: isLevelUp ? "#ffd700" : c,
-            boxShadow: `0 0 12px ${isLevelUp?"#ffd700":c}`,
-            transform:`translate(${tx}px, ${ty}px)`,
-            animation:`celebStarBurst 1.2s ${0.2 + i*0.04}s ease-out both`,
-            pointerEvents:"none",
-          }}/>
-        );
+    <div onClick={stage < 4 ? skip : undefined}
+      style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(7,6,15,0.96)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", display:"flex", alignItems:"center", justifyContent:"center", padding:"calc(18px + var(--sat)) 18px calc(18px + var(--sab))", overflowY:"auto" }}>
+      {/* Ambient glow in the class / level colour, plus a one-off flash that fades out completely */}
+      <div style={{ position:"absolute", top:"8%", left:"50%", width:520, height:520, transform:"translateX(-50%)", background:`radial-gradient(circle, ${accent}38 0%, ${accent}10 40%, transparent 68%)`, pointerEvents:"none" }}/>
+      <div style={{ position:"absolute", inset:0, background:`radial-gradient(circle at 50% 30%, ${accent}66, transparent 60%)`, animation:"celebFlash 0.9s ease-out both", pointerEvents:"none" }}/>
+      {[...Array(10)].map((_,i)=>{
+        const a=(i/10)*Math.PI*2, d=120+(i%3)*24;
+        return <div key={i} style={{ position:"absolute", left:"50%", top:"24%", width:i%2?5:7, height:i%2?5:7, borderRadius:"50%", background:accent, boxShadow:`0 0 12px ${accent}`, transform:`translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px)`, animation:`celebStarBurst 1.1s ${0.15+i*0.04}s ease-out both`, pointerEvents:"none" }}/>;
       })}
 
-      <div style={{ width:"100%", maxWidth:420, position:"relative", zIndex:1, animation:"celebShake 0.5s 0.2s ease-in-out" }}>
-        {/* Headline slam */}
-        <div style={{ textAlign:"center", marginBottom:24, animation:"celebSlam 0.7s cubic-bezier(0.16,1,0.3,1) both" }}>
-          <div style={{
-            fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900,
-            fontSize: isLevelUp ? 44 : 36,
-            color: isLevelUp ? "#ffd700" : isPR ? "#ffd700" : c,
-            textTransform:"uppercase", letterSpacing:1.2, lineHeight:1,
-            textShadow: `0 0 24px ${isLevelUp?"#ffd700":c}88, 0 0 60px ${isLevelUp?"#ffd700":c}44`,
-          }}>
+      <div style={{ width:"100%", maxWidth:400, position:"relative", zIndex:1, display:"flex", flexDirection:"column", gap:14 }}>
+        {/* Headline */}
+        <div style={{ textAlign:"center", animation:"celebSlam 0.6s cubic-bezier(0.16,1,0.3,1) both" }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"5px 12px", borderRadius:100, background:`${accent}1f`, border:`1px solid ${accent}55`, marginBottom:14 }}>
+            <CheckCircle2 size={13} color={accent} strokeWidth={2.5}/>
+            <span style={{ ...label, fontSize:10, color:accent }}>{isLevelUp ? "Level up" : isPR ? "New personal record" : "Workout complete"}</span>
+          </div>
+          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(24px, 8vw, 32px)", lineHeight:1.05, textTransform:"uppercase",
+            background:`linear-gradient(180deg,#ffffff 10%, ${accent} 95%)`, WebkitBackgroundClip:"text", backgroundClip:"text", color:"transparent", filter:`drop-shadow(0 0 18px ${accent}55)` }}>
             {gains.headline}
           </div>
-          <div style={{ fontSize:13, color:"var(--text2)", marginTop:8, fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>
-            {gains.subheadline}
-          </div>
+          {gains.subheadline && <div style={{ fontSize:14, color:"var(--text2)", marginTop:8, fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>{gains.subheadline}</div>}
         </div>
 
-        {/* Stage 1+: XP block */}
+        {/* XP + level progress */}
         {stage >= 1 && (
-          <div style={{ padding:"18px 18px 14px", borderRadius:18, background:`linear-gradient(135deg, ${c}1f, ${c}08)`, border:`1px solid ${c}55`, marginBottom:14, animation:"celebRise 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
-            <div style={{ fontSize:10, color:"var(--text3)", fontWeight:800, textTransform:"uppercase", letterSpacing:0.8, textAlign:"center", marginBottom:4 }}>XP Earned</div>
-            <div style={{ textAlign:"center", fontFamily:"'Unbounded Variable',sans-serif", fontSize:38, fontWeight:900, color:c, lineHeight:1, textShadow:`0 0 24px ${c}66` }}>
-              <CountUp to={gains.xp} duration={1100} prefix="+"/>
+          <div style={{ ...card, padding:"18px 18px 16px", borderColor:`${accent}44`, animation:"celebRise 0.45s cubic-bezier(0.16,1,0.3,1) both" }}>
+            <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", gap:10 }}>
+              <span style={label}>XP earned</span>
+              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:30, fontWeight:900, color:accent, lineHeight:1, textShadow:`0 0 20px ${accent}66` }}>
+                <CountUp to={gains.xp} duration={900} prefix="+"/>
+              </span>
             </div>
-            {/* Bonus breakdown */}
-            {gains.xpBonus > 0 && (
-              <div style={{ marginTop:10, paddingTop:10, borderTop:`1px solid ${c}22`, display:"flex", flexDirection:"column", gap:4 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"var(--text3)" }}>
-                  <span>Base</span><span>+{gains.xpBase}</span>
-                </div>
-                {gains.bonuses?.map((b,i)=>(
-                  <div key={i} style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#4ade80", fontWeight:600, animation:`celebPillIn 0.4s ${0.1 + i*0.1}s cubic-bezier(0.16,1,0.3,1) both` }}>
-                    <span>✨ {b}</span>
-                    <span>BONUS</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Stage 2+: Stat pills cascade */}
-        {stage >= 2 && positiveStats.length > 0 && (
-          <div style={{ marginBottom:14 }}>
-            <div style={{ fontSize:10, color:"var(--text3)", fontWeight:800, textTransform:"uppercase", letterSpacing:0.8, textAlign:"center", marginBottom:10 }}>Stat Gains</div>
-            <div style={{ display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap" }}>
-              {positiveStats.map(([k,v], i)=>(
-                <div key={k}
-                  style={{
-                    padding:"8px 14px", borderRadius:100,
-                    background:`${statColors[k]}1c`,
-                    border:`1.5px solid ${statColors[k]}66`,
-                    boxShadow:`0 4px 14px ${statColors[k]}33`,
-                    animation:`celebPillIn 0.5s ${i*0.12}s cubic-bezier(0.34,1.56,0.64,1) both`,
-                    display:"flex", alignItems:"center", gap:6,
-                  }}>
-                  <span style={{ fontSize:16 }}>{statIcons[k]}</span>
-                  <span style={{ fontSize:14, fontWeight:800, color:statColors[k], fontFamily:"'Manrope Variable',sans-serif", letterSpacing:0.3 }}>+{v} {k}</span>
+            <div style={{ marginTop:12, display:"flex", flexDirection:"column", gap:6, fontFamily:"'Manrope Variable',sans-serif", fontSize:13 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", color:"var(--text2)" }}><span>Workout</span><span style={{ fontWeight:700, color:"var(--text)" }}>+{gains.xpBase}</span></div>
+              {bonusRows.map((b,i)=>(
+                <div key={i} style={{ display:"flex", justifyContent:"space-between", color:"#4ade80", fontWeight:600, animation:`celebPillIn 0.4s ${0.15+i*0.1}s cubic-bezier(0.16,1,0.3,1) both` }}>
+                  <span>✨ {b.label}</span><span style={{ fontWeight:800 }}>{b.xp!=null ? `+${b.xp}` : "Bonus"}</span>
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Stage 3: Level-up burst */}
-        {stage >= 3 && isLevelUp && (
-          <div style={{
-            padding:18, borderRadius:18,
-            background: isTierUp
-              ? `linear-gradient(135deg, ${gains.newTier.color}33, ${gains.newTier.color}11)`
-              : "linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,215,0,0.04))",
-            border: `1.5px solid ${isTierUp?gains.newTier.color:"#ffd700"}99`,
-            textAlign:"center",
-            animation:"celebGoldGlow 1.6s ease-in-out infinite, celebRise 0.5s cubic-bezier(0.16,1,0.3,1) both",
-            marginBottom:14,
-          }}>
-            <div style={{ fontSize:11, color:isTierUp?gains.newTier.color:"#ffd700", fontWeight:800, textTransform:"uppercase", letterSpacing:1, marginBottom:4 }}>
-              {isTierUp ? "Tier Promotion" : "Level Up"}
-            </div>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:24, fontWeight:900, color:"var(--text2)", lineHeight:1 }}>Lv {gains.oldLevel}</span>
-              <span style={{ fontSize:22, color:"#ffd700" }}>→</span>
-              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:29, fontWeight:900, color: isTierUp?gains.newTier.color:"#ffd700", lineHeight:1, textShadow:`0 0 20px ${isTierUp?gains.newTier.color:"#ffd700"}88` }}>
-                Lv {gains.newLevel}
-              </span>
-            </div>
-            {isTierUp && (
-              <div style={{ fontSize:13, color:gains.newTier.color, fontWeight:700, marginTop:8, fontFamily:"'Manrope Variable',sans-serif" }}>
-                {gains.newTier.name.toUpperCase()} TIER UNLOCKED
+            {after && (
+              <div style={{ marginTop:14, paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:8, fontFamily:"'Manrope Variable',sans-serif" }}>
+                  <span style={{ fontSize:13, fontWeight:800, color:"var(--text)" }}>Level {gains.newLevel}</span>
+                  <span style={{ fontSize:12, color:"var(--text2)" }}>{Math.round(after.current)} / {Math.round(after.needed)} XP</span>
+                </div>
+                <div style={{ height:10, borderRadius:10, background:"rgba(255,255,255,0.08)", overflow:"hidden" }}>
+                  <div style={{ height:"100%", width:`${barPct}%`, borderRadius:10, background:`linear-gradient(90deg, ${accent}99, ${accent})`, boxShadow:`0 0 14px ${accent}88`, transition:"width 1.1s cubic-bezier(0.16,1,0.3,1)" }}/>
+                </div>
+                <div style={{ fontSize:12, color:"var(--text3)", marginTop:7, fontFamily:"'Manrope Variable',sans-serif" }}>
+                  {after.needed > after.current ? `${Math.round(after.needed - after.current)} XP to Level ${gains.newLevel + 1}` : "Max level"}
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Stage 4: Button */}
-        <div style={{ opacity: stage >= 4 ? 1 : 0, transition:"opacity 0.4s", pointerEvents: stage >= 4 ? "auto" : "none" }}>
-          <button onClick={onClose}
-            style={{
-              width:"100%", padding:"14px 18px", borderRadius:14, border:"none", cursor:"pointer",
-              background:`linear-gradient(135deg, ${c}, ${c}cc)`,
-              color:"#fff",
-              fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:14, letterSpacing:2, textTransform:"uppercase",
-              boxShadow:`0 6px 24px ${c}55`,
-            }}>
-            Onward →
-          </button>
+        {/* Stat gains */}
+        {stage >= 2 && positiveStats.length > 0 && (
+          <div style={{ display:"grid", gridTemplateColumns:`repeat(${Math.min(positiveStats.length, 3)}, 1fr)`, gap:10 }}>
+            {positiveStats.map(([k,v], i)=>{ const st = STAT[k] || { name:k, icon:"⭐", color:accent }; return (
+              <div key={k} style={{ ...card, padding:"12px 8px", textAlign:"center", borderColor:`${st.color}55`, boxShadow:`inset 0 1px 0 rgba(255,255,255,0.08),0 10px 24px -14px ${st.color}`, animation:`celebPillIn 0.45s ${i*0.1}s cubic-bezier(0.34,1.56,0.64,1) both` }}>
+                <div style={{ fontSize:20, lineHeight:1 }}>{st.icon}</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, color:st.color, marginTop:6 }}>+{v}</div>
+                <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:12, fontWeight:700, color:"var(--text)", marginTop:2 }}>{st.name}</div>
+              </div>
+            ); })}
+          </div>
+        )}
+
+        {/* Level up */}
+        {stage >= 3 && isLevelUp && (
+          <div style={{ ...card, padding:16, textAlign:"center", borderColor:`${accent}88`, background:`linear-gradient(160deg, ${accent}2e, ${accent}0a)`, animation:"celebGoldGlow 1.8s ease-in-out infinite, celebRise 0.45s cubic-bezier(0.16,1,0.3,1) both" }}>
+            <div style={{ ...label, color:accent, marginBottom:8 }}>{isTierUp ? "Tier promotion" : "Level up"}</div>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:12, fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900 }}>
+              <span style={{ fontSize:18, color:"var(--text3)" }}>Lv {gains.oldLevel}</span>
+              <ChevronRight size={20} color={accent}/>
+              <span style={{ fontSize:26, color:accent, textShadow:`0 0 18px ${accent}88` }}>Lv {gains.newLevel}</span>
+            </div>
+            {isTierUp && <div style={{ fontSize:13, color:accent, fontWeight:800, marginTop:8, fontFamily:"'Manrope Variable',sans-serif" }}>{gains.newTier.name} tier unlocked</div>}
+          </div>
+        )}
+
+        {/* Continue */}
+        <div style={{ opacity: stage >= 4 ? 1 : 0, transform: stage >= 4 ? "none" : "translateY(8px)", transition:"opacity 0.35s, transform 0.35s", pointerEvents: stage >= 4 ? "auto" : "none", marginTop:4 }}>
+          <PrimaryBtn onClick={onClose}>Continue</PrimaryBtn>
+          {stage < 4 ? null : <div style={{ textAlign:"center", fontSize:11, color:"var(--text3)", marginTop:10, fontFamily:"'Manrope Variable',sans-serif" }}>Stats and XP saved to your profile</div>}
         </div>
       </div>
     </div>
@@ -2133,10 +2099,12 @@ export default function ApexFitUnified() {
     // Bonus calculations
     let xpBonus = 0;
     const bonuses = [];
-    if (wasFirstToday) { xpBonus += 25; bonuses.push("First workout today"); }
-    if (streak >= 3 && wasFirstToday) { xpBonus += Math.min(streak*5, 100); bonuses.push(`${streak}-day streak`); }
-    if (prs.length > 0) { xpBonus += prs.length * 50; bonuses.push(`${prs.length} new PR${prs.length>1?'s':''}`); }
-    if ((activeWorkout?.duration||0) >= 45) { xpBonus += 20; bonuses.push("Long session"); }
+    const bonusList = [];
+    const addBonus = (label, xp) => { xpBonus += xp; bonuses.push(label); bonusList.push({ label, xp }); };
+    if (wasFirstToday) addBonus("First workout today", 25);
+    if (streak >= 3 && wasFirstToday) addBonus(`${streak}-day streak`, Math.min(streak*5, 100));
+    if (prs.length > 0) addBonus(`${prs.length} new PR${prs.length>1?'s':''}`, prs.length * 50);
+    if ((activeWorkout?.duration||0) >= 45) addBonus("Long session", 20);
 
     const xpEarned = baseXp + xpBonus;
     const statGains = activeWorkout ? workoutStatGain(activeWorkout, cls) : { STR:0,AGI:0,STA:0,WIS:0,VIT:0 };
@@ -2194,6 +2162,9 @@ export default function ApexFitUnified() {
       xpBase: baseXp,
       xpBonus,
       bonuses,
+      bonusList,
+      prevTotal: totalXp,
+      newTotal,
       stats: statGains,
       prs,
       headline,
