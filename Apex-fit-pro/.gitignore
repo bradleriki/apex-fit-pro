@@ -2,3 +2,6 @@ node_modules/
 build/
 .wrangler/
 .dev.vars
+# Cloudflare Pages runs `npm ci` when a lockfile exists, and react-scripts 5 peer deps
+# make that fail; without one it runs `npm install`, which builds fine.
+package-lock.json
