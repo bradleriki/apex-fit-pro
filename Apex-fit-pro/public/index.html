@@ -16,6 +16,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Apex Fit" />
+    <style>
+      /* Space taken by the phone's status bar / navigation bar. Inside the Android app Capacitor sets
+         --safe-area-inset-*; in a browser env() is used (both are 0 on a normal web page). */
+      :root {
+        --sat: max(var(--safe-area-inset-top, 0px), env(safe-area-inset-top, 0px));
+        --sab: max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px));
+      }
+    </style>
   </head>
   <body style="background:#06060e">
     <noscript>You need to enable JavaScript to run this app.</noscript>

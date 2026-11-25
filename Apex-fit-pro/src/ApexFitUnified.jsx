@@ -832,7 +832,7 @@ function VictoryCelebration({ gains, onClose }) {
   const positiveStats = Object.entries(gains.stats||{}).filter(([,v])=>v>0);
 
   return (
-    <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,5,0.92)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", display:"flex", alignItems:"center", justifyContent:"center", padding:18, overflow:"hidden" }}>
+    <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,5,0.92)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", display:"flex", alignItems:"center", justifyContent:"center", padding:"calc(18px + var(--sat)) 18px calc(18px + var(--sab))", overflow:"hidden" }}>
       {/* Stage 0: Full-screen flash */}
       <div style={{ position:"absolute", inset:0, background:`radial-gradient(circle at center, ${isLevelUp?"#ffd70066":c+"66"}, transparent 70%)`, animation:"celebFlash 1s ease-out", pointerEvents:"none" }}/>
 
@@ -1113,6 +1113,7 @@ function Onboarding({ onDone }) {
   const BASE = {
     minHeight:"100vh", background:"#06060e", fontFamily:"'Syne',sans-serif",
     position:"relative", overflowX:"hidden", overflowY:"auto",
+    paddingTop:"var(--sat)", paddingBottom:"var(--sab)", boxSizing:"border-box",
   };
 
   // ── HERO SCREEN ──
@@ -2371,7 +2372,7 @@ export default function ApexFitUnified() {
       </div>
 
       {/* ── HEADER ── */}
-      <div style={{ position:"sticky", top:0, zIndex:200, background:"rgba(6,6,14,0.92)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderBottom:"1px solid rgba(255,255,255,0.05)", padding:"13px 20px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+      <div style={{ position:"sticky", top:0, zIndex:200, background:"rgba(6,6,14,0.92)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderBottom:"1px solid rgba(255,255,255,0.05)", padding:"calc(13px + var(--sat)) 20px 13px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:11 }}>
           {/* Logo mark */}
           <div style={{ width:34, height:34, background:"var(--grad)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(255,61,46,0.4)", flexShrink:0 }}><Zap size={18} color="#fff" strokeWidth={2.5}/></div>
@@ -2416,7 +2417,7 @@ export default function ApexFitUnified() {
 
       {/* ── AI CHAT OVERLAY ── */}
       {chatOpen && (
-        <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(4,4,12,0.94)", backdropFilter:"blur(20px)", display:"flex", flexDirection:"column" }}>
+        <div style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(4,4,12,0.94)", backdropFilter:"blur(20px)", display:"flex", flexDirection:"column", paddingTop:"var(--sat)", paddingBottom:"var(--sab)" }}>
           <div style={{ background:"rgba(13,13,26,0.98)", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"16px 20px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div style={{ display:"flex", alignItems:"center", gap:12 }}>
               <div style={{ width:40, height:40, borderRadius:12, background:"linear-gradient(135deg,rgba(167,139,250,0.35),rgba(255,61,46,0.35))", border:"1px solid rgba(167,139,250,0.3)", display:"flex", alignItems:"center", justifyContent:"center" }}><Bot size={20} color="#c4b5fd" strokeWidth={2}/></div>
@@ -2459,7 +2460,7 @@ export default function ApexFitUnified() {
       )}
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ maxWidth:480, margin:"0 auto", padding:"18px 16px 100px", position:"relative", zIndex:1 }} className="fadein">
+      <div style={{ maxWidth:480, margin:"0 auto", padding:"18px 16px calc(100px + var(--sab))", position:"relative", zIndex:1 }} className="fadein">
 
         {/* ════════════════════════════════ DASHBOARD ════════════════════════════════ */}
         {tab==="dashboard" && (
@@ -4100,7 +4101,7 @@ export default function ApexFitUnified() {
         <div onClick={()=>setClassPickerOpen(false)}
           style={{ position:"fixed", inset:0, zIndex:200, background:"rgba(0,0,0,0.85)", backdropFilter:"blur(16px)", display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
           <div onClick={e=>e.stopPropagation()}
-            style={{ width:"100%", maxWidth:520, maxHeight:"86vh", overflowY:"auto", background:"var(--card)", borderTopLeftRadius:24, borderTopRightRadius:24, padding:"20px 18px 40px", borderTop:"1px solid var(--border2)" }}>
+            style={{ width:"100%", maxWidth:520, maxHeight:"86vh", overflowY:"auto", background:"var(--card)", borderTopLeftRadius:24, borderTopRightRadius:24, padding:"20px 18px calc(40px + var(--sab))", borderTop:"1px solid var(--border2)" }}>
             <div style={{ width:36, height:4, background:"var(--border2)", borderRadius:100, margin:"0 auto 16px" }}/>
             <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:26, textTransform:"uppercase", letterSpacing:0.5, textAlign:"center", marginBottom:6 }}>
               {characterClass ? "Change Class" : "Choose Your Class"}
@@ -4148,7 +4149,7 @@ export default function ApexFitUnified() {
       )}
 
       {/* ── BOTTOM NAV ── */}
-      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:100, background:"rgba(6,6,14,0.95)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderTop:"1px solid rgba(255,255,255,0.05)", padding:"10px 4px 20px", display:"flex", justifyContent:"space-around" }}>
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:100, background:"rgba(6,6,14,0.95)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderTop:"1px solid rgba(255,255,255,0.05)", padding:"10px 4px calc(10px + max(10px, var(--sab)))", display:"flex", justifyContent:"space-around" }}>
         {[
           {id:"dashboard", Icon:Home,      label:"Home"},
           {id:"train",     Icon:Dumbbell,  label:"Train"},
