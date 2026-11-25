@@ -9,6 +9,9 @@ on:
       - ".github/workflows/android.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write   # to publish the APK as a GitHub release
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -53,3 +56,18 @@ jobs:
           name: ApexFit-apk
           path: Apex-fit-pro/ApexFit-*.apk
           retention-days: 30
+
+      # A fixed "latest" release gives a direct download link that works on a phone:
+      # https://github.com/<owner>/<repo>/releases/download/android-latest/ApexFit.apk
+      - name: Publish to "android-latest" release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/android-app'
+        working-directory: Apex-fit-pro
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp ApexFit-*.apk ApexFit.apk
+          gh release view android-latest >/dev/null 2>&1 || \
+            gh release create android-latest --title "Apex Fit Android (latest build)" \
+              --notes "Built automatically from the latest push. Install ApexFit.apk on your phone." --prerelease
+          gh release upload android-latest ApexFit.apk --clobber
+          gh release edit android-latest --notes "Built automatically from ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7}. Install ApexFit.apk on your phone."
