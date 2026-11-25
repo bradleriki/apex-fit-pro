@@ -758,11 +758,11 @@ function PrimaryBtn({ children, onClick, disabled, style={} }) {
         fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: 15,
         letterSpacing: 1, textTransform: "uppercase",
         cursor: disabled ? "default" : "pointer", width: "100%",
-        transition: "all 0.2s", boxShadow: disabled ? "none" : "0 6px 24px rgba(255,61,46,0.3)",
+        transition: "all 0.2s", boxShadow: disabled ? "none" : "inset 0 1px 0 rgba(255,255,255,0.28),0 8px 26px -6px rgba(255,46,99,0.55)",
         ...style
       }}
-      onMouseEnter={e=>{ if(!disabled){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="0 8px 30px rgba(255,61,46,0.45)"; }}}
-      onMouseLeave={e=>{ e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow=disabled?"none":"0 6px 24px rgba(255,61,46,0.3)"; }}>
+      onMouseEnter={e=>{ if(!disabled){ e.currentTarget.style.transform="translateY(-1px)"; e.currentTarget.style.boxShadow="inset 0 1px 0 rgba(255,255,255,0.3),0 12px 32px -6px rgba(255,46,99,0.7)"; }}}
+      onMouseLeave={e=>{ e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow=disabled?"none":"inset 0 1px 0 rgba(255,255,255,0.28),0 8px 26px -6px rgba(255,46,99,0.55)"; }}>
       {children}
     </button>
   );
@@ -771,9 +771,9 @@ function PrimaryBtn({ children, onClick, disabled, style={} }) {
 function GhostBtn({ children, onClick, style={} }) {
   return (
     <button onClick={onClick}
-      style={{ background:"transparent", border:"1px solid var(--border2)", color:"var(--text2)", borderRadius:10, padding:"9px 18px", fontFamily:"'Syne',sans-serif", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s", ...style }}
+      style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"var(--text)", borderRadius:10, padding:"9px 18px", fontFamily:"'Syne',sans-serif", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s", ...style }}
       onMouseEnter={e=>{ e.currentTarget.style.borderColor="var(--brand)"; e.currentTarget.style.color="var(--brand)"; }}
-      onMouseLeave={e=>{ e.currentTarget.style.borderColor="var(--border2)"; e.currentTarget.style.color="var(--text2)"; }}>
+      onMouseLeave={e=>{ e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"; e.currentTarget.style.color="var(--text)"; }}>
       {children}
     </button>
   );
@@ -970,8 +970,8 @@ function VictoryCelebration({ gains, onClose }) {
 function ProgressBar({ value, max, color="var(--brand)", height=5 }) {
   const w = Math.min(100, Math.round((value / (max||1)) * 100));
   return (
-    <div style={{ height, borderRadius: height/2, background: "var(--bg3)", overflow: "hidden" }}>
-      <div style={{ height:"100%", width:`${w}%`, borderRadius:height/2, background:color, transition:"width 0.9s cubic-bezier(0.16,1,0.3,1)" }} />
+    <div style={{ height, borderRadius: height/2, background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+      <div style={{ height:"100%", width:`${w}%`, borderRadius:height/2, background:`linear-gradient(90deg,color-mix(in srgb,${color} 55%,#ffffff 0%),${color})`, boxShadow:`0 0 10px color-mix(in srgb,${color} 60%,transparent)`, transition:"width 0.9s cubic-bezier(0.16,1,0.3,1)" }} />
     </div>
   );
 }
@@ -982,11 +982,11 @@ function DonutRing({ value, max, color, size=80, label }) {
   return (
     <div style={{ textAlign:"center" }}>
       <svg width={size} height={size} viewBox="0 0 80 80">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1a1a28" strokeWidth="8"/>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8"/>
         <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="8"
           strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ/4}
-          strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
-        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="13" fontWeight="700" fontFamily="Bebas Neue,sans-serif">{pct(value,max)}%</text>
+          strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease", filter:`drop-shadow(0 0 5px ${color})`}}/>
+        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" fontFamily="'Barlow Condensed',sans-serif">{pct(value,max)}%</text>
       </svg>
       {label && <div style={{ fontSize:10, color:"#9090b8", marginTop:2 }}>{label}</div>}
     </div>
@@ -1011,9 +1011,9 @@ function WearableRing({ value, max, color, size=78, label, unit }) {
   return (
     <div style={{ textAlign:"center" }}>
       <svg width={size} height={size} viewBox="0 0 78 78">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1a1a28" strokeWidth="8"/>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="8" strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ/4} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease"}}/>
-        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="12" fontWeight="700" fontFamily="Bebas Neue,sans-serif">{p}%</text>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8"/>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="8" strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ/4} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease", filter:`drop-shadow(0 0 5px ${color})`}}/>
+        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" fontFamily="'Barlow Condensed',sans-serif">{p}%</text>
       </svg>
       <div style={{ fontSize:12, fontWeight:700, color, marginTop:2 }}>{typeof value==="number"?value.toLocaleString():value}</div>
       <div style={{ fontSize:10, color:"#9090b8" }}>{unit ? `${label} · ${unit}` : label}</div>
@@ -1028,17 +1028,17 @@ function Sparkline({ data=[], color="var(--brand)", height=60 }) {
   const pts = data.map((v,i)=>[p+i*((W-p*2)/(data.length-1)), p+(1-(v-mn)/rng)*(H-p*2)]);
   const path = "M"+pts.map(([x,y])=>`${x},${y}`).join(" L");
   const fill = path+` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
-  const id = `sg${color.replace("#","")}`;
+  const id = `sg${color.replace(/[^a-zA-Z0-9]/g,"")}`;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width:"100%", height }}>
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.35"/>
+          <stop offset="0%" stopColor={color} stopOpacity="0.45"/>
           <stop offset="100%" stopColor={color} stopOpacity="0"/>
         </linearGradient>
       </defs>
       <path d={fill} fill={`url(#${id})`}/>
-      <path d={path} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d={path} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter:`drop-shadow(0 0 4px ${color})` }}/>
       <circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r="5" fill={color} stroke="var(--bg)" strokeWidth="2"/>
     </svg>
   );
@@ -1051,7 +1051,7 @@ function BarChart({ data=[], labels=[], color="var(--brand)" }) {
       {data.map((v,i)=>(
         <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
           <div style={{ fontSize:8, color:"#9090b8" }}>{v}</div>
-          <div style={{ width:"100%", height:(v/max)*50+4, borderRadius:"3px 3px 0 0", background:i===data.length-1?`linear-gradient(${color},${color}88)`:"var(--border)", transition:"height 0.6s" }}/>
+          <div style={{ width:"100%", height:(v/max)*50+4, borderRadius:"6px 6px 2px 2px", background:i===data.length-1?`linear-gradient(180deg,${color},color-mix(in srgb,${color} 45%,transparent))`:`linear-gradient(180deg,color-mix(in srgb,${color} 55%,transparent),color-mix(in srgb,${color} 15%,transparent))`, boxShadow:i===data.length-1?`0 0 14px color-mix(in srgb,${color} 55%,transparent)`:"none", transition:"height 0.6s" }}/>
           <div style={{ fontSize:8, color:"#8080a8" }}>{labels[i]}</div>
         </div>
       ))}
@@ -1097,7 +1097,7 @@ function Onboarding({ onDone }) {
   const CSS = `
     @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--brand:#ff3d2e;--brand2:#e06800;--bg:#06060e;--bg2:#111120;--border2:#28283f;--text:#ece8e1;--text2:#a8a8c8;--text3:#7070a0;--grad:linear-gradient(135deg,#ff3d2e,#e06800)}
+    :root{--brand:#ff3d2e;--brand2:#ff8a00;--bg:#07060f;--bg2:#13122a;--border2:#2d2b4a;--text:#f2efe9;--text2:#b4b2d4;--text3:#7d7aa8;--grad:linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)}
     input{background:rgba(255,255,255,0.05);border:1px solid #28283f;border-radius:12px;padding:13px 16px;color:#ece8e1;font-family:'Syne',sans-serif;font-size:15px;outline:none;width:100%;transition:border-color 0.2s,box-shadow 0.2s}
     input:focus{border-color:#ff3d2e;box-shadow:0 0 0 3px rgba(255,61,46,0.12)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -1129,7 +1129,7 @@ function Onboarding({ onDone }) {
       <div style={{ position:"relative", zIndex:1, display:"flex", flexDirection:"column", alignItems:"center", padding:"60px 24px 40px" }}>
         {/* Logo */}
         <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:52 }}>
-          <div style={{ width:38, height:38, background:"linear-gradient(135deg,#ff3d2e,#e06800)", borderRadius:11, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 6px 20px rgba(255,61,46,0.4)" }}>
+          <div style={{ width:38, height:38, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:11, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 6px 20px rgba(255,61,46,0.4)" }}>
             <Zap size={20} color="#fff" strokeWidth={2.5}/>
           </div>
           <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, letterSpacing:1.5, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT PRO</span>
@@ -1139,7 +1139,7 @@ function Onboarding({ onDone }) {
         <div className="hero-title" style={{ textAlign:"center", marginBottom:16 }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:"clamp(52px,14vw,80px)", lineHeight:0.9, textTransform:"uppercase", color:"#ece8e1", letterSpacing:-1 }}>
             BUILD YOUR<br/>
-            <span style={{ background:"linear-gradient(135deg,#ff3d2e,#e06800)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>PERFECT</span><br/>
+            <span style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>PERFECT</span><br/>
             BODY
           </div>
         </div>
@@ -1149,7 +1149,7 @@ function Onboarding({ onDone }) {
 
         {/* CTA */}
         <button onClick={()=>setPhase("age")}
-          style={{ background:"linear-gradient(135deg,#ff3d2e,#e06800)", border:"none", color:"#fff", borderRadius:16, padding:"18px 52px", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:20, letterSpacing:1.5, textTransform:"uppercase", cursor:"pointer", boxShadow:"0 8px 32px rgba(255,61,46,0.45)", marginBottom:20, transition:"all 0.2s" }}
+          style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", border:"none", color:"#fff", borderRadius:16, padding:"18px 52px", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:20, letterSpacing:1.5, textTransform:"uppercase", cursor:"pointer", boxShadow:"0 8px 32px rgba(255,61,46,0.45)", marginBottom:20, transition:"all 0.2s" }}
           onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(255,61,46,0.55)"}}
           onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 8px 32px rgba(255,61,46,0.45)"}}>
           GET STARTED →
@@ -1184,7 +1184,7 @@ function Onboarding({ onDone }) {
             ← Back
           </button>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-            <div style={{ width:28, height:28, background:"linear-gradient(135deg,#ff3d2e,#e06800)", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center" }}><Zap size={14} color="#fff" strokeWidth={2.5}/></div>
+            <div style={{ width:28, height:28, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center" }}><Zap size={14} color="#fff" strokeWidth={2.5}/></div>
             <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:16, letterSpacing:1, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT</span>
           </div>
         </div>
@@ -1192,7 +1192,7 @@ function Onboarding({ onDone }) {
         {/* Headline */}
         <div className="hero-title" style={{ textAlign:"center", marginBottom:8 }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:"clamp(38px,10vw,56px)", lineHeight:0.92, textTransform:"uppercase", color:"#ece8e1", letterSpacing:-0.5 }}>
-            SELECT YOUR<br/><span style={{ background:"linear-gradient(135deg,#ff3d2e,#e06800)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>AGE GROUP</span>
+            SELECT YOUR<br/><span style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>AGE GROUP</span>
           </div>
         </div>
         <div className="hero-sub" style={{ textAlign:"center", fontSize:14, color:"#7070a0", marginBottom:32 }}>
@@ -1241,7 +1241,7 @@ function Onboarding({ onDone }) {
         {/* Logo */}
         <div style={{ textAlign:"center", marginBottom:36 }}>
           <div style={{ display:"inline-flex", alignItems:"center", gap:9, marginBottom:10 }}>
-            <div style={{ width:32, height:32, background:"linear-gradient(135deg,#ff3d2e,#e06800)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}><Zap size={16} color="#fff" strokeWidth={2.5}/></div>
+            <div style={{ width:32, height:32, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}><Zap size={16} color="#fff" strokeWidth={2.5}/></div>
             <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:18, letterSpacing:1.5, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT PRO</span>
           </div>
           {/* Selected age badge */}
@@ -1267,7 +1267,7 @@ function Onboarding({ onDone }) {
           <>
             <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&advance()} type={s.type==="number"?"number":"text"} placeholder={s.ph} style={{ marginBottom:14 }}/>
             <button onClick={()=>advance()} disabled={!input}
-              style={{ width:"100%", background:input?"linear-gradient(135deg,#ff3d2e,#e06800)":"rgba(255,255,255,0.04)", border:input?"none":"1px solid rgba(255,255,255,0.06)", color:input?"#fff":"#3e3e5a", borderRadius:12, padding:14, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, letterSpacing:1, textTransform:"uppercase", cursor:input?"pointer":"default", boxShadow:input?"0 6px 24px rgba(255,61,46,0.3)":"none", transition:"all 0.2s" }}>
+              style={{ width:"100%", background:input?"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)":"rgba(255,255,255,0.04)", border:input?"none":"1px solid rgba(255,255,255,0.06)", color:input?"#fff":"#3e3e5a", borderRadius:12, padding:14, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, letterSpacing:1, textTransform:"uppercase", cursor:input?"pointer":"default", boxShadow:input?"0 6px 24px rgba(255,61,46,0.3)":"none", transition:"all 0.2s" }}>
               {step===ONBOARDING.length-1 ? "LET'S GO 🚀" : "CONTINUE →"}
             </button>
           </>
@@ -2267,7 +2267,7 @@ export default function ApexFitUnified() {
   // ── Loading screen ──
   if (!appReady) return (
     <div style={{ minHeight:"100vh", background:"#06060e", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16 }}>
-      <div style={{ width:44, height:44, background:"linear-gradient(135deg,#ff3d2e,#e06800)", borderRadius:13, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 8px 24px rgba(255,61,46,0.4)" }}>
+      <div style={{ width:44, height:44, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:13, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 8px 24px rgba(255,61,46,0.4)" }}>
         <Zap size={22} color="#fff" strokeWidth={2.5}/>
       </div>
       <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, letterSpacing:2, color:"#ece8e1", textTransform:"uppercase" }}>APEX FIT PRO</div>
@@ -2290,12 +2290,14 @@ export default function ApexFitUnified() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
         :root{
-          --brand:#ff3d2e; --brand2:#e06800; --accent:#00f5c4;
-          --bg:#06060e; --bg1:#0d0d1a; --bg2:#111120; --bg3:#171728;
-          --border:#1e1e32; --border2:#28283f;
-          --text:#ece8e1; --text2:#a8a8c8; --text3:#7070a0;
-          --glass:rgba(255,255,255,0.03);
-          --grad:linear-gradient(135deg,#ff3d2e,#e06800);
+          --brand:#ff3d2e; --brand2:#ff8a00; --accent:#00f5c4;
+          --violet:#8b5cf6; --cyan:#22d3ee; --pink:#ff2e63; --lime:#a3e635;
+          --bg:#07060f; --bg1:#0e0d1c; --bg2:#13122a; --bg3:#1b1a33; --card:#121126;
+          --border:#22213b; --border2:#2d2b4a;
+          --text:#f2efe9; --text2:#b4b2d4; --text3:#7d7aa8;
+          --glass:rgba(255,255,255,0.04);
+          --grad:linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%);
+          --grad-cool:linear-gradient(135deg,#8b5cf6,#22d3ee);
         }
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:2px}
@@ -2309,15 +2311,18 @@ export default function ApexFitUnified() {
 
         /* GLASS card */
         .glass{
-          background:linear-gradient(135deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.01) 100%);
-          border:1px solid var(--border2);
+          background:linear-gradient(160deg,rgba(255,255,255,0.075) 0%,rgba(255,255,255,0.025) 45%,rgba(255,255,255,0.015) 100%);
+          border:1px solid rgba(255,255,255,0.08);
           border-radius:20px;
-          backdrop-filter:blur(12px);
-          -webkit-backdrop-filter:blur(12px);
-          transition:border-color 0.25s,transform 0.2s;
+          backdrop-filter:blur(16px) saturate(140%);
+          -webkit-backdrop-filter:blur(16px) saturate(140%);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,0.07),0 14px 32px -16px rgba(0,0,0,0.75);
+          transition:border-color 0.25s,transform 0.2s,box-shadow 0.25s;
         }
-        .glass:hover{border-color:rgba(255,61,46,0.25)}
-        .glass-hot{border-color:rgba(255,61,46,0.35)!important;box-shadow:0 0 40px rgba(255,61,46,0.08)}
+        .glass:hover{border-color:rgba(255,77,46,0.32)}
+        .glass:active{transform:scale(0.995)}
+        .glass-hot{border-color:rgba(255,61,46,0.45)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,0.08),0 0 0 1px rgba(255,61,46,0.12),0 18px 44px -18px rgba(255,61,46,0.45)!important}
+        .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
         /* Typography */
         .display{font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:-0.5px;line-height:0.95;text-transform:uppercase}
@@ -2363,16 +2368,16 @@ export default function ApexFitUnified() {
 
       {/* Multi-layer background atmosphere */}
       <div className="grain" style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none" }}>
-        {/* Deep radial glow top */}
-        <div style={{ position:"absolute", top:-120, left:"50%", transform:"translateX(-50%)", width:700, height:500, background:"radial-gradient(ellipse at 50% 0%,rgba(255,61,46,0.07) 0%,transparent 65%)", pointerEvents:"none" }}/>
-        {/* Subtle bottom accent */}
-        <div style={{ position:"absolute", bottom:0, left:"20%", width:300, height:200, background:"radial-gradient(ellipse,rgba(0,245,196,0.04) 0%,transparent 70%)", pointerEvents:"none" }}/>
+        {/* Aurora glows: warm brand top-left, violet right, cyan low */}
+        <div style={{ position:"absolute", top:-180, left:-140, width:560, height:560, background:"radial-gradient(circle,rgba(255,61,46,0.20) 0%,rgba(255,46,99,0.08) 35%,transparent 65%)", pointerEvents:"none" }}/>
+        <div style={{ position:"absolute", top:140, right:-200, width:520, height:520, background:"radial-gradient(circle,rgba(139,92,246,0.16) 0%,transparent 62%)", pointerEvents:"none" }}/>
+        <div style={{ position:"absolute", bottom:-160, left:-60, width:560, height:460, background:"radial-gradient(circle,rgba(34,211,238,0.10) 0%,transparent 64%)", pointerEvents:"none" }}/>
         {/* Diagonal line texture */}
-        <div style={{ position:"absolute", inset:0, backgroundImage:"repeating-linear-gradient(45deg,rgba(255,255,255,0.012) 0px,rgba(255,255,255,0.012) 1px,transparent 1px,transparent 28px)", pointerEvents:"none" }}/>
+        <div style={{ position:"absolute", inset:0, backgroundImage:"repeating-linear-gradient(45deg,rgba(255,255,255,0.01) 0px,rgba(255,255,255,0.01) 1px,transparent 1px,transparent 28px)", pointerEvents:"none" }}/>
       </div>
 
       {/* ── HEADER ── */}
-      <div style={{ position:"sticky", top:0, zIndex:200, background:"rgba(6,6,14,0.92)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderBottom:"1px solid rgba(255,255,255,0.05)", padding:"calc(13px + var(--sat)) 20px 13px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+      <div style={{ position:"sticky", top:0, zIndex:200, background:"rgba(9,8,20,0.72)", backdropFilter:"blur(24px) saturate(160%)", WebkitBackdropFilter:"blur(24px) saturate(160%)", borderBottom:"1px solid rgba(255,255,255,0.06)", padding:"calc(13px + var(--sat)) 20px 13px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:11 }}>
           {/* Logo mark */}
           <div style={{ width:34, height:34, background:"var(--grad)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(255,61,46,0.4)", flexShrink:0 }}><Zap size={18} color="#fff" strokeWidth={2.5}/></div>
@@ -4149,7 +4154,7 @@ export default function ApexFitUnified() {
       )}
 
       {/* ── BOTTOM NAV ── */}
-      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:100, background:"rgba(6,6,14,0.95)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderTop:"1px solid rgba(255,255,255,0.05)", padding:"10px 4px calc(10px + max(10px, var(--sab)))", display:"flex", justifyContent:"space-around" }}>
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:100, background:"rgba(9,8,20,0.82)", backdropFilter:"blur(24px) saturate(160%)", WebkitBackdropFilter:"blur(24px) saturate(160%)", borderTop:"1px solid rgba(255,255,255,0.07)", padding:"10px 4px calc(10px + max(10px, var(--sab)))", display:"flex", justifyContent:"space-around" }}>
         {[
           {id:"dashboard", Icon:Home,      label:"Home"},
           {id:"train",     Icon:Dumbbell,  label:"Train"},
@@ -4162,10 +4167,12 @@ export default function ApexFitUnified() {
           const active = tab===id || (tab==="active"&&id==="train");
           return (
             <div key={id} onClick={()=>setTab(id)}
-              style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, cursor:"pointer", padding:"6px 5px", borderRadius:12, transition:"all 0.2s", color: active?"var(--brand)":"var(--text3)" }}>
-              <Icon size={18} strokeWidth={active?2.5:1.8} style={{ filter: active?"drop-shadow(0 0 6px rgba(255,61,46,0.55))":"none", transition:"all 0.2s" }}/>
-              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:7.5, letterSpacing:0.8, textTransform:"uppercase" }}>{label}</span>
-              {active && <div className="nav-dot"/>}
+              style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, cursor:"pointer", padding:"7px 6px 6px", minWidth:44, borderRadius:14, transition:"all 0.2s",
+                color: active?"#fff":"var(--text3)",
+                background: active?"linear-gradient(160deg,rgba(255,46,99,0.28),rgba(255,138,0,0.14))":"transparent",
+                boxShadow: active?"inset 0 1px 0 rgba(255,255,255,0.12),0 6px 18px -6px rgba(255,46,99,0.6)":"none" }}>
+              <Icon size={19} strokeWidth={active?2.4:1.8} color={active?"#ff6a3d":"currentColor"} style={{ filter: active?"drop-shadow(0 0 6px rgba(255,61,46,0.7))":"none", transition:"all 0.2s" }}/>
+              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:9, letterSpacing:0.8, textTransform:"uppercase" }}>{label}</span>
             </div>
           );
         })}
