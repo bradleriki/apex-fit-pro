@@ -47,6 +47,15 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
+
+    // Samsung Health Data SDK. The .aar isn't committed (Samsung's licence); CI decrypts it from
+    // libs/samsung-health-data-api-1.1.0.aar.enc using the SAMSUNG_SDK_PASSPHRASE secret.
+    implementation files('libs/samsung-health-data-api-1.1.0.aar')
+    // Runtime libraries the SDK expects (it ships without a dependency list)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
+    implementation "org.jetbrains.kotlin:kotlin-parcelize-runtime:2.1.21"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"
+    implementation "com.google.code.gson:gson:2.11.0"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"

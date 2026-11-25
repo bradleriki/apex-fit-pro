@@ -42,6 +42,21 @@ jobs:
       - name: Copy web app into Android project
         run: npx cap sync android
 
+      # Samsung's SDK can't be published in a public repo, so it's stored encrypted.
+      # Add the passphrase as a repository secret named SAMSUNG_SDK_PASSPHRASE.
+      - name: Add Samsung Health SDK
+        env:
+          SAMSUNG_SDK_PASSPHRASE: ${{ secrets.SAMSUNG_SDK_PASSPHRASE }}
+        run: |
+          if [ -z "$SAMSUNG_SDK_PASSPHRASE" ]; then
+            echo "::error::Missing repository secret SAMSUNG_SDK_PASSPHRASE (GitHub → Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
+            -in android/app/libs/samsung-health-data-api-1.1.0.aar.enc \
+            -out android/app/libs/samsung-health-data-api-1.1.0.aar \
+            -pass env:SAMSUNG_SDK_PASSPHRASE
+
       - name: Build APK
         working-directory: Apex-fit-pro/android
         run: |

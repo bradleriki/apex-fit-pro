@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Home, Dumbbell, Camera, Salad, Watch, BarChart2, Bot, Flame, Zap, ChevronRight, Plus, RotateCcw, X, Send, RefreshCw, Sparkles, CheckCircle2, Play, Pause, Trophy, Target, TrendingDown, Heart, Footprints, Timer, Layers, Wifi, WifiOff, ScanLine, Trash2, ChevronDown, ChevronUp, Shield, Cpu, Swords, Wind, Leaf, Settings, Activity, Moon, Sun, Brain, Smile, Frown, Meh, CloudRain, Stars, BookOpen, BedDouble, AlertCircle } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -714,6 +714,8 @@ async function prepareImage(file) {
 // Inside the Android app the page is served from the device, so AI calls must go to the live site.
 const IS_NATIVE = Capacitor.isNativePlatform();
 const API_BASE  = IS_NATIVE ? "https://apex-fit-pro.pages.dev" : "";
+// Native plugin (android/app/.../SamsungHealthPlugin.java): reads Samsung Health directly in the app
+const SamsungHealth = registerPlugin("SamsungHealth");
 
 // The model, token limit and effort are fixed server-side in functions/api/claude.js
 async function callClaude(messages, system="You are a helpful fitness coach. Be concise and motivational.") {
@@ -1911,6 +1913,28 @@ export default function ApexFitUnified() {
     setGfitError(null);
     try {
       const { startMs, endMs } = todayRange();
+      if (token === "samsung") {
+        // Android app: read straight from Samsung Health
+        const d = await SamsungHealth.readSummary();
+        const samples = (d.heartRate||[]).map(x=>({ t:Number(x.t), bpm:Number(x.bpm) })).filter(x=>x.bpm>0).sort((a,b)=>a.t-b.t);
+        const hrStats = computeHrStats(samples.filter(x=>x.t>=startMs));
+        const latest = samples[samples.length-1];
+        hrStats.current = latest ? latest.bpm : 0;
+        setGfitHrAt(latest ? latest.t : null);
+        setGfitData({ steps:Math.round(d.steps||0), calories:Math.round(d.calories||0), heartRate:hrStats.current, distance:Math.round((d.distance||0)/100)/10, activeMinutes:Math.round(d.activeMinutes||0), weeklySteps:d.weeklySteps||[], weeklyCalories:d.weeklyCalories||[], weeklyHR:[], hrStats });
+        const entries = (d.sleep||[]).map(n=>({ date:n.date, hours:Number(n.hours) })).sort((a,b)=>b.date.localeCompare(a.date));
+        setGfitSleep({ entries, lastNight: entries[0]||null });
+        if (entries.length) {
+          setSleepLog(prev => {
+            const existing = new Set(prev.map(e=>e.date));
+            const fresh = entries.filter(e=>!existing.has(e.date)).map(e=>({ date:e.date, hours:e.hours, quality:null, source:"samsunghealth" }));
+            return [...fresh, ...prev].slice(0,60);
+          });
+        }
+        setGfitLastSync(new Date());
+        setGfitLoading(false);
+        return;
+      }
       const { startMs:wS, endMs:wE } = weekRange();
       const DAY = 86400000;
       const [st,cal,hr,dist,act,wSt,wCal,wHr,sleep,hrRaw] = await Promise.all([
@@ -1944,7 +1968,8 @@ export default function ApexFitUnified() {
       }
       setGfitLastSync(new Date());
     } catch(e) {
-      if (e instanceof FitAuthError && e.message === "expired") disconnectGfit("Your Google Fit sign-in expired (they last 1 hour). Connect again to keep syncing.");
+      if (token === "samsung") setGfitError(`Couldn't read Samsung Health: ${e?.message || "unknown error"}. Check that Samsung Health's developer mode is on.`);
+      else if (e instanceof FitAuthError && e.message === "expired") disconnectGfit("Your Google Fit sign-in expired (they last 1 hour). Connect again to keep syncing.");
       else if (e instanceof FitAuthError) setGfitError("Google Fit refused access. Reconnect and allow all the requested permissions.");
       else setGfitError("Couldn't reach Google Fit. Check your connection and try again.");
     }
@@ -1952,6 +1977,12 @@ export default function ApexFitUnified() {
   },[disconnectGfit]);
 
   useEffect(()=>{ if(gfitToken) fetchGfitAll(gfitToken); },[gfitToken, fetchGfitAll]);
+
+  // Android app: reconnect automatically if Samsung Health access was granted before
+  useEffect(()=>{
+    if (!IS_NATIVE) return;
+    SamsungHealth.status().then(r=>{ if (r?.granted) setGfitToken("samsung"); }).catch(()=>{});
+  },[]);
 
   // Re-sync every 60s while the Watch tab is open and the page is visible
   useEffect(()=>{
@@ -1962,8 +1993,16 @@ export default function ApexFitUnified() {
 
   const connectGfit = () => {
     if (IS_NATIVE) {
-      // Google blocks its sign-in page inside apps' web views, and Google Fit is being retired anyway
-      setGfitError("Google Fit sign-in isn't available inside the app. Watch sync through Samsung Health is coming in the next update.");
+      // In the app, read Samsung Health directly (Google blocks its sign-in inside apps, and Fit is being retired)
+      setGfitConnecting(true); setGfitError(null);
+      SamsungHealth.requestAccess()
+        .then(r => r?.granted
+          ? setGfitToken("samsung")
+          : setGfitError("Apex Fit needs permission to read steps, activity, heart rate and sleep. Tap Connect and allow all of them."))
+        .catch(e => setGfitError(e?.code === "RESOLVABLE"
+          ? "Samsung Health needs attention first. Follow its prompt, then tap Connect again."
+          : `Couldn't connect to Samsung Health: ${e?.message || "unknown error"}. Make sure Samsung Health is installed and its developer mode is on.`))
+        .finally(() => setGfitConnecting(false));
       return;
     }
     if (!gfitClientId.trim()) return;
@@ -3337,7 +3376,7 @@ export default function ApexFitUnified() {
                     </div>
                     <div>
                       <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, textTransform:"uppercase", letterSpacing:0.5, lineHeight:1 }}>Sync your watch</div>
-                      <div style={{ fontSize:12, color:"var(--text3)", marginTop:4 }}>Works with any device that syncs to Google Fit</div>
+                      <div style={{ fontSize:12, color:"var(--text3)", marginTop:4 }}>{IS_NATIVE ? "Reads your Galaxy Watch data from Samsung Health" : "Works with any device that syncs to Google Fit"}</div>
                     </div>
                   </div>
 
@@ -3358,11 +3397,11 @@ export default function ApexFitUnified() {
                   </div>
 
                   <PrimaryBtn onClick={connectGfit} disabled={!gfitClientId.trim()||gfitConnecting} style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-                    {gfitConnecting ? "Redirecting to Google…" : (<><Watch size={15} strokeWidth={2.5}/> Connect Google Fit</>)}
+                    {gfitConnecting ? (IS_NATIVE ? "Connecting…" : "Redirecting to Google…") : (<><Watch size={15} strokeWidth={2.5}/> {IS_NATIVE ? "Connect Samsung Health" : "Connect Google Fit"}</>)}
                   </PrimaryBtn>
 
                   <div style={{ fontSize:11, color:"var(--text3)", textAlign:"center", marginTop:12, lineHeight:1.5 }}>
-                    Google will ask for permission to share your fitness data.<br/>
+                    {IS_NATIVE ? "Samsung Health will ask for permission to share your data." : "Google will ask for permission to share your fitness data."}<br/>
                     <span style={{ color:"var(--text2)" }}>🔒 Data is fetched directly — never stored on our servers.</span>
                   </div>
                 </Card>
@@ -3952,7 +3991,7 @@ export default function ApexFitUnified() {
                     <>
                       <Card style={{ padding:20, textAlign:"center", border:"1px solid rgba(0,229,255,0.2)", background:"rgba(0,229,255,0.04)" }}>
                         <Watch size={32} color="#00e5ff" strokeWidth={1.5} style={{ marginBottom:10 }}/>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", marginBottom:6 }}>Connect Google Fit</div>
+                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", marginBottom:6 }}>{IS_NATIVE ? "Connect Samsung Health" : "Connect Google Fit"}</div>
                         <div style={{ fontSize:12, color:"var(--text2)", lineHeight:1.6, marginBottom:16 }}>Link your watch to automatically sync sleep data from your device. No manual entry needed.</div>
                         <PrimaryBtn onClick={()=>setTab("watch")} style={{ background:"linear-gradient(135deg,#00e5ff,#0891b2)", fontSize:13, display:"flex", alignItems:"center", gap:8, justifyContent:"center", margin:"0 auto" }}>
                           <Watch size={14} strokeWidth={2}/> Go to Watch Tab
