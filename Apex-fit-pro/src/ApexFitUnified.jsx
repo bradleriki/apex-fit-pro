@@ -46,13 +46,23 @@ async function fetchFitData(token, type, startMs, endMs, bucket, sourceId) {
 
 // Fetch raw HR samples (no aggregation) so we can compute resting / max / zones / current
 async function fetchHrSamples(token, startMs, endMs) {
-  const startNs = `${startMs}000000`;
-  const endNs   = `${endMs}000000`;
-  const url = `${FITNESS_API}/dataSources/${MERGED_HR_SOURCE}/datasets/${startNs}-${endNs}`;
-  const r = await fitFetch(url, { headers:{ Authorization:`Bearer ${token}` } });
-  if (!r.ok) return [];
-  const d = await r.json();
-  return (d?.point || [])
+  const range = `${startMs}000000-${endMs}000000`;
+  const auth  = { headers:{ Authorization:`Bearer ${token}` } };
+  const readSource = async id => {
+    const r = await fitFetch(`${FITNESS_API}/dataSources/${id}/datasets/${range}`, auth);
+    if (!r.ok) return [];
+    const d = await r.json();
+    return d?.point || [];
+  };
+  let points = await readSource(MERGED_HR_SOURCE);
+  if (!points.length) {
+    // Google's merged stream is empty or missing (common when data comes in via Health Connect),
+    // so read every heart-rate source on the account instead
+    const r = await fitFetch(`${FITNESS_API}/dataSources?dataTypeName=com.google.heart_rate.bpm`, auth);
+    const ids = r.ok ? ((await r.json())?.dataSource || []).map(s => s.dataStreamId).filter(id => id !== MERGED_HR_SOURCE) : [];
+    points = (await Promise.all(ids.map(readSource))).flat();
+  }
+  return points
     .map(p => ({ t: Math.floor(parseInt(p.endTimeNanos)/1e6), bpm: p.value?.[0]?.fpVal||0 }))
     .filter(s => s.bpm > 0)
     .sort((a,b) => a.t - b.t);
@@ -3380,10 +3390,10 @@ export default function ApexFitUnified() {
                         const m = Math.round((Date.now()-gfitHrAt)/60000);
                         return m<1 ? "Latest reading: just now" : m<60 ? `Latest reading: ${m} min ago` : `Latest reading: ${Math.floor(m/60)}h ${m%60}m ago`;
                       })()}</div>
-                      <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:`${z.c}22`, border:`1px solid ${z.c}44`, borderRadius:20, padding:"3px 12px", marginBottom:12 }}>
+                      {gfitData.heartRate>0 && <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:`${z.c}22`, border:`1px solid ${z.c}44`, borderRadius:20, padding:"3px 12px", marginBottom:12 }}>
                         <div style={{ width:6, height:6, borderRadius:"50%", background:z.c, animation:"pulse 1s infinite" }}/>
                         <span style={{ fontSize:12, fontWeight:700, color:z.c }}>{z.l} Zone</span>
-                      </div>
+                      </div>}
                       <div style={{ display:"flex", gap:16 }}>
                         {[{l:"Resting",v:gfitData.hrStats?.resting?`${gfitData.hrStats.resting} bpm`:"–"},{l:"Max",v:gfitData.hrStats?.max?`${gfitData.hrStats.max} bpm`:"–"}].map(s=>(
                           <div key={s.l}><div style={{ fontSize:10, color:"#9090b8" }}>{s.l}</div><div style={{ fontSize:14, fontWeight:700 }}>{gfitLoading?"–":s.v}</div></div>
