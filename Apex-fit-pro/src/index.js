@@ -1,6 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+// Fonts are bundled with the app (work offline, no Google Fonts request)
+import "@fontsource-variable/unbounded";
+import "@fontsource-variable/manrope";
+import "@fontsource-variable/jetbrains-mono";
 import { Capacitor } from "@capacitor/core";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<React.StrictMode><App /></React.StrictMode>);

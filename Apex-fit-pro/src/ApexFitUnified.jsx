@@ -755,8 +755,8 @@ function PrimaryBtn({ children, onClick, disabled, style={} }) {
         background: disabled ? "var(--bg3)" : "var(--grad)",
         border: "none", color: disabled ? "var(--text3)" : "#fff",
         borderRadius: 12, padding: "13px 22px",
-        fontFamily: "'Barlow Condensed',sans-serif", fontWeight: 800, fontSize: 15,
-        letterSpacing: 1, textTransform: "uppercase",
+        fontFamily: "'Unbounded Variable',sans-serif", fontWeight: 800, fontSize: 13,
+        letterSpacing: 0.4, textTransform: "uppercase",
         cursor: disabled ? "default" : "pointer", width: "100%",
         transition: "all 0.2s", boxShadow: disabled ? "none" : "inset 0 1px 0 rgba(255,255,255,0.28),0 8px 26px -6px rgba(255,46,99,0.55)",
         ...style
@@ -771,7 +771,7 @@ function PrimaryBtn({ children, onClick, disabled, style={} }) {
 function GhostBtn({ children, onClick, style={} }) {
   return (
     <button onClick={onClick}
-      style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"var(--text)", borderRadius:10, padding:"9px 18px", fontFamily:"'Syne',sans-serif", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s", ...style }}
+      style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"var(--text)", borderRadius:10, padding:"9px 18px", fontFamily:"'Manrope Variable',sans-serif", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.2s", ...style }}
       onMouseEnter={e=>{ e.currentTarget.style.borderColor="var(--brand)"; e.currentTarget.style.color="var(--brand)"; }}
       onMouseLeave={e=>{ e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"; e.currentTarget.style.color="var(--text)"; }}>
       {children}
@@ -859,7 +859,7 @@ function VictoryCelebration({ gains, onClose }) {
         {/* Headline slam */}
         <div style={{ textAlign:"center", marginBottom:24, animation:"celebSlam 0.7s cubic-bezier(0.16,1,0.3,1) both" }}>
           <div style={{
-            fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900,
+            fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900,
             fontSize: isLevelUp ? 44 : 36,
             color: isLevelUp ? "#ffd700" : isPR ? "#ffd700" : c,
             textTransform:"uppercase", letterSpacing:1.2, lineHeight:1,
@@ -867,7 +867,7 @@ function VictoryCelebration({ gains, onClose }) {
           }}>
             {gains.headline}
           </div>
-          <div style={{ fontSize:13, color:"var(--text2)", marginTop:8, fontFamily:"'Syne',sans-serif", fontWeight:600 }}>
+          <div style={{ fontSize:13, color:"var(--text2)", marginTop:8, fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>
             {gains.subheadline}
           </div>
         </div>
@@ -876,7 +876,7 @@ function VictoryCelebration({ gains, onClose }) {
         {stage >= 1 && (
           <div style={{ padding:"18px 18px 14px", borderRadius:18, background:`linear-gradient(135deg, ${c}1f, ${c}08)`, border:`1px solid ${c}55`, marginBottom:14, animation:"celebRise 0.5s cubic-bezier(0.16,1,0.3,1) both" }}>
             <div style={{ fontSize:10, color:"var(--text3)", fontWeight:800, textTransform:"uppercase", letterSpacing:0.8, textAlign:"center", marginBottom:4 }}>XP Earned</div>
-            <div style={{ textAlign:"center", fontFamily:"'Barlow Condensed',sans-serif", fontSize:48, fontWeight:900, color:c, lineHeight:1, textShadow:`0 0 24px ${c}66` }}>
+            <div style={{ textAlign:"center", fontFamily:"'Unbounded Variable',sans-serif", fontSize:48, fontWeight:900, color:c, lineHeight:1, textShadow:`0 0 24px ${c}66` }}>
               <CountUp to={gains.xp} duration={1100} prefix="+"/>
             </div>
             {/* Bonus breakdown */}
@@ -912,7 +912,7 @@ function VictoryCelebration({ gains, onClose }) {
                     display:"flex", alignItems:"center", gap:6,
                   }}>
                   <span style={{ fontSize:16 }}>{statIcons[k]}</span>
-                  <span style={{ fontSize:14, fontWeight:800, color:statColors[k], fontFamily:"'Syne',sans-serif", letterSpacing:0.3 }}>+{v} {k}</span>
+                  <span style={{ fontSize:14, fontWeight:800, color:statColors[k], fontFamily:"'Manrope Variable',sans-serif", letterSpacing:0.3 }}>+{v} {k}</span>
                 </div>
               ))}
             </div>
@@ -935,14 +935,14 @@ function VictoryCelebration({ gains, onClose }) {
               {isTierUp ? "Tier Promotion" : "Level Up"}
             </div>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:30, fontWeight:900, color:"var(--text2)", lineHeight:1 }}>Lv {gains.oldLevel}</span>
+              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:30, fontWeight:900, color:"var(--text2)", lineHeight:1 }}>Lv {gains.oldLevel}</span>
               <span style={{ fontSize:22, color:"#ffd700" }}>→</span>
-              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:36, fontWeight:900, color: isTierUp?gains.newTier.color:"#ffd700", lineHeight:1, textShadow:`0 0 20px ${isTierUp?gains.newTier.color:"#ffd700"}88` }}>
+              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:36, fontWeight:900, color: isTierUp?gains.newTier.color:"#ffd700", lineHeight:1, textShadow:`0 0 20px ${isTierUp?gains.newTier.color:"#ffd700"}88` }}>
                 Lv {gains.newLevel}
               </span>
             </div>
             {isTierUp && (
-              <div style={{ fontSize:13, color:gains.newTier.color, fontWeight:700, marginTop:8, fontFamily:"'Syne',sans-serif" }}>
+              <div style={{ fontSize:13, color:gains.newTier.color, fontWeight:700, marginTop:8, fontFamily:"'Manrope Variable',sans-serif" }}>
                 {gains.newTier.name.toUpperCase()} TIER UNLOCKED
               </div>
             )}
@@ -956,7 +956,7 @@ function VictoryCelebration({ gains, onClose }) {
               width:"100%", padding:"14px 18px", borderRadius:14, border:"none", cursor:"pointer",
               background:`linear-gradient(135deg, ${c}, ${c}cc)`,
               color:"#fff",
-              fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:16, letterSpacing:2, textTransform:"uppercase",
+              fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:16, letterSpacing:2, textTransform:"uppercase",
               boxShadow:`0 6px 24px ${c}55`,
             }}>
             Onward →
@@ -986,7 +986,7 @@ function DonutRing({ value, max, color, size=80, label }) {
         <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="8"
           strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ/4}
           strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease", filter:`drop-shadow(0 0 5px ${color})`}}/>
-        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" fontFamily="'Barlow Condensed',sans-serif">{pct(value,max)}%</text>
+        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" fontFamily="'Unbounded Variable',sans-serif">{pct(value,max)}%</text>
       </svg>
       {label && <div style={{ fontSize:10, color:"#9090b8", marginTop:2 }}>{label}</div>}
     </div>
@@ -998,7 +998,7 @@ function HeartRateOrb({ bpm, loading }) {
   return (
     <div style={{ width:110, height:110, borderRadius:"50%", background:`radial-gradient(circle at 40% 35%,${color}33,${color}08)`, border:`2px solid ${color}44`, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", boxShadow:`0 0 30px ${color}22`, animation:bpm>0?"heartbeat 0.9s ease infinite":"none" }}>
       <div style={{ fontSize:20 }}>❤️</div>
-      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:30, color, lineHeight:1 }}>{loading?"–":bpm||"–"}</div>
+      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:30, color, lineHeight:1 }}>{loading?"–":bpm||"–"}</div>
       <div style={{ fontSize:9, color:"#9090b8", letterSpacing:1 }}>BPM</div>
     </div>
   );
@@ -1013,7 +1013,7 @@ function WearableRing({ value, max, color, size=78, label, unit }) {
       <svg width={size} height={size} viewBox="0 0 78 78">
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="8"/>
         <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="8" strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ/4} strokeLinecap="round" style={{transition:"stroke-dasharray 1s ease", filter:`drop-shadow(0 0 5px ${color})`}}/>
-        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" fontFamily="'Barlow Condensed',sans-serif">{p}%</text>
+        <text x={cx} y={cy+5} textAnchor="middle" fill="#fff" fontSize="14" fontWeight="800" fontFamily="'Unbounded Variable',sans-serif">{p}%</text>
       </svg>
       <div style={{ fontSize:12, fontWeight:700, color, marginTop:2 }}>{typeof value==="number"?value.toLocaleString():value}</div>
       <div style={{ fontSize:10, color:"#9090b8" }}>{unit ? `${label} · ${unit}` : label}</div>
@@ -1095,10 +1095,9 @@ function Onboarding({ onDone }) {
   };
 
   const CSS = `
-    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
     *{box-sizing:border-box;margin:0;padding:0}
     :root{--brand:#ff3d2e;--brand2:#ff8a00;--bg:#07060f;--bg2:#13122a;--border2:#2d2b4a;--text:#f2efe9;--text2:#b4b2d4;--text3:#7d7aa8;--grad:linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)}
-    input{background:rgba(255,255,255,0.05);border:1px solid #28283f;border-radius:12px;padding:13px 16px;color:#ece8e1;font-family:'Syne',sans-serif;font-size:15px;outline:none;width:100%;transition:border-color 0.2s,box-shadow 0.2s}
+    input{background:rgba(255,255,255,0.05);border:1px solid #28283f;border-radius:12px;padding:13px 16px;color:#ece8e1;font-family:'Manrope Variable',sans-serif;font-size:15px;outline:none;width:100%;transition:border-color 0.2s,box-shadow 0.2s}
     input:focus{border-color:#ff3d2e;box-shadow:0 0 0 3px rgba(255,61,46,0.12)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     @keyframes popIn{from{opacity:0;transform:scale(0.94)}to{opacity:1;transform:scale(1)}}
@@ -1111,7 +1110,7 @@ function Onboarding({ onDone }) {
   `;
 
   const BASE = {
-    minHeight:"100vh", background:"#06060e", fontFamily:"'Syne',sans-serif",
+    minHeight:"100vh", background:"#06060e", fontFamily:"'Manrope Variable',sans-serif",
     position:"relative", overflowX:"hidden", overflowY:"auto",
     paddingTop:"var(--sat)", paddingBottom:"var(--sab)", boxSizing:"border-box",
   };
@@ -1132,24 +1131,24 @@ function Onboarding({ onDone }) {
           <div style={{ width:38, height:38, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:11, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 6px 20px rgba(255,61,46,0.4)" }}>
             <Zap size={20} color="#fff" strokeWidth={2.5}/>
           </div>
-          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, letterSpacing:1.5, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT PRO</span>
+          <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:22, letterSpacing:1.5, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT PRO</span>
         </div>
 
         {/* Big headline */}
         <div className="hero-title" style={{ textAlign:"center", marginBottom:16 }}>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:"clamp(52px,14vw,80px)", lineHeight:0.9, textTransform:"uppercase", color:"#ece8e1", letterSpacing:-1 }}>
+          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(52px,14vw,80px)", lineHeight:0.9, textTransform:"uppercase", color:"#ece8e1", letterSpacing:-1 }}>
             BUILD YOUR<br/>
             <span style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>PERFECT</span><br/>
             BODY
           </div>
         </div>
-        <div className="hero-sub" style={{ fontFamily:"'Syne',sans-serif", fontSize:15, color:"#7070a0", textAlign:"center", marginBottom:52, letterSpacing:0.3 }}>
+        <div className="hero-sub" style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:15, color:"#7070a0", textAlign:"center", marginBottom:52, letterSpacing:0.3 }}>
           A personalised plan built around your age,<br/>goals and fitness level
         </div>
 
         {/* CTA */}
         <button onClick={()=>setPhase("age")}
-          style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", border:"none", color:"#fff", borderRadius:16, padding:"18px 52px", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:20, letterSpacing:1.5, textTransform:"uppercase", cursor:"pointer", boxShadow:"0 8px 32px rgba(255,61,46,0.45)", marginBottom:20, transition:"all 0.2s" }}
+          style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", border:"none", color:"#fff", borderRadius:16, padding:"18px 40px", fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:16, letterSpacing:0.6, whiteSpace:"nowrap", textTransform:"uppercase", cursor:"pointer", boxShadow:"0 8px 32px rgba(255,61,46,0.45)", marginBottom:20, transition:"all 0.2s" }}
           onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(255,61,46,0.55)"}}
           onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 8px 32px rgba(255,61,46,0.45)"}}>
           GET STARTED →
@@ -1158,7 +1157,7 @@ function Onboarding({ onDone }) {
         {/* Feature pills */}
         <div style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center", marginTop:8 }}>
           {["AI Coach","Food Scanner","Wearable Sync","Custom Plans"].map(f=>(
-            <div key={f} style={{ padding:"6px 14px", borderRadius:100, border:"1px solid rgba(255,255,255,0.08)", fontSize:12, color:"#7070a0", fontFamily:"'Syne',sans-serif", display:"flex", alignItems:"center", gap:6 }}>
+            <div key={f} style={{ padding:"6px 14px", borderRadius:100, border:"1px solid rgba(255,255,255,0.08)", fontSize:12, color:"#7070a0", fontFamily:"'Manrope Variable',sans-serif", display:"flex", alignItems:"center", gap:6 }}>
               <div style={{ width:5, height:5, borderRadius:"50%", background:"#ff3d2e" }}/>
               {f}
             </div>
@@ -1180,18 +1179,18 @@ function Onboarding({ onDone }) {
       <div style={{ position:"relative", zIndex:1, padding:"40px 20px 40px" }}>
         {/* Back + logo row */}
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:40 }}>
-          <button onClick={()=>setPhase("hero")} style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:"8px 14px", color:"#7070a0", fontFamily:"'Syne',sans-serif", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+          <button onClick={()=>setPhase("hero")} style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:10, padding:"8px 14px", color:"#7070a0", fontFamily:"'Manrope Variable',sans-serif", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
             ← Back
           </button>
           <div style={{ display:"flex", alignItems:"center", gap:8 }}>
             <div style={{ width:28, height:28, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center" }}><Zap size={14} color="#fff" strokeWidth={2.5}/></div>
-            <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:16, letterSpacing:1, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT</span>
+            <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:16, letterSpacing:1, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT</span>
           </div>
         </div>
 
         {/* Headline */}
         <div className="hero-title" style={{ textAlign:"center", marginBottom:8 }}>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:"clamp(38px,10vw,56px)", lineHeight:0.92, textTransform:"uppercase", color:"#ece8e1", letterSpacing:-0.5 }}>
+          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(38px,10vw,56px)", lineHeight:0.92, textTransform:"uppercase", color:"#ece8e1", letterSpacing:-0.5 }}>
             SELECT YOUR<br/><span style={{ background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>AGE GROUP</span>
           </div>
         </div>
@@ -1214,8 +1213,8 @@ function Onboarding({ onDone }) {
               {/* Label */}
               <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"14px 16px", display:"flex", alignItems:"flex-end", justifyContent:"space-between" }}>
                 <div style={{ textAlign:"left" }}>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:24, color:"#fff", letterSpacing:0.5, lineHeight:1, textShadow:"0 2px 8px rgba(0,0,0,0.8)" }}>{ab.label}</div>
-                  <div style={{ fontFamily:"'Syne',sans-serif", fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:3 }}>{ab.sub}</div>
+                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:24, color:"#fff", letterSpacing:0.5, lineHeight:1, textShadow:"0 2px 8px rgba(0,0,0,0.8)" }}>{ab.label}</div>
+                  <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:3 }}>{ab.sub}</div>
                 </div>
                 <div style={{ width:30, height:30, borderRadius:"50%", background:ab.accent, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, boxShadow:`0 4px 12px ${ab.accent}88` }}>
                   <ChevronRight size={15} color="#fff" strokeWidth={2.5}/>
@@ -1242,13 +1241,13 @@ function Onboarding({ onDone }) {
         <div style={{ textAlign:"center", marginBottom:36 }}>
           <div style={{ display:"inline-flex", alignItems:"center", gap:9, marginBottom:10 }}>
             <div style={{ width:32, height:32, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center" }}><Zap size={16} color="#fff" strokeWidth={2.5}/></div>
-            <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:18, letterSpacing:1.5, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT PRO</span>
+            <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:18, letterSpacing:1.5, textTransform:"uppercase", color:"#ece8e1" }}>APEX FIT PRO</span>
           </div>
           {/* Selected age badge */}
           {profile.age && (
             <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,61,46,0.1)", border:"1px solid rgba(255,61,46,0.25)", borderRadius:100, padding:"4px 12px", marginTop:4 }}>
               <div style={{ width:5, height:5, borderRadius:"50%", background:"#ff3d2e" }}/>
-              <span style={{ fontFamily:"'Syne',sans-serif", fontSize:11, color:"#ff3d2e", fontWeight:600 }}>Age {profile.age}</span>
+              <span style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:11, color:"#ff3d2e", fontWeight:600 }}>Age {profile.age}</span>
             </div>
           )}
         </div>
@@ -1260,14 +1259,14 @@ function Onboarding({ onDone }) {
           ))}
         </div>
 
-        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:28, color:"#ece8e1", textTransform:"uppercase", letterSpacing:0.5, marginBottom:4, lineHeight:1.1 }}>{s.q}</div>
-        <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, color:"#7070a0", marginBottom:26, letterSpacing:2, textTransform:"uppercase" }}>STEP {step+1} / {ONBOARDING.length}</div>
+        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:28, color:"#ece8e1", textTransform:"uppercase", letterSpacing:0.5, marginBottom:4, lineHeight:1.1 }}>{s.q}</div>
+        <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:11, color:"#7070a0", marginBottom:26, letterSpacing:2, textTransform:"uppercase" }}>STEP {step+1} / {ONBOARDING.length}</div>
 
         {s.type==="text"||s.type==="number" ? (
           <>
             <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&advance()} type={s.type==="number"?"number":"text"} placeholder={s.ph} style={{ marginBottom:14 }}/>
             <button onClick={()=>advance()} disabled={!input}
-              style={{ width:"100%", background:input?"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)":"rgba(255,255,255,0.04)", border:input?"none":"1px solid rgba(255,255,255,0.06)", color:input?"#fff":"#3e3e5a", borderRadius:12, padding:14, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, letterSpacing:1, textTransform:"uppercase", cursor:input?"pointer":"default", boxShadow:input?"0 6px 24px rgba(255,61,46,0.3)":"none", transition:"all 0.2s" }}>
+              style={{ width:"100%", background:input?"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)":"rgba(255,255,255,0.04)", border:input?"none":"1px solid rgba(255,255,255,0.06)", color:input?"#fff":"#3e3e5a", borderRadius:12, padding:14, fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:16, letterSpacing:1, textTransform:"uppercase", cursor:input?"pointer":"default", boxShadow:input?"0 6px 24px rgba(255,61,46,0.3)":"none", transition:"all 0.2s" }}>
               {step===ONBOARDING.length-1 ? "LET'S GO 🚀" : "CONTINUE →"}
             </button>
           </>
@@ -1275,7 +1274,7 @@ function Onboarding({ onDone }) {
           <div style={{ display:"grid", gridTemplateColumns:s.opts.length>3?"1fr 1fr":"1fr", gap:10 }}>
             {s.opts.map(o=>(
               <button key={o.v} onClick={()=>advance(o.v)}
-                style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:14, padding:"16px 18px", color:"#ece8e1", fontFamily:"'Syne',sans-serif", fontSize:14, fontWeight:600, cursor:"pointer", textAlign:"left", transition:"all 0.18s", backdropFilter:"blur(8px)" }}
+                style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:14, padding:"16px 18px", color:"#ece8e1", fontFamily:"'Manrope Variable',sans-serif", fontSize:14, fontWeight:600, cursor:"pointer", textAlign:"left", transition:"all 0.18s", backdropFilter:"blur(8px)" }}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor="#ff3d2e";e.currentTarget.style.background="rgba(255,61,46,0.08)"}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.08)";e.currentTarget.style.background="rgba(255,255,255,0.03)"}}>
                 {o.l}
@@ -1284,7 +1283,7 @@ function Onboarding({ onDone }) {
           </div>
         )}
 
-        <button onClick={()=>setPhase("age")} style={{ marginTop:24, background:"none", border:"none", color:"#7070a0", fontFamily:"'Syne',sans-serif", fontSize:12, cursor:"pointer", display:"block", textAlign:"center", width:"100%" }}>
+        <button onClick={()=>setPhase("age")} style={{ marginTop:24, background:"none", border:"none", color:"#7070a0", fontFamily:"'Manrope Variable',sans-serif", fontSize:12, cursor:"pointer", display:"block", textAlign:"center", width:"100%" }}>
           ← Change age group
         </button>
       </div>
@@ -1303,27 +1302,27 @@ function WorkoutCard({ w, done, onStart }) {
       {/* Type accent bar */}
       <div style={{ position:"absolute", top:0, left:0, width:3, height:"100%", background:`linear-gradient(180deg,${c},${c}44)`, borderRadius:"20px 0 0 20px" }}/>
       {done && (
-        <div style={{ position:"absolute", top:12, right:12, background:"rgba(74,222,128,0.15)", border:"1px solid rgba(74,222,128,0.3)", color:"#4ade80", padding:"2px 10px", borderRadius:100, fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, fontWeight:700, letterSpacing:1 }}>✓ DONE</div>
+        <div style={{ position:"absolute", top:12, right:12, background:"rgba(74,222,128,0.15)", border:"1px solid rgba(74,222,128,0.3)", color:"#4ade80", padding:"2px 10px", borderRadius:100, fontFamily:"'Unbounded Variable',sans-serif", fontSize:11, fontWeight:700, letterSpacing:1 }}>✓ DONE</div>
       )}
       <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:10, paddingLeft:8 }}>
         <div style={{ width:42, height:42, borderRadius:12, background:`${c}18`, border:`1px solid ${c}30`, display:"flex", alignItems:"center", justifyContent:"center", color:c, flexShrink:0 }}>{typeIcon[w.type]||<Dumbbell size={18}/>}</div>
         <div>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.3, color:"var(--text)", lineHeight:1 }}>{w.name}</div>
+          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0, color:"var(--text)", lineHeight:1.15 }}>{w.name}</div>
           <div style={{ display:"flex", gap:7, marginTop:4 }}>
             <span className="pill" style={{ background:`${c}18`, color:c, border:`1px solid ${c}30` }}>{w.type}</span>
-            <span style={{ fontFamily:"'Syne',sans-serif", fontSize:11, color:"var(--text3)", alignSelf:"center" }}>{w.difficulty}</span>
+            <span style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:11, color:"var(--text3)", alignSelf:"center" }}>{w.difficulty}</span>
           </div>
         </div>
       </div>
       <div style={{ display:"flex", gap:16, marginBottom:10, paddingLeft:8 }}>
-        <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, color:"var(--text2)" }}>⏱ {w.duration}m</span>
-        <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:12, color:"var(--text2)" }}>🔥 {w.calories} kcal</span>
+        <span style={{ fontFamily:"'JetBrains Mono Variable',monospace", fontSize:12, color:"var(--text2)" }}>⏱ {w.duration}m</span>
+        <span style={{ fontFamily:"'JetBrains Mono Variable',monospace", fontSize:12, color:"var(--text2)" }}>🔥 {w.calories} kcal</span>
       </div>
       <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:14, paddingLeft:8 }}>
         {w.exercises.slice(0,4).map(e=>(
-          <span key={e} style={{ padding:"3px 9px", borderRadius:100, fontSize:10, fontWeight:600, background:"rgba(255,255,255,0.04)", color:"var(--text3)", border:"1px solid var(--border)", fontFamily:"'Syne',sans-serif" }}>{e}</span>
+          <span key={e} style={{ padding:"3px 9px", borderRadius:100, fontSize:10, fontWeight:600, background:"rgba(255,255,255,0.04)", color:"var(--text3)", border:"1px solid var(--border)", fontFamily:"'Manrope Variable',sans-serif" }}>{e}</span>
         ))}
-        {w.exercises.length>4 && <span style={{ padding:"3px 9px", borderRadius:100, fontSize:10, background:"rgba(255,255,255,0.04)", color:"var(--text3)", border:"1px solid var(--border)", fontFamily:"'Syne',sans-serif" }}>+{w.exercises.length-4}</span>}
+        {w.exercises.length>4 && <span style={{ padding:"3px 9px", borderRadius:100, fontSize:10, background:"rgba(255,255,255,0.04)", color:"var(--text3)", border:"1px solid var(--border)", fontFamily:"'Manrope Variable',sans-serif" }}>+{w.exercises.length-4}</span>}
       </div>
       {!done && <PrimaryBtn onClick={()=>onStart(w)} style={{ padding:"10px", fontSize:14 }}>START →</PrimaryBtn>}
     </div>
@@ -1381,7 +1380,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
       <div style={{ display:"flex", gap:6 }}>
         {[{id:"log",label:"Log Entry"},{id:"history",label:"Progression"}].map(v=>(
           <button key={v.id} onClick={()=>setDiaryView(v.id)}
-            style={{ flex:1, padding:"9px 0", borderRadius:10, border:`1px solid ${diaryView===v.id?"var(--brand)":"var(--border2)"}`, background:diaryView===v.id?"rgba(255,61,46,0.12)":"transparent", color:diaryView===v.id?"var(--brand)":"var(--text3)", fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:12, cursor:"pointer", transition:"all 0.2s" }}>
+            style={{ flex:1, padding:"9px 0", borderRadius:10, border:`1px solid ${diaryView===v.id?"var(--brand)":"var(--border2)"}`, background:diaryView===v.id?"rgba(255,61,46,0.12)":"transparent", color:diaryView===v.id?"var(--brand)":"var(--text3)", fontFamily:"'Manrope Variable',sans-serif", fontWeight:700, fontSize:12, cursor:"pointer", transition:"all 0.2s" }}>
             {v.label}
           </button>
         ))}
@@ -1391,18 +1390,18 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
       {diaryView==="log" && (
         <>
           <Card style={{ padding:18 }}>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5, marginBottom:14 }}>Log Resistance Set</div>
+            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5, marginBottom:14 }}>Log Resistance Set</div>
             <div style={{ marginBottom:14 }}>
               <div style={{ fontSize:11, color:"var(--text3)", marginBottom:6, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Exercise</div>
               <select value={diaryExercise} onChange={e=>setDiaryExercise(e.target.value)}
-                style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:10, padding:"10px 12px", color:"var(--text)", fontFamily:"'Syne',sans-serif", fontSize:13, outline:"none" }}>
+                style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:10, padding:"10px 12px", color:"var(--text)", fontFamily:"'Manrope Variable',sans-serif", fontSize:13, outline:"none" }}>
                 {RESISTANCE_EXERCISES.map(ex=><option key={ex} value={ex}>{ex}</option>)}
               </select>
             </div>
             {pr > 0 && (
               <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px", background:"rgba(255,215,0,0.08)", border:"1px solid rgba(255,215,0,0.2)", borderRadius:10, marginBottom:14 }}>
                 <Trophy size={14} color="#ffd700" strokeWidth={2}/>
-                <span style={{ fontSize:12, color:"#ffd700", fontFamily:"'Syne',sans-serif", fontWeight:700 }}>Current PR: {pr}kg</span>
+                <span style={{ fontSize:12, color:"#ffd700", fontFamily:"'Manrope Variable',sans-serif", fontWeight:700 }}>Current PR: {pr}kg</span>
                 {bestPerSession.length>1 && (
                   <span style={{ fontSize:11, color:"var(--text3)", marginLeft:"auto" }}>
                     {bestPerSession[bestPerSession.length-1]?.weight > bestPerSession[bestPerSession.length-2]?.weight ? "↑ Improving" : "→ Maintaining"}
@@ -1419,13 +1418,13 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
             </div>
             {diarySets.map((set,i)=>(
               <div key={i} style={{ display:"grid", gridTemplateColumns:"28px 1fr 1fr 28px", gap:6, marginBottom:6, alignItems:"center" }}>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:15, color:"var(--brand)", textAlign:"center" }}>{i+1}</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:15, color:"var(--brand)", textAlign:"center" }}>{i+1}</div>
                 <input type="number" placeholder="80" value={set.weight}
                   onChange={e=>setDiarySets(p=>p.map((s,j)=>j===i?{...s,weight:e.target.value}:s))}
-                  style={{ background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", borderRadius:9, padding:"9px 8px", color:"var(--text)", fontFamily:"'JetBrains Mono',monospace", fontSize:14, fontWeight:600, textAlign:"center", outline:"none", width:"100%", boxSizing:"border-box" }}/>
+                  style={{ background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", borderRadius:9, padding:"9px 8px", color:"var(--text)", fontFamily:"'JetBrains Mono Variable',monospace", fontSize:14, fontWeight:600, textAlign:"center", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                 <input type="number" placeholder="10" value={set.reps}
                   onChange={e=>setDiarySets(p=>p.map((s,j)=>j===i?{...s,reps:e.target.value}:s))}
-                  style={{ background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", borderRadius:9, padding:"9px 8px", color:"var(--text)", fontFamily:"'JetBrains Mono',monospace", fontSize:14, fontWeight:600, textAlign:"center", outline:"none", width:"100%", boxSizing:"border-box" }}/>
+                  style={{ background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", borderRadius:9, padding:"9px 8px", color:"var(--text)", fontFamily:"'JetBrains Mono Variable',monospace", fontSize:14, fontWeight:600, textAlign:"center", outline:"none", width:"100%", boxSizing:"border-box" }}/>
                 <button onClick={()=>setDiarySets(p=>p.length>1?p.filter((_,j)=>j!==i):p)}
                   style={{ width:26, height:26, borderRadius:7, background:"rgba(255,61,46,0.1)", border:"1px solid rgba(255,61,46,0.2)", color:"var(--brand)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   <X size={11} strokeWidth={2.5}/>
@@ -1433,12 +1432,12 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
               </div>
             ))}
             <button onClick={()=>setDiarySets(p=>[...p,{reps:"",weight:""}])}
-              style={{ width:"100%", padding:"9px 0", borderRadius:10, border:"1px dashed var(--border2)", background:"transparent", color:"var(--text3)", fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:12, cursor:"pointer", margin:"6px 0 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+              style={{ width:"100%", padding:"9px 0", borderRadius:10, border:"1px dashed var(--border2)", background:"transparent", color:"var(--text3)", fontFamily:"'Manrope Variable',sans-serif", fontWeight:700, fontSize:12, cursor:"pointer", margin:"6px 0 14px", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
               <Plus size={13} strokeWidth={2.5}/> Add Set
             </button>
             <textarea value={diaryNote} onChange={e=>setDiaryNote(e.target.value)}
               placeholder="Notes… e.g. felt strong, slight shoulder tweak" rows={2}
-              style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:10, padding:"10px 12px", color:"var(--text)", fontFamily:"'Syne',sans-serif", fontSize:12, outline:"none", resize:"none", marginBottom:14, boxSizing:"border-box" }}/>
+              style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:10, padding:"10px 12px", color:"var(--text)", fontFamily:"'Manrope Variable',sans-serif", fontSize:12, outline:"none", resize:"none", marginBottom:14, boxSizing:"border-box" }}/>
             <PrimaryBtn onClick={saveDiaryEntry} disabled={!diarySets.some(s=>s.weight&&s.reps)}
               style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, fontSize:14 }}>
               <CheckCircle2 size={15} strokeWidth={2}/> Save Entry
@@ -1448,16 +1447,16 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
           {/* Recent all exercises */}
           {strengthLog.length > 0 && (
             <Card style={{ padding:16 }}>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>Recent Entries</div>
+              <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>Recent Entries</div>
               {strengthLog.slice(0,8).map((entry,i)=>(
                 <div key={entry.id||i} style={{ padding:"10px 0", borderBottom:i<Math.min(strengthLog.length,8)-1?"1px solid var(--border)":"none" }}>
                   <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                    <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:13 }}>{entry.exercise}</div>
+                    <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontWeight:700, fontSize:13 }}>{entry.exercise}</div>
                     <div style={{ fontSize:10, color:"var(--text3)" }}>{entry.date}</div>
                   </div>
                   <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
                     {entry.sets.map((s,j)=>(
-                      <div key={j} style={{ padding:"3px 9px", borderRadius:20, background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", fontSize:11, fontFamily:"'JetBrains Mono',monospace", color:"var(--text2)" }}>
+                      <div key={j} style={{ padding:"3px 9px", borderRadius:20, background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", fontSize:11, fontFamily:"'JetBrains Mono Variable',monospace", color:"var(--text2)" }}>
                         {s.weight}kg × {s.reps}
                       </div>
                     ))}
@@ -1477,7 +1476,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
             <div style={{ fontSize:11, color:"var(--text3)", marginBottom:8, fontWeight:700, textTransform:"uppercase", letterSpacing:1 }}>Tracking exercise</div>
             {loggedExercises.length ? (
               <select value={diaryExercise} onChange={e=>setDiaryExercise(e.target.value)}
-                style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:10, padding:"10px 12px", color:"var(--text)", fontFamily:"'Syne',sans-serif", fontSize:13, outline:"none" }}>
+                style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:10, padding:"10px 12px", color:"var(--text)", fontFamily:"'Manrope Variable',sans-serif", fontSize:13, outline:"none" }}>
                 {loggedExercises.map(ex=><option key={ex} value={ex}>{ex}</option>)}
               </select>
             ) : (
@@ -1501,7 +1500,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
                 ].map(s=>(
                   <Card key={s.label} style={{ padding:12, textAlign:"center" }}>
                     <s.Icon size={15} color={s.color} strokeWidth={2} style={{ marginBottom:4 }}/>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:900, color:s.color }}>{s.val}</div>
+                    <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:20, fontWeight:900, color:s.color }}>{s.val}</div>
                     <div style={{ fontSize:9, color:"var(--text3)", marginTop:2, lineHeight:1.3 }}>{s.label}</div>
                   </Card>
                 ))}
@@ -1509,7 +1508,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
 
               {/* Weight progression chart */}
               <Card style={{ padding:16 }}>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:2 }}>Weight Progression</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:2 }}>Weight Progression</div>
                 <div style={{ fontSize:11, color:"var(--text3)", marginBottom:14 }}>Top set per session (kg)</div>
                 {bestPerSession.length > 1 ? (
                   <>
@@ -1524,7 +1523,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
                           <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
                             {isPR && <div style={{ fontSize:8, color:"#ffd700" }}>PR</div>}
                             <div style={{ width:"100%", borderRadius:"5px 5px 3px 3px", background:isPR?"#ffd700":isLatest?"var(--brand)":"rgba(255,61,46,0.35)", height:`${h}px`, transition:"height 0.5s", minHeight:8, boxShadow:isLatest?"0 0 10px rgba(255,61,46,0.4)":"none" }}/>
-                            <div style={{ fontSize:9, fontFamily:"'JetBrains Mono',monospace", color:isPR?"#ffd700":isLatest?"var(--brand)":"var(--text3)", fontWeight:600 }}>{s.weight}</div>
+                            <div style={{ fontSize:9, fontFamily:"'JetBrains Mono Variable',monospace", color:isPR?"#ffd700":isLatest?"var(--brand)":"var(--text3)", fontWeight:600 }}>{s.weight}</div>
                             <div style={{ fontSize:8, color:"var(--text3)" }}>{s.date.slice(5)}</div>
                           </div>
                         );
@@ -1552,7 +1551,7 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
               {/* Volume chart */}
               {bestPerSession.length > 1 && (
                 <Card style={{ padding:16 }}>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:2 }}>Volume per Session</div>
+                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:2 }}>Volume per Session</div>
                   <div style={{ fontSize:11, color:"var(--text3)", marginBottom:14 }}>Total kg lifted (sets × reps × weight)</div>
                   <div style={{ display:"flex", alignItems:"flex-end", gap:5, height:80 }}>
                     {bestPerSession.map((s,i)=>{
@@ -1570,18 +1569,18 @@ function StrengthDiary({ strengthLog, setStrengthLog }) {
 
               {/* Session history */}
               <Card style={{ padding:16 }}>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>Session History</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5, marginBottom:12 }}>Session History</div>
                 {[...exerciseHistory].reverse().map((entry,i)=>(
                   <div key={entry.id||i} style={{ padding:"12px 0", borderBottom:i<exerciseHistory.length-1?"1px solid var(--border)":"none" }}>
                     <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
                       <div style={{ fontSize:11, color:"var(--text3)" }}>{entry.date}</div>
-                      <div style={{ fontSize:11, color:"var(--text3)", fontFamily:"'JetBrains Mono',monospace" }}>Vol: {entry.sets.reduce((a,s)=>a+s.weight*s.reps,0).toFixed(0)}kg</div>
+                      <div style={{ fontSize:11, color:"var(--text3)", fontFamily:"'JetBrains Mono Variable',monospace" }}>Vol: {entry.sets.reduce((a,s)=>a+s.weight*s.reps,0).toFixed(0)}kg</div>
                     </div>
                     <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
                       {entry.sets.map((s,j)=>{
                         const isTop = s.weight===Math.max(...entry.sets.map(x=>x.weight));
                         return (
-                          <div key={j} style={{ padding:"4px 10px", borderRadius:20, background:isTop?"rgba(255,215,0,0.1)":"rgba(255,255,255,0.03)", border:`1px solid ${isTop?"rgba(255,215,0,0.3)":"var(--border2)"}`, fontSize:12, fontFamily:"'JetBrains Mono',monospace", color:isTop?"#ffd700":"var(--text2)", fontWeight:isTop?700:400 }}>
+                          <div key={j} style={{ padding:"4px 10px", borderRadius:20, background:isTop?"rgba(255,215,0,0.1)":"rgba(255,255,255,0.03)", border:`1px solid ${isTop?"rgba(255,215,0,0.3)":"var(--border2)"}`, fontSize:12, fontFamily:"'JetBrains Mono Variable',monospace", color:isTop?"#ffd700":"var(--text2)", fontWeight:isTop?700:400 }}>
                             {s.weight}kg × {s.reps}
                           </div>
                         );
@@ -2270,7 +2269,7 @@ export default function ApexFitUnified() {
       <div style={{ width:44, height:44, background:"linear-gradient(135deg,#ff2e63 0%,#ff4d2e 45%,#ff9500 100%)", borderRadius:13, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 8px 24px rgba(255,61,46,0.4)" }}>
         <Zap size={22} color="#fff" strokeWidth={2.5}/>
       </div>
-      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, letterSpacing:2, color:"#ece8e1", textTransform:"uppercase" }}>APEX FIT PRO</div>
+      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:22, letterSpacing:2, color:"#ece8e1", textTransform:"uppercase" }}>APEX FIT PRO</div>
       <div style={{ display:"flex", gap:6, marginTop:8 }}>
         {[0,1,2].map(i=>(
           <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#ff3d2e", animation:`pulse 1.2s ${i*0.2}s ease-in-out infinite`, opacity:0.8 }}/>
@@ -2286,9 +2285,8 @@ export default function ApexFitUnified() {
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight:"100vh", background:"#06060e", color:"var(--text)", fontFamily:"'Syne',sans-serif", position:"relative", overflowX:"hidden" }}>
+    <div style={{ minHeight:"100vh", background:"#06060e", color:"var(--text)", fontFamily:"'Manrope Variable',sans-serif", position:"relative", overflowX:"hidden" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
         :root{
           --brand:#ff3d2e; --brand2:#ff8a00; --accent:#00f5c4;
           --violet:#8b5cf6; --cyan:#22d3ee; --pink:#ff2e63; --lime:#a3e635;
@@ -2325,14 +2323,14 @@ export default function ApexFitUnified() {
         .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
         /* Typography */
-        .display{font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:-0.5px;line-height:0.95;text-transform:uppercase}
-        .label{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:10px;color:var(--text3)}
-        .mono{font-family:'JetBrains Mono',monospace;font-weight:600}
+        .display{font-family:'Unbounded Variable',sans-serif;font-weight:900;letter-spacing:-0.5px;line-height:0.95;text-transform:uppercase}
+        .label{font-family:'Unbounded Variable',sans-serif;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-size:10px;color:var(--text3)}
+        .mono{font-family:'JetBrains Mono Variable',monospace;font-weight:600}
 
         /* Inputs */
         input,select,textarea{
           background:var(--bg2);border:1px solid var(--border2);border-radius:12px;
-          padding:11px 15px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;
+          padding:11px 15px;color:var(--text);font-family:'Manrope Variable',sans-serif;font-size:14px;
           outline:none;width:100%;transition:border-color 0.2s,box-shadow 0.2s
         }
         input:focus,select:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(255,61,46,0.12)}
@@ -2360,7 +2358,7 @@ export default function ApexFitUnified() {
         .shimmer{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.8s infinite;border-radius:10px}
 
         /* Pill tags */
-        .pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px;text-transform:uppercase}
+        .pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;font-family:'Unbounded Variable',sans-serif;letter-spacing:0.5px;text-transform:uppercase}
 
         /* Nav active indicator */
         .nav-dot{width:4px;height:4px;border-radius:50%;background:var(--brand);margin-top:3px}
@@ -2382,7 +2380,7 @@ export default function ApexFitUnified() {
           {/* Logo mark */}
           <div style={{ width:34, height:34, background:"var(--grad)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(255,61,46,0.4)", flexShrink:0 }}><Zap size={18} color="#fff" strokeWidth={2.5}/></div>
           <div>
-            <div className="display" style={{ fontSize:20, letterSpacing:1, color:"var(--text)", lineHeight:1 }}>APEX FIT</div>
+            <div className="display" style={{ fontSize:17, letterSpacing:0.5, color:"var(--text)", lineHeight:1, whiteSpace:"nowrap" }}>APEX FIT</div>
             <div className="label" style={{ fontSize:8, color:"var(--text3)", letterSpacing:2 }}>PRO EDITION</div>
           </div>
         </div>
@@ -2390,28 +2388,28 @@ export default function ApexFitUnified() {
           {/* Streak pill */}
           <div style={{ background:"rgba(255,130,0,0.12)", border:"1px solid rgba(255,130,0,0.25)", padding:"5px 12px", borderRadius:100, display:"flex", gap:5, alignItems:"center" }}>
             <Flame size={13} color="#e06800" strokeWidth={2.5}/>
-            <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, color:"#e06800", fontSize:14, letterSpacing:0.5 }}>{streak}</span>
-            <span style={{ fontFamily:"'Syne',sans-serif", fontSize:10, color:"rgba(255,130,0,0.6)" }}>day streak</span>
+            <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:700, color:"#e06800", fontSize:14, letterSpacing:0.5 }}>{streak}</span>
+            <span style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:10, color:"rgba(255,130,0,0.6)" }}>day streak</span>
           </div>
           {/* AI coach button */}
           <button onClick={()=>setChatOpen(true)} style={{ width:34, height:34, borderRadius:10, background:"linear-gradient(135deg,rgba(167,139,250,0.3),rgba(255,61,46,0.3))", border:"1px solid rgba(167,139,250,0.3)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", backdropFilter:"blur(8px)" }}><Bot size={16} color="#c4b5fd" strokeWidth={2}/></button>
           {/* Avatar with reset on long-press */}
           <div style={{ position:"relative" }}>
             <div
-              style={{ width:34, height:34, borderRadius:10, background:"var(--grad)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Barlow Condensed',sans-serif", fontSize:16, fontWeight:900, boxShadow:"0 4px 12px rgba(255,61,46,0.3)", cursor:"pointer" }}
+              style={{ width:34, height:34, borderRadius:10, background:"var(--grad)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Unbounded Variable',sans-serif", fontSize:16, fontWeight:900, boxShadow:"0 4px 12px rgba(255,61,46,0.3)", cursor:"pointer" }}
               title="Hold to reset data"
               onContextMenu={e=>{e.preventDefault(); if(window.confirm("Reset all data and start fresh?")) resetAllData();}}
               onClick={()=>setShowResetHint(h=>!h)}
             >{profile.name?.[0]?.toUpperCase()||"A"}</div>
             {showResetHint && (
               <div style={{ position:"absolute", top:42, right:0, background:"rgba(13,13,26,0.98)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, padding:"10px 14px", minWidth:180, zIndex:200, boxShadow:"0 8px 32px rgba(0,0,0,0.5)" }}>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, color:"var(--text2)", marginBottom:8 }}>Signed in as <strong style={{color:"var(--text)"}}>{profile.name}</strong></div>
+                <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:11, color:"var(--text2)", marginBottom:8 }}>Signed in as <strong style={{color:"var(--text)"}}>{profile.name}</strong></div>
                 <button onClick={()=>{ setProfile(null); setShowResetHint(false); }}
-                  style={{ width:"100%", background:"rgba(167,139,250,0.10)", border:"1px solid rgba(167,139,250,0.25)", borderRadius:8, padding:"8px 10px", color:"#c4b5fd", fontFamily:"'Syne',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+                  style={{ width:"100%", background:"rgba(167,139,250,0.10)", border:"1px solid rgba(167,139,250,0.25)", borderRadius:8, padding:"8px 10px", color:"#c4b5fd", fontFamily:"'Manrope Variable',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
                   <RotateCcw size={13} strokeWidth={2}/> View Onboarding
                 </button>
                 <button onClick={()=>{ if(window.confirm("Reset all data and start fresh?")) resetAllData(); setShowResetHint(false); }}
-                  style={{ width:"100%", background:"rgba(255,61,46,0.12)", border:"1px solid rgba(255,61,46,0.3)", borderRadius:8, padding:"8px 10px", color:"var(--brand)", fontFamily:"'Syne',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+                  style={{ width:"100%", background:"rgba(255,61,46,0.12)", border:"1px solid rgba(255,61,46,0.3)", borderRadius:8, padding:"8px 10px", color:"var(--brand)", fontFamily:"'Manrope Variable',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
                   <Trash2 size={13} strokeWidth={2}/> Reset All Data
                 </button>
               </div>
@@ -2427,8 +2425,8 @@ export default function ApexFitUnified() {
             <div style={{ display:"flex", alignItems:"center", gap:12 }}>
               <div style={{ width:40, height:40, borderRadius:12, background:"linear-gradient(135deg,rgba(167,139,250,0.35),rgba(255,61,46,0.35))", border:"1px solid rgba(167,139,250,0.3)", display:"flex", alignItems:"center", justifyContent:"center" }}><Bot size={20} color="#c4b5fd" strokeWidth={2}/></div>
               <div>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, color:"var(--text)" }}>APEX AI Coach</div>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, color:"var(--text3)" }}>Powered by Claude</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, color:"var(--text)" }}>APEX AI Coach</div>
+                <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:11, color:"var(--text3)" }}>Powered by Claude</div>
               </div>
             </div>
             <GhostBtn onClick={()=>setChatOpen(false)} style={{ padding:"6px 14px", fontSize:12 }}>✕ Close</GhostBtn>
@@ -2437,10 +2435,10 @@ export default function ApexFitUnified() {
             {aiMessages.length===0 && (
               <div style={{ textAlign:"center", padding:"36px 16px" }}>
                 <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}><Bot size={44} color="#a78bfa" strokeWidth={1.5}/></div>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:22, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6, color:"var(--text)" }}>Hi {profile.name}, I'm APEX.</div>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontSize:13, color:"var(--text2)", marginBottom:22, lineHeight:1.6 }}>Ask me anything about workouts, nutrition or recovery.</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:22, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6, color:"var(--text)" }}>Hi {profile.name}, I'm APEX.</div>
+                <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:13, color:"var(--text2)", marginBottom:22, lineHeight:1.6 }}>Ask me anything about workouts, nutrition or recovery.</div>
                 {["What workout should I do today?","How much protein do I need?","How can I break a plateau?"].map(q=>(
-                  <button key={q} onClick={()=>setAiInput(q)} style={{ display:"block", width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:12, padding:"11px 16px", color:"var(--text2)", fontFamily:"'Syne',sans-serif", fontSize:13, cursor:"pointer", textAlign:"left", marginBottom:8, transition:"all 0.2s" }}
+                  <button key={q} onClick={()=>setAiInput(q)} style={{ display:"block", width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:12, padding:"11px 16px", color:"var(--text2)", fontFamily:"'Manrope Variable',sans-serif", fontSize:13, cursor:"pointer", textAlign:"left", marginBottom:8, transition:"all 0.2s" }}
                     onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--brand)";e.currentTarget.style.color="var(--text)"}}
                     onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.color="var(--text2)"}}>
                     {q}
@@ -2450,7 +2448,7 @@ export default function ApexFitUnified() {
             )}
             {aiMessages.map((m,i)=>(
               <div key={i} style={{ display:"flex", justifyContent:m.role==="user"?"flex-end":"flex-start" }}>
-                <div style={{ maxWidth:"82%", padding:"11px 16px", borderRadius:m.role==="user"?"16px 16px 4px 16px":"16px 16px 16px 4px", background:m.role==="user"?"var(--grad)":"rgba(255,255,255,0.04)", border:m.role==="user"?"none":"1px solid var(--border2)", fontFamily:"'Syne',sans-serif", fontSize:14, lineHeight:1.6, color:m.content==="..."?"var(--text3)":"var(--text)" }}>
+                <div style={{ maxWidth:"82%", padding:"11px 16px", borderRadius:m.role==="user"?"16px 16px 4px 16px":"16px 16px 16px 4px", background:m.role==="user"?"var(--grad)":"rgba(255,255,255,0.04)", border:m.role==="user"?"none":"1px solid var(--border2)", fontFamily:"'Manrope Variable',sans-serif", fontSize:14, lineHeight:1.6, color:m.content==="..."?"var(--text3)":"var(--text)" }}>
                   {m.content==="..." ? <span style={{ animation:"pulse 1s infinite" }}>●●●</span> : m.content}
                 </div>
               </div>
@@ -2492,13 +2490,13 @@ export default function ApexFitUnified() {
                           <span style={{ fontSize:10, color:tier.color, fontWeight:800, textTransform:"uppercase", letterSpacing:0.6, padding:"2px 7px", borderRadius:20, background:`${tier.color}22`, border:`1px solid ${tier.color}55` }}>{tier.name}</span>
                           <span style={{ fontSize:11, color:"var(--text3)", fontWeight:600 }}>Lv {lvl}</span>
                         </div>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:24, lineHeight:1.05, textTransform:"uppercase", letterSpacing:0.3 }}>{profile.name||"Hero"}</div>
-                        <div style={{ fontSize:11, color:accent, fontWeight:700, marginTop:3, fontFamily:"'Syne',sans-serif" }}>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:24, lineHeight:1.05, textTransform:"uppercase", letterSpacing:0.3 }}>{profile.name||"Hero"}</div>
+                        <div style={{ fontSize:11, color:accent, fontWeight:700, marginTop:3, fontFamily:"'Manrope Variable',sans-serif" }}>
                           {cls ? `${cls.icon} ${cls.name} · ${cls.tagline}` : "Class not chosen"}
                         </div>
                       </div>
                       <button onClick={()=>setClassPickerOpen(true)}
-                        style={{ padding:"6px 10px", background:cls?"transparent":"var(--grad)", border:cls?"1px solid var(--border2)":"none", borderRadius:8, color:cls?"var(--text3)":"#fff", fontSize:10, fontFamily:"'Syne',sans-serif", fontWeight:700, cursor:"pointer", flexShrink:0 }}>
+                        style={{ padding:"6px 10px", background:cls?"transparent":"var(--grad)", border:cls?"1px solid var(--border2)":"none", borderRadius:8, color:cls?"var(--text3)":"#fff", fontSize:10, fontFamily:"'Manrope Variable',sans-serif", fontWeight:700, cursor:"pointer", flexShrink:0 }}>
                         {cls ? "Change" : "Pick Class"}
                       </button>
                     </div>
@@ -2518,7 +2516,7 @@ export default function ApexFitUnified() {
                   {/* Stat hexagon / radar */}
                   <Card style={{ padding:16 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                      <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5 }}>Stats</span>
+                      <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5 }}>Stats</span>
                       <span style={{ fontSize:10, color:"var(--text3)", fontWeight:600 }}>Total: {Object.values(charStats).reduce((a,b)=>a+b,0)}</span>
                     </div>
                     {(()=>{
@@ -2538,12 +2536,12 @@ export default function ApexFitUnified() {
                               <div key={s.key} style={{ display:"flex", alignItems:"center", gap:12 }}>
                                 <div style={{ width:62, display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
                                   <span style={{ fontSize:14 }}>{s.icon}</span>
-                                  <span style={{ fontSize:11, fontWeight:800, color:s.color, fontFamily:"'Syne',sans-serif", letterSpacing:0.5 }}>{s.label}</span>
+                                  <span style={{ fontSize:11, fontWeight:800, color:s.color, fontFamily:"'Manrope Variable',sans-serif", letterSpacing:0.5 }}>{s.label}</span>
                                 </div>
                                 <div style={{ flex:1, height:7, background:"var(--border)", borderRadius:100, overflow:"hidden" }}>
                                   <div style={{ height:"100%", width:`${Math.min(100,(v/max)*100)}%`, background:`linear-gradient(90deg,${s.color},${s.color}88)`, borderRadius:100, transition:"width 0.6s" }}/>
                                 </div>
-                                <span style={{ fontSize:13, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", minWidth:24, textAlign:"right" }}>{v}</span>
+                                <span style={{ fontSize:13, fontWeight:700, color:s.color, fontFamily:"'Unbounded Variable',sans-serif", minWidth:24, textAlign:"right" }}>{v}</span>
                               </div>
                             );
                           })}
@@ -2564,7 +2562,7 @@ export default function ApexFitUnified() {
             <Card style={{ padding:18 }} glow={!!aiSuggestion}>
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
                 <Bot size={16} color="#a78bfa" strokeWidth={2}/>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5 }}>AI Coach</span>
+                <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0.5 }}>AI Coach</span>
                 {aiLoading && <span style={{ fontSize:11, color:"#a78bfa", marginLeft:"auto", animation:"pulse 1s infinite" }}>Thinking…</span>}
               </div>
               {aiSuggestion
@@ -2604,7 +2602,7 @@ export default function ApexFitUnified() {
               ].map(s=>(
                 <Card key={s.label} style={{ padding:14 }}>
                   <div style={{ marginBottom:8 }}><s.Icon size={18} color={s.color} strokeWidth={2}/></div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:26, color:s.color }}>{s.value}</div>
+                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:26, color:s.color }}>{s.value}</div>
                   <div style={{ fontSize:10, color:"#7878a0" }}>{s.unit} · {s.label}</div>
                 </Card>
               ))}
@@ -2637,7 +2635,7 @@ export default function ApexFitUnified() {
               <div style={{ display:"flex", alignItems:"center", gap:14 }}>
                 <div style={{ textAlign:"center" }}>
                   <div style={{ fontSize:10, color:"#9090b8", marginBottom:1 }}>START</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, color:"var(--brand)" }}>{profile.weight||84}</div>
+                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, color:"var(--brand)" }}>{profile.weight||84}</div>
                 </div>
                 <div style={{ flex:1 }}>
                   <ProgressBar value={Math.abs((profile.weight||84)-80.5)} max={Math.abs((profile.weight||84)-(profile.target||75))||1}/>
@@ -2647,7 +2645,7 @@ export default function ApexFitUnified() {
                 </div>
                 <div style={{ textAlign:"center" }}>
                   <div style={{ fontSize:10, color:"#9090b8", marginBottom:1 }}>TARGET</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, color:"#4ade80" }}>{profile.target||75}</div>
+                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, color:"#4ade80" }}>{profile.target||75}</div>
                 </div>
               </div>
             </Card>
@@ -2658,7 +2656,7 @@ export default function ApexFitUnified() {
         {tab==="train" && (
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>TRAIN</div>
+              <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(20px, 6.4vw, 28px)", letterSpacing:0, textTransform:"uppercase" }}>TRAIN</div>
               {trainSubTab==="freestyle" && (
                 <PrimaryBtn onClick={()=>setBuilderView(v=>v==="list"?"build":"list")} style={{ width:"auto", padding:"8px 14px", fontSize:12 }}>
                   {builderView==="list" ? "+ BUILD" : "← Back"}
@@ -2695,11 +2693,11 @@ export default function ApexFitUnified() {
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ fontSize:10, color:"var(--text3)", fontWeight:700, textTransform:"uppercase", letterSpacing:0.8, marginBottom:3 }}>Current Program</div>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, textTransform:"uppercase", lineHeight:1.1 }}>{program.emoji} {program.name}</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:22, textTransform:"uppercase", lineHeight:1.1 }}>{program.emoji} {program.name}</div>
                         <div style={{ fontSize:11, color:"var(--text3)", marginTop:4 }}>{program.daysPerWeek} days · {program.level}</div>
                       </div>
                       <button onClick={()=>setTrainSubTab("programs")}
-                        style={{ padding:"7px 12px", borderRadius:8, background:"var(--border)", border:"1px solid var(--border2)", color:"var(--text)", fontSize:11, fontFamily:"'Syne',sans-serif", fontWeight:600, cursor:"pointer", whiteSpace:"nowrap" }}>
+                        style={{ padding:"7px 12px", borderRadius:8, background:"var(--border)", border:"1px solid var(--border2)", color:"var(--text)", fontSize:11, fontFamily:"'Manrope Variable',sans-serif", fontWeight:600, cursor:"pointer", whiteSpace:"nowrap" }}>
                         Change
                       </button>
                     </div>
@@ -2739,7 +2737,7 @@ export default function ApexFitUnified() {
                             </div>
                             {workout && (
                               isToday ? (
-                                <div style={{ padding:"7px 14px", borderRadius:100, background:"var(--grad)", color:"#fff", fontSize:11, fontWeight:700, fontFamily:"'Syne',sans-serif", whiteSpace:"nowrap", display:"flex", alignItems:"center", gap:4, boxShadow:"0 4px 14px rgba(255,61,46,0.4)" }}>
+                                <div style={{ padding:"7px 14px", borderRadius:100, background:"var(--grad)", color:"#fff", fontSize:11, fontWeight:700, fontFamily:"'Manrope Variable',sans-serif", whiteSpace:"nowrap", display:"flex", alignItems:"center", gap:4, boxShadow:"0 4px 14px rgba(255,61,46,0.4)" }}>
                                   Start <ChevronRight size={12} strokeWidth={2.5}/>
                                 </div>
                               ) : (
@@ -2776,14 +2774,14 @@ export default function ApexFitUnified() {
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
                             <span style={{ fontSize:20 }}>{p.emoji}</span>
-                            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.3 }}>{p.name}</div>
-                            {recommended && <span style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"rgba(74,222,128,0.18)", color:"#4ade80", fontWeight:700, fontFamily:"'Syne',sans-serif" }}>RECOMMENDED</span>}
+                            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0, lineHeight:1.15 }}>{p.name}</div>
+                            {recommended && <span style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"rgba(74,222,128,0.18)", color:"#4ade80", fontWeight:700, fontFamily:"'Manrope Variable',sans-serif" }}>RECOMMENDED</span>}
                           </div>
                           <div style={{ fontSize:12, color:"var(--text3)", marginBottom:8, lineHeight:1.45 }}>{p.description}</div>
                           <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{p.daysPerWeek}d/week</span>
-                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{p.level}</span>
-                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Syne',sans-serif" }}>{p.goal}</span>
+                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Manrope Variable',sans-serif" }}>{p.daysPerWeek}d/week</span>
+                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Manrope Variable',sans-serif" }}>{p.level}</span>
+                            <span style={{ fontSize:10, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:"#9898b8", fontWeight:600, fontFamily:"'Manrope Variable',sans-serif" }}>{p.goal}</span>
                           </div>
                         </div>
                         {sel ? <CheckCircle2 size={20} color="var(--brand)" strokeWidth={2.5}/> : <ChevronRight size={18} color="var(--text3)"/>}
@@ -2800,7 +2798,7 @@ export default function ApexFitUnified() {
                 {builderView==="build" ? (
                   <div style={{ display:"flex", flexDirection:"column", gap:12 }} className="fadein">
                     <Card style={{ padding:18 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8, fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, marginBottom:14 }}><Settings size={16} strokeWidth={2}/> Workout Builder</div>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, marginBottom:14 }}><Settings size={16} strokeWidth={2}/> Workout Builder</div>
                       <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                         <input value={builderName} onChange={e=>setBuilderName(e.target.value)} placeholder="Workout name…"/>
                         <select value={builderType} onChange={e=>setBuilderType(e.target.value)}>
@@ -2861,10 +2859,10 @@ export default function ApexFitUnified() {
         {/* ════════════════════════════════ ACTIVE WORKOUT ════════════════════════════════ */}
         {tab==="active" && activeWorkout && (
           <div style={{ display:"flex", flexDirection:"column", gap:18, alignItems:"center", textAlign:"center" }} className="fadein">
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, letterSpacing:2, color:"var(--brand)" }}>IN PROGRESS</div>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22 }}>{activeWorkout.name}</div>
+            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:20, letterSpacing:2, color:"var(--brand)" }}>IN PROGRESS</div>
+            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22 }}>{activeWorkout.name}</div>
             <Card style={{ padding:36, width:"100%", borderColor:"rgba(255,77,77,0.3)" }} glow>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:68, letterSpacing:4, color:"var(--brand)", lineHeight:1, animation:"pulse 2s infinite" }}>{fmt(workoutTimer)}</div>
+              <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:68, letterSpacing:4, color:"var(--brand)", lineHeight:1, animation:"pulse 2s infinite" }}>{fmt(workoutTimer)}</div>
               <div style={{ fontSize:11, color:"#8080a8", marginTop:6 }}>elapsed · {activeWorkout.duration} min target</div>
               <div style={{ marginTop:18 }}>
                 <GhostBtn onClick={()=>setTimerRunning(r=>!r)}>{timerRunning?"⏸ Pause":"▶ Resume"}</GhostBtn>
@@ -2954,7 +2952,7 @@ export default function ApexFitUnified() {
         {/* ════════════════════════════════ NUTRITION ════════════════════════════════ */}
         {tab==="nutrition" && (
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>MEAL PLAN</div>
+            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(20px, 6.4vw, 28px)", letterSpacing:0, textTransform:"uppercase" }}>MEAL PLAN</div>
             <Card style={{ padding:16, display:"flex", alignItems:"center", gap:14 }}>
               <DonutRing value={totalCal} max={2000} color="var(--brand)" size={72}/>
               <div style={{ flex:1 }}>
@@ -2974,7 +2972,7 @@ export default function ApexFitUnified() {
             <button onClick={()=>setTab("scan")} style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 18px", background:"rgba(255,61,46,0.06)", border:"1px dashed rgba(255,61,46,0.3)", borderRadius:14, cursor:"pointer", width:"100%", textAlign:"left" }}>
               <div style={{ width:38, height:38, borderRadius:10, background:"linear-gradient(135deg,var(--brand),var(--brand2))", display:"flex", alignItems:"center", justifyContent:"center" }}><Camera size={18} color="#fff" strokeWidth={2}/></div>
               <div>
-                <div style={{ fontWeight:700, color:"var(--text)", fontSize:14, fontFamily:"'Syne',sans-serif" }}>Scan a Meal</div>
+                <div style={{ fontWeight:700, color:"var(--text)", fontSize:14, fontFamily:"'Manrope Variable',sans-serif" }}>Scan a Meal</div>
                 <div style={{ fontSize:12, color:"var(--text2)" }}>AI identifies calories & macros from a photo</div>
               </div>
               <div style={{ marginLeft:"auto", color:"var(--brand)" }}><ChevronRight size={18} strokeWidth={2}/></div>
@@ -2988,7 +2986,7 @@ export default function ApexFitUnified() {
                   <Plus size={18} color="var(--text2)" strokeWidth={2}/>
                 </div>
                 <div>
-                  <div style={{ fontWeight:700, color:"var(--text)", fontSize:14, fontFamily:"'Syne',sans-serif" }}>Quick Add</div>
+                  <div style={{ fontWeight:700, color:"var(--text)", fontSize:14, fontFamily:"'Manrope Variable',sans-serif" }}>Quick Add</div>
                   <div style={{ fontSize:12, color:"var(--text2)" }}>Eating out? Log calories manually</div>
                 </div>
                 <div style={{ marginLeft:"auto", color:"var(--text3)", transition:"transform 0.2s", transform:quickOpen?"rotate(180deg)":"none" }}>
@@ -3003,15 +3001,15 @@ export default function ApexFitUnified() {
                     {/* Calories — required, prominent */}
                     <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                       <div style={{ flex:1 }}>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:11, letterSpacing:1, color:"var(--text3)", textTransform:"uppercase", marginBottom:5 }}>Calories <span style={{ color:"var(--brand)" }}>*</span></div>
-                        <input type="number" value={quickCal} onChange={e=>setQuickCal(e.target.value)} placeholder="e.g. 450" style={{ textAlign:"center", fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, fontWeight:900, color:"var(--brand)", letterSpacing:0.5 }}/>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:11, letterSpacing:1, color:"var(--text3)", textTransform:"uppercase", marginBottom:5 }}>Calories <span style={{ color:"var(--brand)" }}>*</span></div>
+                        <input type="number" value={quickCal} onChange={e=>setQuickCal(e.target.value)} placeholder="e.g. 450" style={{ textAlign:"center", fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, fontWeight:900, color:"var(--brand)", letterSpacing:0.5 }}/>
                       </div>
                     </div>
                     {/* Optional macros row */}
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
                       {[{label:"Protein (g)", val:quickPro, set:setQuickPro, color:"#a78bfa"},{label:"Carbs (g)", val:quickCarbs, set:setQuickCarbs, color:"#ffd700"},{label:"Fat (g)", val:quickFat, set:setQuickFat, color:"var(--brand2)"}].map(f=>(
                         <div key={f.label}>
-                          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, letterSpacing:1, color:"var(--text3)", textTransform:"uppercase", marginBottom:5 }}>{f.label}</div>
+                          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:10, letterSpacing:1, color:"var(--text3)", textTransform:"uppercase", marginBottom:5 }}>{f.label}</div>
                           <input type="number" value={f.val} onChange={e=>f.set(e.target.value)} placeholder="0" style={{ textAlign:"center", color:f.color, fontWeight:700 }}/>
                         </div>
                       ))}
@@ -3033,9 +3031,9 @@ export default function ApexFitUnified() {
                   <Card key={item.id} style={{ padding:14, marginBottom:8 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                       <div>
-                        <div style={{ fontWeight:700, fontSize:14, fontFamily:"'Syne',sans-serif", marginBottom:4 }}>{item.name}</div>
+                        <div style={{ fontWeight:700, fontSize:14, fontFamily:"'Manrope Variable',sans-serif", marginBottom:4 }}>{item.name}</div>
                         <div style={{ display:"flex", gap:12, fontSize:12, color:"var(--text2)", flexWrap:"wrap" }}>
-                          <span style={{ color:"var(--brand)", fontWeight:700, fontFamily:"'Barlow Condensed',sans-serif", fontSize:14 }}>{item.calories} kcal</span>
+                          <span style={{ color:"var(--brand)", fontWeight:700, fontFamily:"'Unbounded Variable',sans-serif", fontSize:14 }}>{item.calories} kcal</span>
                           {item.protein>0 && <span style={{ color:"#a78bfa" }}>{item.protein}g protein</span>}
                           {item.carbs>0   && <span style={{ color:"#ffd700" }}>{item.carbs}g carbs</span>}
                           {item.fat>0     && <span style={{ color:"var(--brand2)" }}>{item.fat}g fat</span>}
@@ -3071,7 +3069,7 @@ export default function ApexFitUnified() {
                       ‹
                     </button>
                     <div style={{ textAlign:"center" }}>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, textTransform:"uppercase", letterSpacing:0.5, lineHeight:1 }}>{dayLabel}</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:22, textTransform:"uppercase", letterSpacing:0.5, lineHeight:1 }}>{dayLabel}</div>
                       <div style={{ fontSize:11, color:"var(--text3)", marginTop:3 }}>{dateLabel}</div>
                     </div>
                     <button onClick={()=>setMealDayOffset(d=>d+1)}
@@ -3123,7 +3121,7 @@ export default function ApexFitUnified() {
                               ))}
                               {mealSwaps[swapKey] && (
                                 <button onClick={()=>{ setMealSwaps(prev=>{const n={...prev};delete n[swapKey];return n;}); setSwapPickerOpen(null); }}
-                                  style={{ padding:"8px 12px", borderRadius:10, background:"transparent", border:"1px dashed var(--border2)", color:"var(--text3)", fontSize:11, cursor:"pointer", fontFamily:"'Syne',sans-serif", fontWeight:600 }}>
+                                  style={{ padding:"8px 12px", borderRadius:10, background:"transparent", border:"1px dashed var(--border2)", color:"var(--text3)", fontSize:11, cursor:"pointer", fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>
                                   Reset to default
                                 </button>
                               )}
@@ -3142,7 +3140,7 @@ export default function ApexFitUnified() {
                                   const sel = mult===m;
                                   return (
                                     <button key={i} onClick={()=>setMealPortions(prev=>({...prev,[meal.id]:m}))}
-                                      style={{ padding:"3px 8px", borderRadius:20, border:`1px solid ${sel?"var(--brand)":"var(--border2)"}`, background:sel?"rgba(255,61,46,0.12)":"transparent", color:sel?"var(--brand)":"var(--text3)", fontSize:9, fontWeight:700, fontFamily:"'Syne',sans-serif", cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}>
+                                      style={{ padding:"3px 8px", borderRadius:20, border:`1px solid ${sel?"var(--brand)":"var(--border2)"}`, background:sel?"rgba(255,61,46,0.12)":"transparent", color:sel?"var(--brand)":"var(--text3)", fontSize:9, fontWeight:700, fontFamily:"'Manrope Variable',sans-serif", cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap" }}>
                                       {p}
                                     </button>
                                   );
@@ -3196,7 +3194,7 @@ export default function ApexFitUnified() {
 
             {scanSubTab==="camera" && (
               <>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, letterSpacing:1 }}>AI FOOD SCANNER</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:24, letterSpacing:1 }}>AI FOOD SCANNER</div>
 
                 {/* Drop zone / image */}
                 {!scanImage ? (
@@ -3204,7 +3202,7 @@ export default function ApexFitUnified() {
                     onClick={()=>fileRef.current?.click()}
                     style={{ border:`2px dashed ${dragOver?"var(--brand)":"var(--border2)"}`, borderRadius:18, padding:"44px 24px", textAlign:"center", cursor:"pointer", background:dragOver?"rgba(255,77,77,0.05)":"#0d0d18", transition:"all 0.2s" }}>
                     <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}><Camera size={52} color="var(--brand)" strokeWidth={1.2}/></div>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, letterSpacing:1, marginBottom:6 }}>SNAP YOUR MEAL</div>
+                    <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:20, letterSpacing:1, marginBottom:6 }}>SNAP YOUR MEAL</div>
                     <div style={{ fontSize:13, color:"#7878a0", marginBottom:22 }}>Drop a photo or tap to browse</div>
                     <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
                       <PrimaryBtn onClick={e=>{e.stopPropagation();camRef.current?.click()}} style={{ width:"auto", padding:"9px 18px", fontSize:13 }}>📷 Camera</PrimaryBtn>
@@ -3241,7 +3239,7 @@ export default function ApexFitUnified() {
                     <Card style={{ padding:18, borderColor:"rgba(255,77,77,0.25)" }}>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"start", marginBottom:8 }}>
                         <div>
-                          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, lineHeight:1.1 }}>{scanResult.name}</div>
+                          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, lineHeight:1.1 }}>{scanResult.name}</div>
                           <div style={{ fontSize:11, color:"#9090b8", marginTop:2 }}>{scanResult.servingSize}</div>
                         </div>
                         <div style={{ textAlign:"center", flexShrink:0 }}>
@@ -3259,7 +3257,7 @@ export default function ApexFitUnified() {
                     {/* Calorie hero */}
                     <Card style={{ padding:16, textAlign:"center", background:"linear-gradient(135deg,#150a0a,#0f0a0a)", borderColor:"rgba(255,77,77,0.2)" }}>
                       <div style={{ fontSize:11, color:"#9090b8", letterSpacing:2, textTransform:"uppercase", marginBottom:2 }}>Total Calories</div>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:64, letterSpacing:2, color:"var(--brand)", lineHeight:1, textShadow:"0 0 40px rgba(255,77,77,0.4)" }}>{scanResult.calories}</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:64, letterSpacing:2, color:"var(--brand)", lineHeight:1, textShadow:"0 0 40px rgba(255,77,77,0.4)" }}>{scanResult.calories}</div>
                       <div style={{ fontSize:12, color:"#9090b8" }}>kcal · {scanResult.servingSize}</div>
                     </Card>
 
@@ -3269,7 +3267,7 @@ export default function ApexFitUnified() {
                       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8, textAlign:"center" }}>
                         {[{l:"Protein",v:scanResult.protein,c:"#a78bfa"},{l:"Carbs",v:scanResult.carbs,c:"#ffd700"},{l:"Fat",v:scanResult.fat,c:"var(--brand2)"},{l:"Fiber",v:scanResult.fiber,c:"#4ade80"}].map(m=>(
                           <div key={m.l}>
-                            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, color:m.c }}>{m.v}g</div>
+                            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, color:m.c }}>{m.v}g</div>
                             <div style={{ fontSize:10, color:"#9090b8" }}>{m.l}</div>
                           </div>
                         ))}
@@ -3305,7 +3303,7 @@ export default function ApexFitUnified() {
                     {/* AI tip */}
                     {scanResult.tips && (
                       <Card style={{ padding:16, borderColor:"rgba(167,139,250,0.2)", background:"rgba(167,139,250,0.03)" }}>
-                        <div style={{ display:"flex", gap:8, marginBottom:8 }}><Bot size={14} color="#a78bfa" strokeWidth={2}/><span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5 }}>AI Insight</span></div>
+                        <div style={{ display:"flex", gap:8, marginBottom:8 }}><Bot size={14} color="#a78bfa" strokeWidth={2}/><span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, textTransform:"uppercase", letterSpacing:0.5 }}>AI Insight</span></div>
                         <div style={{ fontSize:13, color:"#bbb", lineHeight:1.65 }}>{scanResult.tips}</div>
                         {scanResult.alternatives?.map((a,i)=><div key={i} style={{ display:"flex", gap:7, marginTop:6 }}><span style={{ color:"#4ade80", fontSize:12 }}>→</span><span style={{ fontSize:12, color:"#777" }}>{a}</span></div>)}
                       </Card>
@@ -3328,14 +3326,14 @@ export default function ApexFitUnified() {
 
             {scanSubTab==="log" && (
               <>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, letterSpacing:1 }}>SCANNED MEALS</div>
+                <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:24, letterSpacing:1 }}>SCANNED MEALS</div>
                 {scannedToday.length>0 && (
                   <Card style={{ padding:16 }}>
                     <div style={{ fontWeight:700, fontSize:13, marginBottom:12 }}>Today from Scans</div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:8, textAlign:"center" }}>
                       {[{l:"Cal",v:scannedCal,c:"var(--brand)"},{l:"Protein",v:scannedPro+"g",c:"#a78bfa"},{l:"Items",v:scannedToday.length,c:"#4ade80"},{l:"Avg Score",v:Math.round(scannedToday.reduce((a,i)=>a+num(i.result?.healthScore,100),0)/scannedToday.length),c:"#ffd700"}].map(s=>(
                         <div key={s.l}>
-                          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, color:s.c }}>{s.v}</div>
+                          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:20, color:s.c }}>{s.v}</div>
                           <div style={{ fontSize:9, color:"#7878a0" }}>{s.l}</div>
                         </div>
                       ))}
@@ -3364,11 +3362,11 @@ export default function ApexFitUnified() {
               <>
                 <div>
                   <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:8 }}>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>CONNECT WEARABLE</div>
+                    <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(20px, 6.4vw, 28px)", letterSpacing:0, textTransform:"uppercase" }}>CONNECT WEARABLE</div>
                   </div>
                   <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.04)", border:"1px solid var(--border2)", borderRadius:100, padding:"4px 12px" }}>
                     <div style={{ width:6, height:6, borderRadius:"50%", background:"var(--text3)" }}/>
-                    <span style={{ fontSize:11, color:"var(--text3)", fontFamily:"'Syne',sans-serif", fontWeight:600 }}>Not connected</span>
+                    <span style={{ fontSize:11, color:"var(--text3)", fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>Not connected</span>
                   </div>
                 </div>
 
@@ -3381,7 +3379,7 @@ export default function ApexFitUnified() {
                       <Watch size={24} color="#fff" strokeWidth={2}/>
                     </div>
                     <div>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, textTransform:"uppercase", letterSpacing:0.5, lineHeight:1 }}>Sync your watch</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:16, textTransform:"uppercase", letterSpacing:0, lineHeight:1.1 }}>Sync your watch</div>
                       <div style={{ fontSize:12, color:"var(--text3)", marginTop:4 }}>{IS_NATIVE ? "Reads your Galaxy Watch data from Samsung Health" : "Works with any device that syncs to Google Fit"}</div>
                     </div>
                   </div>
@@ -3397,7 +3395,7 @@ export default function ApexFitUnified() {
                     ].map(p=>(
                       <div key={p.label} style={{ display:"flex", alignItems:"center", gap:5, padding:"5px 10px", borderRadius:100, background:`${p.color}14`, border:`1px solid ${p.color}33` }}>
                         <p.Icon size={11} color={p.color} strokeWidth={2}/>
-                        <span style={{ fontSize:11, color:p.color, fontFamily:"'Syne',sans-serif", fontWeight:600 }}>{p.label}</span>
+                        <span style={{ fontSize:11, color:p.color, fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>{p.label}</span>
                       </div>
                     ))}
                   </div>
@@ -3417,7 +3415,7 @@ export default function ApexFitUnified() {
               <>
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                   <div>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>WEARABLE DATA</div>
+                    <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(20px, 6.4vw, 28px)", letterSpacing:0, textTransform:"uppercase" }}>WEARABLE DATA</div>
                     {gfitLastSync && <div style={{ fontSize:10, color:"#7878a0" }}>Synced {gfitLastSync.toLocaleTimeString()}</div>}
                   </div>
                   <div style={{ display:"flex", gap:8, alignItems:"center" }}>
@@ -3473,7 +3471,7 @@ export default function ApexFitUnified() {
                   {[{Icon:Footprints,label:"Steps",value:gfitLoading?"–":gfitData.steps.toLocaleString(),sub:"/10,000 goal",color:"var(--brand)"},{Icon:Flame,label:"Calories",value:gfitLoading?"–":`${gfitData.calories}`,sub:"kcal burned",color:"var(--brand2)"},{Icon:Activity,label:"Distance",value:gfitLoading?"–":`${gfitData.distance}`,sub:"km today",color:"#00e5ff"},{Icon:Timer,label:"Active",value:gfitLoading?"–":`${gfitData.activeMinutes}`,sub:"minutes",color:"#4ade80"}].map(s=>(
                     <Card key={s.label} style={{ padding:14 }}>
                       <div style={{ marginBottom:7 }}><s.Icon size={17} color={s.color} strokeWidth={2}/></div>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:26, color:s.color }}>{s.value}</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:26, color:s.color }}>{s.value}</div>
                       <div style={{ fontSize:11, color:"var(--text3)" }}>{s.sub}·{s.label}</div>
                     </Card>
                   ))}
@@ -3525,7 +3523,7 @@ export default function ApexFitUnified() {
         {/* ════════════════════════════════ PROGRESS ════════════════════════════════ */}
         {tab==="progress" && (
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>MY PROGRESS</div>
+            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(20px, 6.4vw, 28px)", letterSpacing:0, textTransform:"uppercase" }}>MY PROGRESS</div>
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
               {[
@@ -3535,7 +3533,7 @@ export default function ApexFitUnified() {
               ].map(s=>(
                 <Card key={s.label} style={{ padding:12, textAlign:"center" }}>
                   <div style={{ display:"flex", justifyContent:"center", marginBottom:4 }}><s.Icon size={17} color={s.color} strokeWidth={2}/></div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, color:s.color, marginTop:2 }}>{s.value}</div>
+                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:24, color:s.color, marginTop:2 }}>{s.value}</div>
                   <div style={{ fontSize:9, color:"var(--text3)", marginTop:1 }}>{s.unit}</div>
                 </Card>
               ))}
@@ -3602,7 +3600,7 @@ export default function ApexFitUnified() {
                 ].map(a=>(
                   <div key={a.name} style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 12px", borderRadius:12, background:a.unlocked?"rgba(255,61,46,0.06)":"rgba(255,255,255,0.02)", border:`1px solid ${a.unlocked?"rgba(255,61,46,0.2)":"rgba(255,255,255,0.04)"}`, opacity:a.unlocked?1:0.35, transition:"all 0.3s" }}>
                     <a.Icon size={16} color={a.unlocked?a.color:"var(--text3)"} strokeWidth={2}/>
-                    <span style={{ fontSize:12, fontWeight:600, color:a.unlocked?"var(--text)":"var(--text3)", fontFamily:"'Syne',sans-serif" }}>{a.name}</span>
+                    <span style={{ fontSize:12, fontWeight:600, color:a.unlocked?"var(--text)":"var(--text3)", fontFamily:"'Manrope Variable',sans-serif" }}>{a.name}</span>
                   </div>
                 ))}
               </div>
@@ -3662,13 +3660,13 @@ export default function ApexFitUnified() {
           return (
             <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
               {/* Header */}
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:30, letterSpacing:0.5, textTransform:"uppercase" }}>WELLNESS</div>
+              <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:"clamp(20px, 6.4vw, 28px)", letterSpacing:0, textTransform:"uppercase" }}>WELLNESS</div>
 
               {/* Sub-nav */}
               <div style={{ display:"flex", gap:6, overflowX:"auto", paddingBottom:2 }}>
                 {WTABS.map(({id,label,Icon})=>(
                   <button key={id} onClick={()=>setWellnessTab(id)}
-                    style={{ display:"flex", alignItems:"center", gap:5, padding:"7px 13px", borderRadius:100, border:`1px solid ${wellnessTab===id?"var(--brand)":"var(--border2)"}`, background:wellnessTab===id?"rgba(255,61,46,0.12)":"transparent", color:wellnessTab===id?"var(--brand)":"var(--text3)", fontFamily:"'Syne',sans-serif", fontSize:11, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap", transition:"all 0.2s", flexShrink:0 }}>
+                    style={{ display:"flex", alignItems:"center", gap:5, padding:"7px 13px", borderRadius:100, border:`1px solid ${wellnessTab===id?"var(--brand)":"var(--border2)"}`, background:wellnessTab===id?"rgba(255,61,46,0.12)":"transparent", color:wellnessTab===id?"var(--brand)":"var(--text3)", fontFamily:"'Manrope Variable',sans-serif", fontSize:11, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap", transition:"all 0.2s", flexShrink:0 }}>
                     <Icon size={12} strokeWidth={2}/>{label}
                   </button>
                 ))}
@@ -3683,8 +3681,8 @@ export default function ApexFitUnified() {
                       <DonutRing value={recoveryScore} max={100} color={recoveryColor} size={88}/>
                       <div>
                         <div className="label" style={{ marginBottom:4 }}>Recovery Score</div>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:42, color:recoveryColor, lineHeight:1 }}>{recoveryScore}</div>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:18, color:recoveryColor, opacity:0.8 }}>{recoveryLabel}</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:42, color:recoveryColor, lineHeight:1 }}>{recoveryScore}</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:700, fontSize:18, color:recoveryColor, opacity:0.8 }}>{recoveryLabel}</div>
                         <div style={{ fontSize:11, color:"var(--text3)", marginTop:4 }}>Based on sleep, stress & mood</div>
                       </div>
                     </div>
@@ -3700,7 +3698,7 @@ export default function ApexFitUnified() {
                     ].map(s=>(
                       <Card key={s.label} style={{ padding:14 }}>
                         <s.Icon size={16} color={s.color} strokeWidth={2} style={{ marginBottom:6 }}/>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, color:s.color, textTransform:"capitalize" }}>{s.val}</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, color:s.color, textTransform:"capitalize" }}>{s.val}</div>
                         <div style={{ fontSize:10, color:"var(--text3)", marginTop:2 }}>{s.label}</div>
                       </Card>
                     ))}
@@ -3721,7 +3719,7 @@ export default function ApexFitUnified() {
                         <q.Icon size={17} color={q.color} strokeWidth={2}/>
                       </div>
                       <div style={{ flex:1 }}>
-                        <div style={{ fontWeight:700, fontSize:14, fontFamily:"'Syne',sans-serif", color:"var(--text)" }}>{q.label}</div>
+                        <div style={{ fontWeight:700, fontSize:14, fontFamily:"'Manrope Variable',sans-serif", color:"var(--text)" }}>{q.label}</div>
                         <div style={{ fontSize:11, color:"var(--text3)", marginTop:1 }}>{q.sub}</div>
                       </div>
                       <ChevronRight size={16} color="var(--text3)" strokeWidth={2}/>
@@ -3747,7 +3745,7 @@ export default function ApexFitUnified() {
                                 <Wind size={20} color={p.color} strokeWidth={2}/>
                               </div>
                               <div>
-                                <div style={{ fontWeight:700, fontSize:14, fontFamily:"'Syne',sans-serif" }}>{p.name}</div>
+                                <div style={{ fontWeight:700, fontSize:14, fontFamily:"'Manrope Variable',sans-serif" }}>{p.name}</div>
                                 <div style={{ fontSize:11, color:"var(--text3)", marginTop:2 }}>{p.desc} · {p.times.filter(t=>t>0).join("-")} pattern</div>
                               </div>
                             </div>
@@ -3760,7 +3758,7 @@ export default function ApexFitUnified() {
                     </>
                   ) : (
                     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"20px 0", gap:20 }} className="fadein">
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:20, color:"var(--text2)", textTransform:"uppercase", letterSpacing:2 }}>{breathPattern.name}</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:20, color:"var(--text2)", textTransform:"uppercase", letterSpacing:2 }}>{breathPattern.name}</div>
                       {/* Animated orb */}
                       <div style={{ position:"relative", width:200, height:200, display:"flex", alignItems:"center", justifyContent:"center" }}>
                         {/* Outer glow ring */}
@@ -3775,11 +3773,11 @@ export default function ApexFitUnified() {
                           transition:`transform ${breathPhase==="inhale"?(breathPattern.times[0]||2)+"s":(breathPhase==="exhale"?(breathPattern.times[2]||4)+"s":"0.3s")} ease-in-out`,
                           display:"flex", alignItems:"center", justifyContent:"center",
                         }}>
-                          <div style={{ fontFamily:"'JetBrains Mono',monospace", fontWeight:600, fontSize:22, color:"#fff", textShadow:"0 2px 8px rgba(0,0,0,0.4)" }}>{breathTimer}</div>
+                          <div style={{ fontFamily:"'JetBrains Mono Variable',monospace", fontWeight:600, fontSize:22, color:"#fff", textShadow:"0 2px 8px rgba(0,0,0,0.4)" }}>{breathTimer}</div>
                         </div>
                       </div>
                       {/* Phase label */}
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:28, letterSpacing:2, color:breathPattern.color, textTransform:"uppercase", minHeight:36 }}>{breathLabel}</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:28, letterSpacing:2, color:breathPattern.color, textTransform:"uppercase", minHeight:36 }}>{breathLabel}</div>
                       {/* Cycle count */}
                       <div style={{ display:"flex", gap:8 }}>
                         {Array.from({length:Math.max(breathCount,1)}).map((_,i)=>(
@@ -3799,26 +3797,26 @@ export default function ApexFitUnified() {
                   {!meditRunning ? (
                     <>
                       <div style={{ textAlign:"center" }}>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:22, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Meditation Timer</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:22, textTransform:"uppercase", letterSpacing:1, marginBottom:6 }}>Meditation Timer</div>
                         <div style={{ fontSize:13, color:"var(--text2)" }}>Set your duration, close your eyes, and focus on your breath.</div>
                       </div>
                       {/* Duration picker */}
-                      <div style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center" }}>
+                      <div style={{ display:"flex", gap:8, justifyContent:"center" }}>
                         {[2,5,10,15,20,30].map(d=>(
                           <button key={d} onClick={()=>setMeditDuration(d)}
-                            style={{ width:60, height:60, borderRadius:14, border:`2px solid ${meditDuration===d?"#a78bfa":"var(--border2)"}`, background:meditDuration===d?"rgba(167,139,250,0.15)":"transparent", color:meditDuration===d?"#a78bfa":"var(--text3)", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:18, cursor:"pointer", transition:"all 0.2s" }}>
-                            {d}<span style={{ fontSize:10, display:"block", fontFamily:"'Syne',sans-serif", fontWeight:600 }}>min</span>
+                            style={{ flex:"1 1 0", minWidth:0, maxWidth:60, height:58, borderRadius:14, border:`2px solid ${meditDuration===d?"#a78bfa":"var(--border2)"}`, background:meditDuration===d?"rgba(167,139,250,0.15)":"transparent", color:meditDuration===d?"#a78bfa":"var(--text3)", fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:15, cursor:"pointer", transition:"all 0.2s" }}>
+                            {d}<span style={{ fontSize:10, display:"block", fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>min</span>
                           </button>
                         ))}
                       </div>
                       {/* Ambient preview ring */}
                       <div style={{ width:160, height:160, borderRadius:"50%", background:"radial-gradient(circle at 40% 35%, rgba(167,139,250,0.3), rgba(167,139,250,0.05))", border:"2px solid rgba(167,139,250,0.3)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 40px rgba(167,139,250,0.15)" }}>
                         <div style={{ textAlign:"center" }}>
-                          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:36, color:"#a78bfa" }}>{meditDuration}</div>
-                          <div style={{ fontFamily:"'Syne',sans-serif", fontSize:11, color:"rgba(167,139,250,0.7)" }}>minutes</div>
+                          <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:36, color:"#a78bfa" }}>{meditDuration}</div>
+                          <div style={{ fontFamily:"'Manrope Variable',sans-serif", fontSize:11, color:"rgba(167,139,250,0.7)" }}>minutes</div>
                         </div>
                       </div>
-                      <PrimaryBtn onClick={()=>{setMeditElapsed(0);setMeditRunning(true);}} style={{ background:"linear-gradient(135deg,#a78bfa,#7c3aed)", padding:"14px 40px", fontSize:15, display:"flex", alignItems:"center", gap:8 }}>
+                      <PrimaryBtn onClick={()=>{setMeditElapsed(0);setMeditRunning(true);}} style={{ background:"linear-gradient(135deg,#a78bfa,#7c3aed)", padding:"14px 32px", fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
                         <Play size={16} strokeWidth={2.5}/> Begin Session
                       </PrimaryBtn>
                       {/* History */}
@@ -3828,7 +3826,7 @@ export default function ApexFitUnified() {
                           {meditationLog.slice(0,5).map((s,i)=>(
                             <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0", borderBottom:i<Math.min(meditationLog.length,5)-1?"1px solid var(--border)":"none" }}>
                               <div style={{ display:"flex", alignItems:"center", gap:8 }}><Brain size={13} color="#a78bfa" strokeWidth={2}/><span style={{ fontSize:12, color:"var(--text2)" }}>{s.date}</span></div>
-                              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:15, color:"#a78bfa", fontWeight:700 }}>{s.duration} min</span>
+                              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:15, color:"#a78bfa", fontWeight:700 }}>{s.duration} min</span>
                             </div>
                           ))}
                         </Card>
@@ -3836,12 +3834,12 @@ export default function ApexFitUnified() {
                     </>
                   ) : (
                     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:20, padding:"20px 0" }} className="fadein">
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, color:"var(--text2)", textTransform:"uppercase", letterSpacing:2 }}>Meditating…</div>
+                      <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, color:"var(--text2)", textTransform:"uppercase", letterSpacing:2 }}>Meditating…</div>
                       {/* Progress ring */}
                       <div style={{ position:"relative", width:200, height:200 }}>
                         <DonutRing value={meditElapsed} max={meditDuration*60} color="#a78bfa" size={200}/>
                         <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-                          <div style={{ fontFamily:"'JetBrains Mono',monospace", fontWeight:600, fontSize:32, color:"#a78bfa" }}>{fmt(meditDuration*60-meditElapsed)}</div>
+                          <div style={{ fontFamily:"'JetBrains Mono Variable',monospace", fontWeight:600, fontSize:32, color:"#a78bfa" }}>{fmt(meditDuration*60-meditElapsed)}</div>
                           <div style={{ fontSize:11, color:"var(--text3)", marginTop:4 }}>remaining</div>
                         </div>
                       </div>
@@ -3856,7 +3854,7 @@ export default function ApexFitUnified() {
               {wellnessTab==="stress" && (
                 <div style={{ display:"flex", flexDirection:"column", gap:14 }} className="fadein">
                   <Card style={{ padding:18 }}>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>How stressed are you today?</div>
+                    <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>How stressed are you today?</div>
                     <div style={{ fontSize:12, color:"var(--text3)", marginBottom:18 }}>1 = totally calm · 5 = very stressed</div>
                     <div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:20 }}>
                       {[1,2,3,4,5].map(n=>{
@@ -3864,7 +3862,7 @@ export default function ApexFitUnified() {
                         const sel = stressLog.find(s=>s.date===today)?.score===n;
                         return (
                           <button key={n} onClick={()=>setStressLog(p=>{const f=p.filter(s=>s.date!==today);return [...f,{date:today,score:n}];})}
-                            style={{ width:52, height:52, borderRadius:14, border:`2px solid ${sel?cols[n-1]:"var(--border2)"}`, background:sel?`${cols[n-1]}22`:"transparent", color:sel?cols[n-1]:"var(--text3)", fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:22, cursor:"pointer", transition:"all 0.2s", boxShadow:sel?`0 0 16px ${cols[n-1]}44`:"none" }}>
+                            style={{ width:52, height:52, borderRadius:14, border:`2px solid ${sel?cols[n-1]:"var(--border2)"}`, background:sel?`${cols[n-1]}22`:"transparent", color:sel?cols[n-1]:"var(--text3)", fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:22, cursor:"pointer", transition:"all 0.2s", boxShadow:sel?`0 0 16px ${cols[n-1]}44`:"none" }}>
                             {n}
                           </button>
                         );
@@ -3882,7 +3880,7 @@ export default function ApexFitUnified() {
                           return (
                             <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
                               <div style={{ width:"100%", borderRadius:4, background:cols[s.score-1], height:`${(s.score/5)*64}px`, transition:"height 0.4s", minHeight:6 }}/>
-                              <div style={{ fontSize:9, color:"var(--text3)", fontFamily:"'Syne',sans-serif" }}>{s.date.slice(5)}</div>
+                              <div style={{ fontSize:9, color:"var(--text3)", fontFamily:"'Manrope Variable',sans-serif" }}>{s.date.slice(5)}</div>
                             </div>
                           );
                         })}
@@ -3902,7 +3900,7 @@ export default function ApexFitUnified() {
                       {/* Connected banner */}
                       <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 14px", background:"rgba(0,229,255,0.06)", border:"1px solid rgba(0,229,255,0.2)", borderRadius:12 }}>
                         <Watch size={15} color="#00e5ff" strokeWidth={2}/>
-                        <span style={{ fontSize:12, color:"#00e5ff", fontFamily:"'Syne',sans-serif", fontWeight:600 }}>Synced from Google Fit</span>
+                        <span style={{ fontSize:12, color:"#00e5ff", fontFamily:"'Manrope Variable',sans-serif", fontWeight:600 }}>Synced from Google Fit</span>
                         <button onClick={()=>fetchGfitAll(gfitToken)} style={{ marginLeft:"auto", background:"none", border:"none", cursor:"pointer", color:"#00e5ff", display:"flex", alignItems:"center" }}>
                           <RefreshCw size={13} strokeWidth={2} style={{ animation:gfitLoading?"spin 1s linear infinite":"none" }}/>
                         </button>
@@ -3915,7 +3913,7 @@ export default function ApexFitUnified() {
                             <DonutRing value={gfitSleep.lastNight.hours} max={9} color="#a78bfa" size={80}/>
                             <div>
                               <div className="label" style={{ marginBottom:4 }}>Last Night</div>
-                              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:48, color:"#a78bfa", lineHeight:1 }}>{gfitSleep.lastNight.hours}<span style={{ fontSize:22 }}>h</span></div>
+                              <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:48, color:"#a78bfa", lineHeight:1 }}>{gfitSleep.lastNight.hours}<span style={{ fontSize:22 }}>h</span></div>
                               <div style={{ fontSize:11, color:"var(--text3)", marginTop:4 }}>
                                 {gfitSleep.lastNight.hours>=7?"✓ Good sleep":"⚠ Below recommended 7–9h"}
                               </div>
@@ -3967,7 +3965,7 @@ export default function ApexFitUnified() {
                             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
                               {[{l:"Avg",v:`${avg.toFixed(1)}h`,c:"#a78bfa"},{l:"Best",v:`${best}h`,c:"#4ade80"},{l:"Worst",v:`${worst}h`,c:"#ff3d2e"}].map(s=>(
                                 <div key={s.l} style={{ textAlign:"center", padding:"10px 8px", background:"rgba(255,255,255,0.02)", borderRadius:10 }}>
-                                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, fontWeight:900, color:s.c }}>{s.v}</div>
+                                  <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, fontWeight:900, color:s.c }}>{s.v}</div>
                                   <div style={{ fontSize:10, color:"var(--text3)", marginTop:2 }}>{s.l}</div>
                                 </div>
                               ))}
@@ -3978,11 +3976,11 @@ export default function ApexFitUnified() {
 
                       {/* Quality override — manual rating still available */}
                       <Card style={{ padding:16 }}>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:14, textTransform:"uppercase", letterSpacing:0.5, marginBottom:10 }}>Rate Last Night's Quality</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:700, fontSize:14, textTransform:"uppercase", letterSpacing:0.5, marginBottom:10 }}>Rate Last Night's Quality</div>
                         <div style={{ display:"flex", gap:8 }}>
                           {[{v:1,l:"Poor"},{v:2,l:"Fair"},{v:3,l:"OK"},{v:4,l:"Good"},{v:5,l:"Great"}].map(q=>(
                             <button key={q.v} onClick={()=>setSleepQuality(q.v)}
-                              style={{ flex:1, padding:"10px 4px", borderRadius:10, border:`1px solid ${sleepQuality===q.v?"#a78bfa":"var(--border2)"}`, background:sleepQuality===q.v?"rgba(167,139,250,0.15)":"transparent", color:sleepQuality===q.v?"#a78bfa":"var(--text3)", fontFamily:"'Syne',sans-serif", fontSize:10, fontWeight:700, cursor:"pointer", transition:"all 0.2s" }}>
+                              style={{ flex:1, padding:"10px 4px", borderRadius:10, border:`1px solid ${sleepQuality===q.v?"#a78bfa":"var(--border2)"}`, background:sleepQuality===q.v?"rgba(167,139,250,0.15)":"transparent", color:sleepQuality===q.v?"#a78bfa":"var(--text3)", fontFamily:"'Manrope Variable',sans-serif", fontSize:10, fontWeight:700, cursor:"pointer", transition:"all 0.2s" }}>
                               {q.l}
                             </button>
                           ))}
@@ -3997,7 +3995,7 @@ export default function ApexFitUnified() {
                     <>
                       <Card style={{ padding:20, textAlign:"center", border:"1px solid rgba(0,229,255,0.2)", background:"rgba(0,229,255,0.04)" }}>
                         <Watch size={32} color="#00e5ff" strokeWidth={1.5} style={{ marginBottom:10 }}/>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", marginBottom:6 }}>{IS_NATIVE ? "Connect Samsung Health" : "Connect Google Fit"}</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", marginBottom:6 }}>{IS_NATIVE ? "Connect Samsung Health" : "Connect Google Fit"}</div>
                         <div style={{ fontSize:12, color:"var(--text2)", lineHeight:1.6, marginBottom:16 }}>Link your watch to automatically sync sleep data from your device. No manual entry needed.</div>
                         <PrimaryBtn onClick={()=>setTab("watch")} style={{ background:"linear-gradient(135deg,#00e5ff,#0891b2)", fontSize:13, display:"flex", alignItems:"center", gap:8, justifyContent:"center", margin:"0 auto" }}>
                           <Watch size={14} strokeWidth={2}/> Go to Watch Tab
@@ -4006,11 +4004,11 @@ export default function ApexFitUnified() {
 
                       {/* Manual fallback */}
                       <Card style={{ padding:18 }}>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:14, textTransform:"uppercase", marginBottom:14, opacity:0.7 }}>Or Log Manually</div>
+                        <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:700, fontSize:14, textTransform:"uppercase", marginBottom:14, opacity:0.7 }}>Or Log Manually</div>
                         <div style={{ marginBottom:16 }}>
                           <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
                             <span style={{ fontSize:12, color:"var(--text3)" }}>Hours slept</span>
-                            <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, color:"#ffd700", fontWeight:900 }}>{sleepHours}h</span>
+                            <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontSize:22, color:"#ffd700", fontWeight:900 }}>{sleepHours}h</span>
                           </div>
                           <input type="range" min="3" max="12" step="0.5" value={sleepHours} onChange={e=>setSleepHours(Number(e.target.value))} style={{ width:"100%", accentColor:"#ffd700" }}/>
                           <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, color:"var(--text3)", marginTop:4 }}><span>3h</span><span>7–9h optimal</span><span>12h</span></div>
@@ -4020,7 +4018,7 @@ export default function ApexFitUnified() {
                           <div style={{ display:"flex", gap:8 }}>
                             {[{v:1,l:"Poor"},{v:2,l:"Fair"},{v:3,l:"OK"},{v:4,l:"Good"},{v:5,l:"Great"}].map(q=>(
                               <button key={q.v} onClick={()=>setSleepQuality(q.v)}
-                                style={{ flex:1, padding:"10px 4px", borderRadius:10, border:`1px solid ${sleepQuality===q.v?"#ffd700":"var(--border2)"}`, background:sleepQuality===q.v?"rgba(255,215,0,0.12)":"transparent", color:sleepQuality===q.v?"#ffd700":"var(--text3)", fontFamily:"'Syne',sans-serif", fontSize:10, fontWeight:700, cursor:"pointer", transition:"all 0.2s" }}>
+                                style={{ flex:1, padding:"10px 4px", borderRadius:10, border:`1px solid ${sleepQuality===q.v?"#ffd700":"var(--border2)"}`, background:sleepQuality===q.v?"rgba(255,215,0,0.12)":"transparent", color:sleepQuality===q.v?"#ffd700":"var(--text3)", fontFamily:"'Manrope Variable',sans-serif", fontSize:10, fontWeight:700, cursor:"pointer", transition:"all 0.2s" }}>
                                 {q.l}
                               </button>
                             ))}
@@ -4054,18 +4052,18 @@ export default function ApexFitUnified() {
               {wellnessTab==="mood" && (
                 <div style={{ display:"flex", flexDirection:"column", gap:14 }} className="fadein">
                   <Card style={{ padding:18 }}>
-                    <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, marginBottom:16 }}>How are you feeling?</div>
+                    <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.5, marginBottom:16 }}>How are you feeling?</div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr", gap:8, marginBottom:16 }}>
                       {MOOD_OPTIONS.map(m=>(
                         <button key={m.v} onClick={()=>setTodayMood(m.v)}
                           style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, padding:"12px 6px", borderRadius:14, border:`2px solid ${todayMood===m.v?m.color:"var(--border2)"}`, background:todayMood===m.v?`${m.color}18`:"transparent", cursor:"pointer", transition:"all 0.2s", boxShadow:todayMood===m.v?`0 0 16px ${m.color}44`:"none" }}>
                           <m.Icon size={22} color={todayMood===m.v?m.color:"var(--text3)"} strokeWidth={2}/>
-                          <span style={{ fontSize:9, fontFamily:"'Syne',sans-serif", fontWeight:700, color:todayMood===m.v?m.color:"var(--text3)" }}>{m.label}</span>
+                          <span style={{ fontSize:9, fontFamily:"'Manrope Variable',sans-serif", fontWeight:700, color:todayMood===m.v?m.color:"var(--text3)" }}>{m.label}</span>
                         </button>
                       ))}
                     </div>
                     <textarea value={moodNote} onChange={e=>setMoodNote(e.target.value)} placeholder="Optional note… what's on your mind?" rows={3}
-                      style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:12, padding:"12px 14px", color:"var(--text)", fontFamily:"'Syne',sans-serif", fontSize:13, outline:"none", resize:"none", marginBottom:14, boxSizing:"border-box" }}/>
+                      style={{ width:"100%", background:"rgba(255,255,255,0.03)", border:"1px solid var(--border2)", borderRadius:12, padding:"12px 14px", color:"var(--text)", fontFamily:"'Manrope Variable',sans-serif", fontSize:13, outline:"none", resize:"none", marginBottom:14, boxSizing:"border-box" }}/>
                     <PrimaryBtn onClick={()=>{if(!todayMood)return; setMoodLog(p=>{const f=p.filter(s=>s.date!==today);return [{date:today,mood:todayMood,note:moodNote},...f].slice(0,60);}); setMoodNote(""); }} disabled={!todayMood} style={{ fontSize:14, display:"flex", alignItems:"center", gap:8, justifyContent:"center" }}>
                       <BookOpen size={15} strokeWidth={2}/> Save Mood Entry
                     </PrimaryBtn>
@@ -4083,7 +4081,7 @@ export default function ApexFitUnified() {
                             </div>
                             <div style={{ flex:1 }}>
                               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                                <span style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:13, color:m.color, textTransform:"capitalize" }}>{m.label}</span>
+                                <span style={{ fontFamily:"'Manrope Variable',sans-serif", fontWeight:700, fontSize:13, color:m.color, textTransform:"capitalize" }}>{m.label}</span>
                                 <span style={{ fontSize:10, color:"var(--text3)" }}>{entry.date}</span>
                               </div>
                               {entry.note && <div style={{ fontSize:11, color:"var(--text2)", marginTop:3, lineHeight:1.5 }}>{entry.note}</div>}
@@ -4108,7 +4106,7 @@ export default function ApexFitUnified() {
           <div onClick={e=>e.stopPropagation()}
             style={{ width:"100%", maxWidth:520, maxHeight:"86vh", overflowY:"auto", background:"var(--card)", borderTopLeftRadius:24, borderTopRightRadius:24, padding:"20px 18px calc(40px + var(--sab))", borderTop:"1px solid var(--border2)" }}>
             <div style={{ width:36, height:4, background:"var(--border2)", borderRadius:100, margin:"0 auto 16px" }}/>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:900, fontSize:26, textTransform:"uppercase", letterSpacing:0.5, textAlign:"center", marginBottom:6 }}>
+            <div style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:900, fontSize:26, textTransform:"uppercase", letterSpacing:0.5, textAlign:"center", marginBottom:6 }}>
               {characterClass ? "Change Class" : "Choose Your Class"}
             </div>
             <div style={{ fontSize:12, color:"var(--text3)", textAlign:"center", marginBottom:18, lineHeight:1.5 }}>
@@ -4127,15 +4125,15 @@ export default function ApexFitUnified() {
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2, flexWrap:"wrap" }}>
-                          <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.3, color:c.color }}>{c.name}</span>
-                          {recommended && <span style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"rgba(74,222,128,0.18)", color:"#4ade80", fontWeight:700, fontFamily:"'Syne',sans-serif" }}>RECOMMENDED</span>}
+                          <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:800, fontSize:18, textTransform:"uppercase", letterSpacing:0.3, color:c.color }}>{c.name}</span>
+                          {recommended && <span style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"rgba(74,222,128,0.18)", color:"#4ade80", fontWeight:700, fontFamily:"'Manrope Variable',sans-serif" }}>RECOMMENDED</span>}
                           {sel && <CheckCircle2 size={14} color={c.color} strokeWidth={2.5}/>}
                         </div>
                         <div style={{ fontSize:11, color:c.color, fontWeight:600, marginBottom:4, fontStyle:"italic" }}>{c.tagline}</div>
                         <div style={{ fontSize:12, color:"var(--text2)", lineHeight:1.45 }}>{c.description}</div>
                         <div style={{ display:"flex", gap:4, marginTop:6, flexWrap:"wrap" }}>
                           {Object.entries(c.statBias).filter(([,v])=>v>=1.3).map(([s])=>(
-                            <span key={s} style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:c.color, fontWeight:700, fontFamily:"'Syne',sans-serif" }}>+{s}</span>
+                            <span key={s} style={{ fontSize:9, padding:"2px 7px", borderRadius:20, background:"var(--border)", color:c.color, fontWeight:700, fontFamily:"'Manrope Variable',sans-serif" }}>+{s}</span>
                           ))}
                         </div>
                       </div>
@@ -4172,7 +4170,7 @@ export default function ApexFitUnified() {
                 background: active?"linear-gradient(160deg,rgba(255,46,99,0.28),rgba(255,138,0,0.14))":"transparent",
                 boxShadow: active?"inset 0 1px 0 rgba(255,255,255,0.12),0 6px 18px -6px rgba(255,46,99,0.6)":"none" }}>
               <Icon size={19} strokeWidth={active?2.4:1.8} color={active?"#ff6a3d":"currentColor"} style={{ filter: active?"drop-shadow(0 0 6px rgba(255,61,46,0.7))":"none", transition:"all 0.2s" }}/>
-              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:9, letterSpacing:0.8, textTransform:"uppercase" }}>{label}</span>
+              <span style={{ fontFamily:"'Unbounded Variable',sans-serif", fontWeight:700, fontSize:9, letterSpacing:0.8, textTransform:"uppercase" }}>{label}</span>
             </div>
           );
         })}
